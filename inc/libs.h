@@ -1,23 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.h                                          :+:      :+:    :+:   */
+/*   libs.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:25:20 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/08 15:04:44 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/09 16:35:14 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// ! This file is the main header file for the webserv project.
-// ! It contains all the includes and the main structure of the project.
+// ! This file contains all the librairies for the authorized functions in the project.
 
-#ifndef WEBSERV_H
-# define WEBSERV_H
-
-
-// ! System Librairies
+#ifndef LIBS_H
+# define LIBS_H
 
 # include <iostream>      // General I/O operations
 # include <string>        // String operations
@@ -35,13 +31,5 @@
 # include <cstdlib>       // General utilities (exit, etc.)
 # include <cstdio>        // Standard I/O (for CGI)
 # include <cerrno>        // Error handling
-
-
-// ! Custom Librairies
-
-# include "WebServ.hpp"
-
-
-
 
 #endif

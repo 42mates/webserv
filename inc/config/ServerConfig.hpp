@@ -1,26 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   WebServ.hpp                                        :+:      :+:    :+:   */
+/*   ServerConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/08 14:45:48 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/09 16:35:30 by mbecker          ###   ########.fr       */
+/*   Created: 2025/01/09 15:46:32 by mbecker           #+#    #+#             */
+/*   Updated: 2025/01/09 16:37:49 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libs.h"
-#include "config/ServerConfig.hpp"
+#pragma once
 
-class WebServ
+#include "../libs.h"
+
+class ServerConfig
 {
 	private:
-		ServerConfig _conf;
+		std::string _config_file;
+
+		void parseFile();
 
 	public:
-		WebServ();
-		~WebServ();
+		ServerConfig();
+		~ServerConfig();
 
-		void run(const char* conf_file, int &ret);
+		void parse(std::string &config_file);
 };
