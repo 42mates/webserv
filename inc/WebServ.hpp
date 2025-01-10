@@ -6,17 +6,18 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:45:48 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/09 16:35:30 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/10 12:54:40 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libs.h"
-#include "config/ServerConfig.hpp"
+#include "macros.h"
+#include "config/Config.hpp"
 
 class WebServ
 {
 	private:
-		ServerConfig _conf;
+		Config _conf;
 
 	public:
 		WebServ();

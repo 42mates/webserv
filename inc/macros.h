@@ -1,29 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ServerConfig.hpp                                   :+:      :+:    :+:   */
+/*   macros.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/09 15:46:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/09 16:37:49 by mbecker          ###   ########.fr       */
+/*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
+/*   Updated: 2025/01/10 11:38:51 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef MACROS_H
+# define MACROS_H
 
-#include "../libs.h"
+# define DEFAULT_CONFIG_FILE "tools/config/webserv.conf"
 
-class ServerConfig
-{
-	private:
-		std::string _config_file;
-
-		void parseFile();
-
-	public:
-		ServerConfig();
-		~ServerConfig();
-
-		void parse(std::string &config_file);
-};
+#endif
