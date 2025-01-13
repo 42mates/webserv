@@ -17,6 +17,7 @@
 
 # include <iostream>      // General I/O operations
 # include <string>        // String operations
+# include <sstream>       // String operations
 # include <fstream>       // File operations (configuration file)
 # include <map>           // Storing configuration parameters
 # include <vector>        // Storing multiple sockets

@@ -36,7 +36,7 @@ void Config::parse(std::string &config_file)
 		ServerConfig *new_serv = new ServerConfig();
 		
 		// parse the server block
-		ServerBlock	serv_block(new_serv);
+		ServerBlock	serv_block(new_serv, 0);
 		serv_block.parse(_file);
 		_servers.push_back(new_serv);
 
