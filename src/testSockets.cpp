@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/09 15:52:09 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/10 15:36:52 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/13 16:15:47 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,25 +88,25 @@ void sendData(void)
         throw std::runtime_error("Error sending data");
 }
 
-int main ( void )
-{
-	try {
-		createSocket();
-		bindSocket();
-		listenSocket();
-		acceptConnection();
+// int main ( void )
+// {
+// 	try {
+// 		createSocket();
+// 		bindSocket();
+// 		listenSocket();
+// 		acceptConnection();
 
-		receiveData();
-		sendData();
-	}
-	catch (const std::exception&e)
-	{
-		std::cerr << e.what() << std::endl;
-		if (server_socket > 0) close(server_socket);
-		if (client_socket > 0) close(client_socket);
-		return (1);
-	}
-	close(server_socket);
-	close(client_socket);
-	return (0);
-}
+// 		receiveData();
+// 		sendData();
+// 	}
+// 	catch (const std::exception&e)
+// 	{
+// 		std::cerr << e.what() << std::endl;
+// 		if (server_socket > 0) close(server_socket);
+// 		if (client_socket > 0) close(client_socket);
+// 		return (1);
+// 	}
+// 	close(server_socket);
+// 	close(client_socket);
+// 	return (0);
+// }
