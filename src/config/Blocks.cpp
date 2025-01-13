@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:38:12 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/10 17:59:38 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/13 12:30:17 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,21 @@ void ABlock::identifyDirectives(std::string line)
 {
 	//todo: once all directives are identified, if two location blocks are identical, return following:
 	//"nginx: [emerg] duplicate location "/" in /home/mbecker/nginx/conf/nginx.conf:15"
+	(void)line;
 }
 
 void ABlock::handleDirective(std::string line)
 {
-	
+	(void)line;
 }
 
 
 /************ SERVER BLOCK *************/
 
-ServerBlock::ServerBlock(struct ServerConfig &config)
+ServerBlock::ServerBlock(struct ServerConfig *config)
 {
+	_config = config;
+	
 	_fields.push_back("server_name");
 	_fields.push_back("error_page");
 	_fields.push_back("client_max_body_size");
@@ -39,14 +42,16 @@ ServerBlock::ServerBlock(struct ServerConfig &config)
 
 void ServerBlock::parse(std::ifstream &file)
 {
-
+	(void)file;
 }
 
 
 /************ LOCATION BLOCK *************/
 
-LocationBlock::LocationBlock(struct RouteConfig &config)
+LocationBlock::LocationBlock(struct RouteConfig *config)
 {
+	_config = config;
+	
 	_fields.push_back("root");
 	_fields.push_back("methods");
 	_fields.push_back("directory_listing");
@@ -62,5 +67,5 @@ LocationBlock::LocationBlock(struct RouteConfig &config)
 
 void LocationBlock::parse(std::ifstream &file)
 {
-
+	(void)file;
 }

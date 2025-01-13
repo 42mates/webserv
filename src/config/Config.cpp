@@ -19,17 +19,21 @@ Config::Config()
 {}
 
 Config::~Config()
-{}
+{
+	for (std::vector<ServerConfig *>::iterator it = _servers.begin(); it != _servers.end(); it++)
+		delete *it;
+}
 
 void Config::parse(std::string &config_file)
 {
 	_path = config_file;
 	openFile();
 
+	//while there are servers directives
 	{
 		// Skip comments and ws
 		// meet server block: initialise a new ServerConfig node
-		ServerConfig new_serv;
+		ServerConfig *new_serv = new ServerConfig();
 		
 		// parse the server block
 		ServerBlock	serv_block(new_serv);

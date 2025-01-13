@@ -60,7 +60,7 @@ class Config
 	private:
 		std::string		_path;              // Path to the configuration file
 		std::ifstream	_file;              // File stream for the configuration file
-		std::vector<ServerConfig> _servers; // List of configured servers
+		std::vector<ServerConfig *> _servers; // List of configured servers
 
 		void openFile();
 

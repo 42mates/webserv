@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/10 17:51:14 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/13 12:29:30 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ class ABlock
 		 * Key: directive type ("block" or "field")
 		 * Value: directive value (e.g., "server_name", "error_page", etc.) 
 		 */
-		std::vector<std::string, std::string> _directives; 
+		std::map<std::string, std::string> _directives; 
 
 		void identifyDirectives(std::string line);
 		void handleDirective(std::string line);
@@ -43,8 +43,11 @@ class ABlock
  */
 class ServerBlock : public ABlock
 {
+	private:
+		struct ServerConfig *_config;
+
 	public:
-		ServerBlock(struct ServerConfig &config);
+		ServerBlock(struct ServerConfig *config);
 		void parse(std::ifstream &file);
 };
 
@@ -53,7 +56,10 @@ class ServerBlock : public ABlock
  */
 class LocationBlock : public ABlock
 {
+	private:
+		struct RouteConfig *_config;
+
 	public:
-		LocationBlock(struct RouteConfig &config);
+		LocationBlock(struct RouteConfig *config);
 		void parse(std::ifstream &file);
 };
