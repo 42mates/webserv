@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/config/Config.hpp"
-#include "../../inc/config/Blocks.hpp"
+#include "Config.hpp"
+#include "Blocks.hpp"
 
 
 Config::Config() 

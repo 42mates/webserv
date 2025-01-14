@@ -1,0 +1,46 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   SocketManager.hpp                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
+/*   Updated: 2025/01/14 16:19:08 by mbecker          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef SOCKET_MANAGER_HPP
+# define SOCKET_MANAGER_HPP
+
+# include "libs.h"
+
+class SocketManager 
+{
+	private:
+		std::vector<struct port_info>		_ports_info;
+
+			/*Individual manager. If ports are added dynamically
+				might need to make them public*/
+		void			createSocket(int index, int port_at_index);
+		void			bindSocket(int index);
+		void			listenSocket(int index);
+
+	public:
+		SocketManager(const std::vector<int>& ports);
+		~SocketManager( void );
+
+								/*GETERS*/
+		std::vector<struct port_info>		getPortsInfo( void ) const;
+};	
+
+struct port_info
+{
+	int								port;
+	int								server_socket;
+	struct sockaddr_in				server_address;
+	std::vector<int>				client_socket;
+	std::vector<struct sockaddr_in>	client_address;
+};
+
+#endif

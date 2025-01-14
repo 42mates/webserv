@@ -6,11 +6,11 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/14 15:53:03 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/14 16:16:05 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/config/Blocks.hpp"
+#include "Blocks.hpp"
 
 /*********** SERVER BLOCK ***********/
 

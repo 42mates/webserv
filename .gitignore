@@ -31,8 +31,6 @@
 *.out
 *.app
 webserv
-
-
 # Personal
 todo.md
 chatgpt*

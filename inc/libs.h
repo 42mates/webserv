@@ -33,4 +33,6 @@
 # include <cstdio>        // Standard I/O (for CGI)
 # include <cerrno>        // Error handling
 
+#include "macros.h"
+
 #endif

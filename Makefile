@@ -6,7 +6,7 @@
 #    By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/18 13:05:21 by mbecker           #+#    #+#              #
-#    Updated: 2025/01/08 15:34:49 by mbecker          ###   ########.fr        #
+#    Updated: 2025/01/14 16:14:59 by mbecker          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,8 @@ NAME = webserv
 
 CC = c++
 CFLAG = -Wall -Wextra -Werror -std=c++98
+INCLUDES = $(shell find inc -type d -exec echo -I{} \;)
+DEBUGGER = -g3
 
 SRC_DIR = src
 OBJ_DIR = .obj
@@ -26,7 +28,7 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@echo "$(LYELLOW)Objects successfully compiled in $(YELLOW)$$PWD/obj/$(LYELLOW).$(NC)"
-	@$(CC) $(CFLAG) $(SRC) -o $(NAME)
+	@$(CC) $(CFLAG) $(SRC) $(INCLUDES) $(DEBUGGER) -o $(NAME)
 	@if [ -f $(NAME) ]; then \
 		echo "$(LGREEN)Created $(GREEN)$(NAME)$(LGREEN).$(NC)" ; \
 	else \
@@ -35,7 +37,7 @@ $(NAME): $(OBJ)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
 	@echo "$(LYELLOW)Compiling $(YELLOW)$<$(NC)"
-	@$(CC) $(CFLAG) -c $< -o $@
+	@$(CC) $(CFLAG) $(INCLUDES) $(DEBUGGER) -c $< -o $@
 	@printf "\033[1A\033[2K\r"
 
 clean:

@@ -6,11 +6,11 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:38:12 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/14 15:59:14 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/14 16:16:11 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/config/Blocks.hpp"
+#include "Blocks.hpp"
 
 /************ ABSTRACT DEFINITIONS *************/
 
