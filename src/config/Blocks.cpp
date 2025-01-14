@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:38:12 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/14 16:16:11 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/14 16:48:10 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@
 
 void ABlock::parseField()
 {
-	std::string key;
-	std::vector<std::string> val;
+	string key;
+	vector<string> val;
 
 	key = "server_name";
-	std::string example = "localhost";
+	string example = "localhost";
 	val.push_back(example);
 
 	(this->*_std_fields[key])(val);
@@ -29,19 +29,18 @@ void ABlock::parseField()
 
 void ABlock::extractBlock()
 {
-	//int depth = 0;
-	//std::string block;
-	std::string line;
+	int depth = 0;
+	string block;
+	string line;
 	
 	//this function must start right after the bracket of a valid block.
-	while (std::getline(*_infile, line))
+	while (getline(*_infile, line))
 	{
 		
 
 		
 		_line_nb++;
 	}
-
 }
 
 void ABlock::identifyDirectives()
@@ -72,14 +71,14 @@ ServerBlock::ServerBlock(struct ServerConfig *config, int line)
 	_config = config;
 	_line_nb = line;
 
-	_std_fields["server_name"] = static_cast<void (ABlock::*)(std::vector <std::string>)>(&ServerBlock::parseServerName);
-	_std_fields["error_page"] = static_cast<void (ABlock::*)(std::vector <std::string>)>(&ServerBlock::parseErrorPage);
-	_std_fields["client_max_body_size"] = static_cast<void (ABlock::*)(std::vector <std::string>)>(&ServerBlock::parseClientMaxBodySize);
+	_std_fields["server_name"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseServerName);
+	_std_fields["error_page"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseErrorPage);
+	_std_fields["client_max_body_size"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseClientMaxBodySize);
 
 	_std_blocks.push_back("location");
 }
 
-void ServerBlock::parse(std::ifstream &stream)
+void ServerBlock::parse(ifstream &stream)
 {
 	_infile = &stream;
 
@@ -94,19 +93,19 @@ LocationBlock::LocationBlock(struct RouteConfig *config, int line)
 	_config = config;
 	_line_nb = line;
 	
-    _std_fields["root"] = static_cast<void (ABlock::*)(std::vector <std::string>)>(&LocationBlock::parseRoot);
-    _std_fields["methods"] = static_cast<void (ABlock::*)(std::vector <std::string>)>(&LocationBlock::parseMethods);
-    _std_fields["directory_listing"] = static_cast<void (ABlock::*)(std::vector <std::string>)>(&LocationBlock::parseDirectoryListing);
-    _std_fields["index_file"] = static_cast<void (ABlock::*)(std::vector <std::string>)>(&LocationBlock::parseIndexFile);
-    _std_fields["cgi_path"] = static_cast<void (ABlock::*)(std::vector <std::string>)>(&LocationBlock::parseCgiPath);
-    _std_fields["upload_dir"] = static_cast<void (ABlock::*)(std::vector <std::string>)>(&LocationBlock::parseUploadDir);
-    _std_fields["http_redirect"] = static_cast<void (ABlock::*)(std::vector <std::string>)>(&LocationBlock::parseHttpRedirect);
-    _std_fields["return"] = static_cast<void (ABlock::*)(std::vector <std::string>)>(&LocationBlock::parseReturn);
+    _std_fields["root"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseRoot);
+    _std_fields["methods"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseMethods);
+    _std_fields["directory_listing"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseDirectoryListing);
+    _std_fields["index_file"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseIndexFile);
+    _std_fields["cgi_path"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseCgiPath);
+    _std_fields["upload_dir"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseUploadDir);
+    _std_fields["http_redirect"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseHttpRedirect);
+    _std_fields["return"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseReturn);
 
 	_std_blocks.push_back("location");
 }
 
-void LocationBlock::parse(std::ifstream &stream)
+void LocationBlock::parse(ifstream &stream)
 {
 	(void)stream;
 }

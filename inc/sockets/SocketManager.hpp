@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/14 16:19:08 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/14 16:45:32 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 class SocketManager 
 {
 	private:
-		std::vector<struct port_info>		_ports_info;
+		vector<struct port_info>		_ports_info;
 
 			/*Individual manager. If ports are added dynamically
 				might need to make them public*/
@@ -27,11 +27,11 @@ class SocketManager
 		void			listenSocket(int index);
 
 	public:
-		SocketManager(const std::vector<int>& ports);
+		SocketManager(const vector<int>& ports);
 		~SocketManager( void );
 
 								/*GETERS*/
-		std::vector<struct port_info>		getPortsInfo( void ) const;
+		vector<struct port_info>		getPortsInfo( void ) const;
 };	
 
 struct port_info
@@ -39,8 +39,8 @@ struct port_info
 	int								port;
 	int								server_socket;
 	struct sockaddr_in				server_address;
-	std::vector<int>				client_socket;
-	std::vector<struct sockaddr_in>	client_address;
+	vector<int>				client_socket;
+	vector<struct sockaddr_in>	client_address;
 };
 
 #endif

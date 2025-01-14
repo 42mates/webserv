@@ -20,11 +20,11 @@ Config::Config()
 
 Config::~Config()
 {
-	for (std::vector<ServerConfig *>::iterator it = _servers.begin(); it != _servers.end(); it++)
+	for (vector<ServerConfig *>::iterator it = _servers.begin(); it != _servers.end(); it++)
 		delete *it;
 }
 
-void Config::parse(std::string &config_file)
+void Config::parse(string &config_file)
 {
 	_path = config_file;
 	openFile();
@@ -55,9 +55,9 @@ void Config::openFile()
 	if (!_file.is_open() || _file.bad())
 	{
 		if (_path == DEFAULT_CONFIG_FILE)
-			throw std::runtime_error("Could not open default config file: " + _path + ": " + strerror(errno));
+			throw runtime_error("Could not open default config file: " + _path + ": " + strerror(errno));
 		else
-			throw std::runtime_error("Could not open config file: " + _path + ": " + strerror(errno));
+			throw runtime_error("Could not open config file: " + _path + ": " + strerror(errno));
 	}
 }
 
