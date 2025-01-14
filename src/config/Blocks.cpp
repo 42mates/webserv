@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:38:12 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/14 16:48:10 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/14 18:21:38 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,22 +26,76 @@ void ABlock::parseField()
 	(this->*_std_fields[key])(val);
 }
 
+void ABlock::isGoodDirective(string directive)
+{
+	istringstream iss(directive);
+	string word;
+	iss >> word;
+
+	if (_std_fields.find(word) != _std_fields.end())
+	{
+		if (directive.find(';') == string::npos)
+			throw runtime_error("unexpected end of directive \"" + directive + "\"");
+	}
+	else if (find(_std_blocks.begin(), _std_blocks.end(), word) != _std_blocks.end())
+	{
+		
+	}
+	else
+		throw runtime_error("unknown directive \"" + word + "\"");
+	
+}
 
 void ABlock::extractBlock()
 {
 	int depth = 0;
 	string block;
-	string line;
 	
 	//this function must start right after the bracket of a valid block.
-	while (getline(*_infile, line))
+	while (getline(*_infile, _line))
 	{
-		
+		while (!_line.empty())
+		{
+			string directive;
+			istringstream iss(_line);
+			string word;
 
-		
-		_line_nb++;
+			while (iss >> word)
+			{
+				if (*word.begin() == '}')
+				{
+					block += directive + " }";
+					
+					
+					word.erase(word.begin());
+					if (depth == 0) // End of block, quit function
+					{
+						_subblocks.push_back(block);
+						_line = word + iss.str().substr(iss.tellg()); 
+						return ;
+					}
+					depth--;
+				}
+				
+				directive += word + " ";
+			}
+			directive = directive.substr(0, directive.size() - 1); // Remove trailing space
+			_line_nb++;
+		}
 	}
 }
+
+
+			//if (word.find(';') != string::npos) {
+			//	directive += word;
+			//	break;
+			//}
+			//if (word.find('{') != string::npos || word.find('}') != string::npos) {
+			//	break;
+			//}
+			
+			//if (word.find('{') != string::npos || word.find(';') != string::npos || word.front() == '}' || word.back() == '}')
+			//	break;
 
 void ABlock::identifyDirectives()
 {

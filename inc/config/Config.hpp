@@ -21,8 +21,8 @@
 struct RouteConfig {
     string path;                  // Path of the route (e.g., "/upload")
     string root;                  // Root directory associated with the route
-    vector<string> methods;  // Accepted HTTP methods (e.g., {"GET", "POST"})
-    bool directory_listing;            // Enable or disable directory listing
+    vector<string> methods;       // Accepted HTTP methods (e.g., {"GET", "POST"})
+    bool directory_listing;       // Enable or disable directory listing
     string index_file;            // Default file for a directory (e.g., "index.html")
     string cgi_path;              // Path to the CGI program (e.g., "/usr/bin/php-cgi")
     string upload_dir;            // Upload directory for sent files
@@ -37,12 +37,12 @@ struct RouteConfig {
  * @brief Configuration data for a specific server in the web server (`server` block).
  */
 struct ServerConfig {
-    string host;                       // Server IP address (default: 0.0.0.0)
-    int port;                               // Server listening port (default: 80)
+    string host;                  // Server IP address (default: 0.0.0.0)
+    int port;                     // Server listening port (default: 80)
     vector<string> server_names;  // Domain names associated with the server
     map<int, string> error_pages; // Error pages (key: HTTP code, value: file path)
-    size_t client_max_body_size;            // Max body size (default: 1 MB)
-    vector<RouteConfig> routes;        // List of configured routes
+    size_t client_max_body_size;  // Max body size (default: 1 MB)
+    vector<RouteConfig> routes;   // List of configured routes
 
     ServerConfig() : 
 		host("0.0.0.0"), 
@@ -58,8 +58,8 @@ struct ServerConfig {
 class Config
 {
 	private:
-		string		_path;              // Path to the configuration file
-		ifstream	_file;              // File stream for the configuration file
+		string		_path;               // Path to the configuration file
+		ifstream	_file;               // File stream for the configuration file
 		vector<ServerConfig *> _servers; // List of configured servers
 
 		void openFile();

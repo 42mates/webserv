@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/14 16:45:32 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/14 18:12:41 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,18 @@
 class ABlock
 {
 	protected:
-		int _line_nb;                                                          // Line number where the block starts.
-		ifstream *_infile;                                             // File stream for the configuration file.
+		int _line_nb;                                              // Line number where the block starts.
+		string _line;											   // Current line being parsed.
+		ifstream *_infile;                                         // File stream for the configuration file.
 
 		map<string, void (ABlock::*)(vector<string>)> _std_fields; // Allowed fields that can be found in a block.
-		vector<string> _std_blocks;                               // Allowed blocks that can be found in a block.
-		vector<string> _subblocks;                                // Blocks found in the current block.		
+		vector<string> _std_blocks;                                // Allowed blocks that can be found in a block.
+
+		vector<string> _subblocks;                                 // Blocks found in the current block.		
 
 		void identifyDirectives();
 		void extractBlock();
+		void isGoodDirective(string directive);
 		void parseField();
 
 	public:

@@ -19,6 +19,7 @@
 # include <string>        // String operations
 # include <sstream>       // String operations
 # include <fstream>       // File operations (configuration file)
+# include <algorithm>     // String operations
 # include <map>           // Storing configuration parameters
 # include <vector>        // Storing multiple sockets
 # include <sys/types.h>   // Socket functions
