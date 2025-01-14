@@ -6,56 +6,68 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/13 17:57:29 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/14 15:53:03 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/config/Blocks.hpp"
 
-void ServerBlock::parseServerName(std::string &str)
+/*********** SERVER BLOCK ***********/
+
+void ServerBlock::parseServerName(std::vector<std::string> val)
 {
-	std::cout << "parseServerName(" << str << ")" << std::endl;
+	std::cout << "parseServerName(" << val[0] << ")" << std::endl;
 }
 
-void ServerBlock::parseErrorPage(std::string &str)
+void ServerBlock::parseErrorPage(std::vector<std::string> val)
 {
-	std::cout << "parseErrorPage(" << str << ")" << std::endl;
+	std::cout << "parseErrorPage(" << val[0] << ")" << std::endl;
 }
 
-void ServerBlock::parseClientMaxBodySize(std::string &str)
+void ServerBlock::parseClientMaxBodySize(std::vector<std::string> val)
 {
-	std::cout << "parseClientMaxBodySize(" << str << ")" << std::endl;
+	std::cout << "parseClientMaxBodySize(" << val[0] << ")" << std::endl;
 }
 
 
-void LocationBlock::parseRoot(std::string &str)
-{
-	std::cout << "parseRoot(" << str << ")" << std::endl;}
+/*********** LOCATION BLOCK ***********/
 
-void LocationBlock::parseMethods(std::string &str)
+void LocationBlock::parseRoot(std::vector<std::string> val)
 {
-	std::cout << "parseMethods(" << str << ")" << std::endl;}
+	std::cout << "parseRoot(" << val[0] << ")" << std::endl;
+}
 
-void LocationBlock::parseDirectoryListing(std::string &str)
+void LocationBlock::parseMethods(std::vector<std::string> val)
 {
-	std::cout << "parseDirectoryListing(" << str << ")" << std::endl;}
+	std::cout << "parseMethods(" << val[0] << ")" << std::endl;
+}
 
-void LocationBlock::parseIndexFile(std::string &str)
+void LocationBlock::parseDirectoryListing(std::vector<std::string> val)
 {
-	std::cout << "parseIndexFile(" << str << ")" << std::endl;}
+	std::cout << "parseDirectoryListing(" << val[0] << ")" << std::endl;
+}
 
-void LocationBlock::parseCgiPath(std::string &str)
+void LocationBlock::parseIndexFile(std::vector<std::string> val)
 {
-	std::cout << "parseCgiPath(" << str << ")" << std::endl;}
+	std::cout << "parseIndexFile(" << val[0] << ")" << std::endl;
+}
 
-void LocationBlock::parseUploadDir(std::string &str)
+void LocationBlock::parseCgiPath(std::vector<std::string> val)
 {
-	std::cout << "parseUploadDir(" << str << ")" << std::endl;}
+	std::cout << "parseCgiPath(" << val[0] << ")" << std::endl;
+}
 
-void LocationBlock::parseHttpRedirect(std::string &str)
+void LocationBlock::parseUploadDir(std::vector<std::string> val)
 {
-	std::cout << "parseHttpRedirect(" << str << ")" << std::endl;}
+	std::cout << "parseUploadDir(" << val[0] << ")" << std::endl;
+}
 
-void LocationBlock::parseReturn(std::string &str)
+void LocationBlock::parseHttpRedirect(std::vector<std::string> val)
 {
-	std::cout << "parseReturn(" << str << ")" << std::endl;}
+	std::cout << "parseHttpRedirect(" << val[0] << ")" << std::endl;
+}
+
+void LocationBlock::parseReturn(std::vector<std::string> val)
+{
+	std::cout << "parseReturn(" << val[0] << ")" << std::endl;
+}
