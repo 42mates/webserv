@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/13 16:11:38 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/14 15:03:30 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ class SocketManager
 
 			/*Individual manager. If ports are added dynamically
 				might need to make them public*/
-		void			createSocket(int index);
+		void			createSocket(int index, int port_at_index);
 		void			bindSocket(int index);
 		void			listenSocket(int index);
 
