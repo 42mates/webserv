@@ -22,6 +22,7 @@
 # include <algorithm>     // String operations
 # include <map>           // Storing configuration parameters
 # include <vector>        // Storing multiple sockets
+# include <sys/stat.h>    // for stat
 # include <sys/types.h>   // Socket functions
 # include <sys/socket.h>  // Socket functions
 # include <netinet/in.h>  // Socket functions

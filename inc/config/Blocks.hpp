@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/14 18:12:41 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/15 16:52:46 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@
 class ABlock
 {
 	protected:
-		int _line_nb;                                              // Line number where the block starts.
-		string _line;											   // Current line being parsed.
-		ifstream *_infile;                                         // File stream for the configuration file.
+		int            _line;                                   // Line number where the block starts.
+		vector<string> _file;                                      // File stream for the configuration file.
+		vector<string> _tokens;                                    // File stream for the configuration file.
 
 		map<string, void (ABlock::*)(vector<string>)> _std_fields; // Allowed fields that can be found in a block.
 		vector<string> _std_blocks;                                // Allowed blocks that can be found in a block.
@@ -31,12 +31,10 @@ class ABlock
 		vector<string> _subblocks;                                 // Blocks found in the current block.		
 
 		void identifyDirectives();
-		void extractBlock();
-		void isGoodDirective(string directive);
 		void parseField();
 
 	public:
-		virtual void parse(ifstream &stream) = 0;	
+		virtual void parse(vector<string> &file) = 0;	
 };
 
 /**
@@ -53,7 +51,7 @@ class ServerBlock : public ABlock
 
 	public:
 		ServerBlock(struct ServerConfig *config, int line);
-		void parse(ifstream &stream);
+		void parse(vector<string> &file);
 };
 
 /**
@@ -75,6 +73,5 @@ class LocationBlock : public ABlock
 
 	public:
 		LocationBlock(struct RouteConfig *config, int line);
-		~LocationBlock();
-		void parse(ifstream &stream);
+		void parse(vector<string> &file);
 };

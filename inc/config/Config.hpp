@@ -58,11 +58,10 @@ struct ServerConfig {
 class Config
 {
 	private:
-		string		_path;               // Path to the configuration file
-		ifstream	_file;               // File stream for the configuration file
 		vector<ServerConfig *> _servers; // List of configured servers
+		string _path;                    // Path to the configuration file
 
-		void openFile();
+		void openFile(std::ifstream& file);
 
 	public:
 		Config();

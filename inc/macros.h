@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/14 16:45:55 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/15 17:19:57 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,15 @@ using namespace std;
 /************ CONFIG ************/
 
 # define DEFAULT_CONFIG_FILE "tools/config/webserv.conf"
+
+# define BLOCK_START '{'
+# define BLOCK_END '}'
+# define FIELD_DELIMITER ';'
+# define COMMENT '#'
+# define QUOTES "\"'"
+# define S_QUOTE '\''
+# define D_QUOTE '"'
+# define SPACES " \t\r\n"
 
 
 /************ ERRORS ************/
