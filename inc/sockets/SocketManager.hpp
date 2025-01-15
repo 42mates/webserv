@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   SocketManager.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/14 16:45:32 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/15 11:59:19 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SOCKET_MANAGER_HPP
-# define SOCKET_MANAGER_HPP
+# pragma once
 
 # include "libs.h"
 
@@ -42,5 +41,3 @@ struct port_info
 	vector<int>				client_socket;
 	vector<struct sockaddr_in>	client_address;
 };
-
-#endif
