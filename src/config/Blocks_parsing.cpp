@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/15 16:14:56 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/16 20:33:57 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,22 +50,35 @@ void ServerBlock::parseErrorPage(vector<string> val)
 
 void ServerBlock::parseClientMaxBodySize(vector<string> val)
 {
-	string	client_max_body_size("client_max_body_size");
+	string	client_max_body_size("client_max_body_size ");
 	size_t	first_not_of;
 	size_t	size_string;
+	size_t	bytes;
 
 	if (val.size() != 1)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + client_max_body_size);
+
+	if (isdigit(val[0].at(0)) == false)
+		throw runtime_error(INVALID_VALUE_IN + client_max_body_size + val[0]);
+
 	size_string = val[0].size();
 	first_not_of = val[0].find_first_not_of("0123456789");
 	if (first_not_of != string::npos)
 	{
-		
+		char	tmp = toupper(val[0].at(first_not_of));
+		if (tmp != 'K' && tmp != 'M' && tmp != 'G')
+			throw runtime_error(INVALID_VALUE_IN + client_max_body_size + val[0]);
+		if (size_string != first_not_of + 1) //* means that there is something after the unit
+			throw runtime_error(INVALID_VALUE_IN + client_max_body_size + val[0]);
 	}
+	istringstream	iss(val[0]);
+	iss >> bytes;
+	if (iss.fail())
+		throw runtime_error("iss conv");
 	//todo only one argument ✅
-	//todo start with alpha char (negative values arent accepted)
-	//todo ends with k, m or g (case insensitive, and just one of them)
-	//todo and nothing after the last alpha char (k, m, g)
+	//todo start with num char (negative values arent accepted) ✅
+	//todo ends with k, m or g (case insensitive, and just one of them) ✅
+	//todo and nothing after the last alpha char (k, m, g) ✅
 	//todo 0 disables the limit
 	//todo without units, treated as bytes
 	//? set a maximum value (so that it doesn't exceed system limits)
@@ -105,28 +118,40 @@ void LocationBlock::parseMethods(vector<string> val)
 
 void LocationBlock::parseDirectoryListing(vector<string> val)
 {
+	//todo format is "autoindex on" or "autoindex off" ✅
+	//todo so there should just be on or off (therefore one argument only) ✅
+	if (val.size() != 1)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("autoindex"));
+	if (val[0] != "off" && val[0] != "on")
+		throw runtime_error(INVALID_VALUE_IN + string("autoindex"));
 	cout << "parseDirectoryListing(" << val[0] << ")" << endl;
 }
 
 void LocationBlock::parseIndexFile(vector<string> val)
 {
-	//todo empty or missing
+	//todo empty or missing ✅
+	//todo invalid characters in filename (check with le M)
+	if (val.size() != 1)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("index_file"));
 	cout << "parseIndexFile(" << val[0] << ")" << endl;
 }
 
 void LocationBlock::parseCgiPath(vector<string> val)
 {
+	if (val.size() != 1)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("cgi_pass"));
 	cout << "parseCgiPath(" << val[0] << ")" << endl;
 }
 
 void LocationBlock::parseUploadDir(vector<string> val)
 {
+if (val.size() != 1)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("upload_dir"));
 	cout << "parseUploadDir(" << val[0] << ")" << endl;
 }
 
 void LocationBlock::parseHttpRedirect(vector<string> val)
 {
-	//todo 
 	cout << "parseHttpRedirect(" << val[0] << ")" << endl;
 }
 
