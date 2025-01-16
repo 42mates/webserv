@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 16:27:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/15 18:34:36 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/16 17:29:53 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,57 +17,106 @@ Tokenizer::Tokenizer(vector<string> &file, int line)
 {}
 
 
-void Tokenizer::skipSpaces(string &line)
-{
-	size_t pos = line.find_first_not_of(SPACES);
-	line.erase(0, pos);
-}
+//string Tokenizer::getNextToken(string &line, string &result)
+//{
+//	size_t end;
+
+//	cout << MAGENTA << "[TOKEN] " << NC << "Line: " << line ;
+//	cout << MAGENTA << "in quotes: " << NC << _in_quotes << endl;
+
+//	if (line.empty())// || line == "#")
+//		return "";
+
+
+
+//	if (_in_quotes)
+//	{
+//		end = line.find_first_of(QUOTES);
+//		if (end == string::npos)
+//			end = line.size();
+//		else 
+//			_in_quotes = false;
+		
+//		result += line.substr(0, end);
+//		line.erase(0, end);
+//		cout << "LINE AFTER: " << line << endl;
+//	}
+//	else
+//	{
+//		//skip leading spaces
+//		line.erase(0, line.find_first_not_of(SPACES));
+		
+//		// if the first character is a delimiter, return it.
+//		if (*line.begin() == D_QUOTE || *line.begin() == S_QUOTE 
+//		 || *line.begin() == BLOCK_END  || *line.begin() == BLOCK_START
+//		 || *line.begin() == FIELD_DELIMITER )
+//		{
+//			if (*line.begin() == D_QUOTE || *line.begin() == S_QUOTE)
+//				_in_quotes = !_in_quotes;
+//			result = line.substr(0, 1);
+//			line.erase(0, 1);
+//		}
+//		else
+//		{
+//			end = line.find_first_of(string(SPACES) + FIELD_DELIMITER + BLOCK_START);
+//			if (end == string::npos)
+//				end = line.size();
+//			result = line.substr(0, end);
+//			line.erase(0, end);
+//		}
+//	}
+
+//	return result;
+//}
 
 string Tokenizer::getNextToken(string &line, string &result)
 {
-	static size_t pos = 0;
-	size_t start = pos;
 	size_t end;
-	
-	cout << "[line]:   '" << line << "'"  << endl;
-	cout << "[start]:  '" << start << "'" << endl;
-	
-	
-	if (pos == line.size()) // if we reached the end of the line, return empty string for loop to be over.
-	{
-		pos = 0;
+
+	cout << MAGENTA << "[TOKEN] " << NC << "Line: " << line ;
+	cout << MAGENTA << "in quotes: " << NC << _in_quotes << endl;
+
+	if (line.empty())// || line == "#")
 		return "";
+
+	if (*line.begin() == D_QUOTE  || *line.begin() == S_QUOTE)
+	{
+		_in_quotes = !_in_quotes;
+		line.erase(0, 1);
 	}
 
-	if (_in_quotes) // if in quotes, return everything until next quote or end of line.
+	if(_in_quotes)
 	{
-		end = line.find_first_of(QUOTES, start);
+		end = line.find_first_of(QUOTES);
 		if (end == string::npos)
 			end = line.size();
-		result += line.substr(start, end - start);
-		pos = end;
-		return result;
+		
+		result += line.substr(0, end);
+		line.erase(0, end);
+		
+		cout << "LINE AFTER: " << line << endl;
 	}
 	else
 	{
-		skipSpaces(line);
-		if (line[start] == D_QUOTE || line[start] == S_QUOTE)  // if the token is a quote, return " or '
+		line.erase(0, line.find_first_not_of(SPACES));
+		
+		// if the first character is a delimiter, return it.
+		if (*line.begin() == BLOCK_END  || *line.begin() == BLOCK_START
+			|| *line.begin() == FIELD_DELIMITER )
 		{
-			_in_quotes = !_in_quotes;
-			end = start + 1;
+			result = line.substr(0, 1);
+			line.erase(0, 1);
 		}
-		else if (line[start] == BLOCK_END) // if the token is a block end, return }
-			end = start + 1;
 		else
 		{
-			end = line.find_first_of(string(SPACES) + FIELD_DELIMITER + BLOCK_START, start);
+			end = line.find_first_of(string(SPACES) + FIELD_DELIMITER + BLOCK_START + QUOTES);
 			if (end == string::npos)
 				end = line.size();
+			result = line.substr(0, end);
+			line.erase(0, end);
 		}
 	}
 
-	pos = end; // mark the end of the token for next.
-	result = line.substr(start, end - start);
 	return result;
 }
 
@@ -78,28 +127,43 @@ void Tokenizer::tokenize()
 	cout << "Tokenizing file..." << endl;
 	cout << "Line: " << _line << endl;
 	cout << "File size: " << _file.size() << endl;
+	cout << endl;
 
 
+	string token;
 	
 	for (size_t i = _line; i < _file.size(); i++)
 	{
-		string token;
-		while (getNextToken(_file[i], token) != "")
+		string line = _file[i] + '\n';
+
+		while (line != "")
 		{
-			cout << "GNT: " << token << endl;
-			cout << endl; 
-			token.clear();
+			while (!_in_quotes && getNextToken(line, token) != "")
+			{
+				if (_in_quotes && (token == string(1, D_QUOTE) || token == string(1, S_QUOTE)))
+				{
+					cout << YELLOW << "GNT '" << NC << token << YELLOW << "'" << NC << endl;
+					token.clear();
+				}
+				else
+					cout << GREEN << "GNT '" << NC << token << GREEN << "'" << NC << endl;	
+			}
+	
+			while (_in_quotes)
+			{								
+				if (line.empty() && i < _file.size())
+					line = _file[++i] + '\n';
+				getNextToken(line, token);
+				if (!_in_quotes)
+					cout << BLUE << "GNT '" << NC << token << BLUE << "'" << NC << endl;
+			}
 		}
 		
-		//while (_in_quotes)
-		//	getNextToken(_file[i], token);
-		
-		//while (!_in_quotes && token != "")
-		//{
-		//	getNextToken(_file[i], token);
-		//	_tokens.push_back(token);
-		//}
-		//cout << "Added token: " << _tokens.back() << endl;
+
+		cout << GREY << "EOL" << NC << endl;
+
 	}
+	if (_in_quotes)
+		throw std::runtime_error("Error: Missing closing quotes.");
 		
 }
