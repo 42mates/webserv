@@ -15,6 +15,9 @@
 #include "../libs.h"
 #include "../macros.h"
 
+#include "Blocks.hpp"
+#include "Tokenizer.hpp"
+
 /**
  * @brief Configuration data for a specific route in the web server (`location` block).
  */
@@ -58,10 +61,13 @@ struct ServerConfig {
 class Config
 {
 	private:
+		vector<string> _std_blocks;      // Allowed blocks that can be found in the configuration file
 		vector<ServerConfig *> _servers; // List of configured servers
 		string _path;                    // Path to the configuration file
+		vector<Token> _tokens;           // Tokens from the configuration file
 
 		vector<string> getFileVector();
+		vector<Token>::iterator findBlockEnd(vector<Token>::iterator begin);
 
 	public:
 		Config();

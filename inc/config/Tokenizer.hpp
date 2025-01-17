@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 16:27:24 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/17 15:50:03 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/17 17:06:04 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,11 @@ class Tokenizer
 		Tokenizer(vector<string> &file);
 
 		vector<Token> tokenize();
-		vector<Token> getTokens();
 		
+		vector<Token> getTokens();
+
+		void print(const Token &new_token);
+		void print();
+		void print(vector<Token> &tokens);
+		void print(vector<Token>::iterator begin, vector<Token>::iterator end);
 };

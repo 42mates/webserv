@@ -11,13 +11,13 @@
 /* ************************************************************************** */
 
 #include "Config.hpp"
-#include "Blocks.hpp"
-#include "Tokenizer.hpp"
 
 
 Config::Config() 
-	: _path("")
-{}
+	: _path(""), _tokens()
+{
+	_std_blocks.push_back("server");
+}
 
 Config::~Config()
 {
@@ -65,6 +65,29 @@ vector<string> Config::getFileVector()
 	return file;
 }
 
+vector<Token>::iterator Config::findBlockEnd(vector<Token>::iterator begin)
+{
+	vector<Token>::iterator end = begin;
+	int block_count = 0;
+
+	while (end != _tokens.end())
+	{
+		if (end->type == TKN_BLOCK_START)
+			block_count++;
+		else if (end->type == TKN_BLOCK_END)
+		{
+			block_count--;
+			if (block_count == 0)
+				return end;
+		}
+		end++;
+	}
+	if (block_count != 0)
+		throw runtime_error("unexpected end of file, expecting \"" + string(1, BLOCK_END) + "\" in " + _path + ":" + itostr(begin->line));
+	return end;
+}
+
+
 
 void Config::parse(string &config_file)
 {
@@ -73,9 +96,29 @@ void Config::parse(string &config_file)
 	vector<string> file = getFileVector(); 
 	Tokenizer tokenizer(file);
 	
-	vector<Token> tokens = tokenizer.tokenize();
+	_tokens = tokenizer.tokenize();
 
-	//vector<Token>::iterator begin = tokens.begin();
-	//vector<Token>::iterator end = findBlockEnd(begin);
+	cout << "Tokens length: " << _tokens.size() << endl;
+	for (vector<Token>::iterator it = _tokens.begin(); it != _tokens.end(); it++)
+	{
+		if (find(_std_blocks.begin(), _std_blocks.end(), it->token) == _std_blocks.end()) // not a block known in _std_blocks
+			throw runtime_error("unknown directive \"" + it->token + "\" in " + _path + ":" + itostr(it->line));
+		it++;
+
+		vector<Token>::iterator end = findBlockEnd(it);
+		vector<Token> block_tokens(it, end + 1);
+
+		//if enough tokens to form a block
+			//ServerConfig *sconfig = new ServerConfig();
+
+		//Block block(sconfig);
+		//block.parse(block_tokens);
+
+		//_servers.push_back(sconfig);
+
+		it = end;
+	}
+
+
 }
 
