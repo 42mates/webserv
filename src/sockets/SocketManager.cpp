@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/15 15:12:56 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/17 09:51:10 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,4 +103,4 @@ void	SocketManager::listenSocket(int index)
 		throw runtime_error(SOCKET_LISTENING_ERROR);
 }
 
-vector<struct port_info>	SocketManager::getPortsInfo(void) const { return (_ports_info); }
+vector<struct PortInfo>	SocketManager::getPortsInfo(void) const { return (_ports_info); }

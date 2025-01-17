@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/15 11:59:19 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/17 09:50:59 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 class SocketManager 
 {
 	private:
-		vector<struct port_info>		_ports_info;
+		vector<struct PortInfo>		_ports_info;
 
 			/*Individual manager. If ports are added dynamically
 				might need to make them public*/
@@ -30,14 +30,14 @@ class SocketManager
 		~SocketManager( void );
 
 								/*GETERS*/
-		vector<struct port_info>		getPortsInfo( void ) const;
+		vector<struct PortInfo>		getPortsInfo( void ) const;
 };	
 
-struct port_info
+struct PortInfo
 {
 	int								port;
 	int								server_socket;
 	struct sockaddr_in				server_address;
-	vector<int>				client_socket;
-	vector<struct sockaddr_in>	client_address;
+	vector<int>						client_socket;
+	vector<struct sockaddr_in>		client_address;
 };

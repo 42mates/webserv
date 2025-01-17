@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/14 16:45:32 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/17 14:57:44 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 
 #include "../libs.h"
 #include "../macros.h"
+
+#include "Config.hpp" // Include the header file that defines ServerConfig
+
 
 /**
  * @brief Base class for handling configuration blocks.
@@ -33,7 +36,8 @@ class ABlock
 		void parseField();
 
 	public:
-		virtual void parse(ifstream &stream) = 0;	
+		virtual void parse(ifstream &stream) = 0;
+		virtual ~ABlock() {};
 };
 
 /**
@@ -44,13 +48,16 @@ class ServerBlock : public ABlock
 	private:
 		struct ServerConfig *_config;
 
+
+	public:
+		void parseListen(vector<string> val);
 		void parseServerName(vector<string> val);
 		void parseErrorPage(vector<string> val);
 		void parseClientMaxBodySize(vector<string> val);
-
-	public:
+		
 		ServerBlock(struct ServerConfig *config, int line);
 		void parse(ifstream &stream);
+		~ServerBlock( void );
 };
 
 /**
@@ -61,6 +68,8 @@ class LocationBlock : public ABlock
 	private:
 		struct RouteConfig *_config;
 		
+
+	public:
 		void parseRoot(vector<string> val);
 		void parseMethods(vector<string> val);
 		void parseDirectoryListing(vector<string> val);
@@ -69,8 +78,6 @@ class LocationBlock : public ABlock
 		void parseUploadDir(vector<string> val);
 		void parseHttpRedirect(vector<string> val);
 		void parseReturn(vector<string> val);
-
-	public:
 		LocationBlock(struct RouteConfig *config, int line);
 		~LocationBlock();
 		void parse(ifstream &stream);
