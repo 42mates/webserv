@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/16 16:14:09 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/17 14:56:37 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,15 @@ using namespace std;
 # define S_QUOTE '\''
 # define D_QUOTE '"'
 # define SPACES " \t\r\n"
+
+enum TokenType
+{
+	TKN_BLOCK_START,
+	TKN_BLOCK_END,
+	TKN_FIELD_DELIMITER,
+	TKN_DIRECTIVE,
+	TKN_VALUE,
+};
 
 
 /************ ERRORS ************/

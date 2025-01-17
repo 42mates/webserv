@@ -25,44 +25,21 @@ Config::~Config()
 		delete *it;
 }
 
-void Config::parse(string &config_file)
+
+/**
+ * @brief Opens the file specified by the _path member variable, reads its contents line by line,
+ *        stores each line in a vector of strings, and returns the vector.
+ * 
+ * @return A vector containing the lines of the file as strings.
+ * 
+ * @throws If the path is invalid, if the path is a directory, or if the file cannot be opened.
+ */
+vector<string> Config::getFileVector()
 {
 	ifstream ifs;
 	string tmp;
 	vector<string> file;
-	
-	_path = config_file;
-	openFile(ifs);
 
-	while (getline(ifs, tmp))
-		file.push_back(tmp);
-
-
-	Tokenizer tokenizer(file, 0);
-
-	tokenizer.tokenize();
-
-	////while there are servers directives
-	//{
-	//	// Skip comments and ws
-	//	// meet server block: initialise a new ServerConfig node
-	//	ServerConfig *new_serv = new ServerConfig();
-		
-	//	// parse the server block
-	//	ServerBlock	serv_block(new_serv, 0);
-	//	serv_block.parse(file);
-	//	_servers.push_back(new_serv);
-
-	//	//repeat
-	//}
-
-
-
-	ifs.close();
-}
-
-void Config::openFile(ifstream& file)
-{
 	struct stat path_stat;
     if (stat(_path.c_str(), &path_stat) != 0) 
       throw std::runtime_error("Could not stat path: " + _path + ": " + strerror(errno));
@@ -70,17 +47,35 @@ void Config::openFile(ifstream& file)
     if (S_ISDIR(path_stat.st_mode)) 
       throw std::runtime_error("Could not open path: " + _path + ": " + strerror(errno));
 
-	file.open(_path.c_str());
+	ifs.open(_path.c_str());
 
-	if (!file.is_open() || file.bad() || file.fail())
+	if (!ifs.is_open() || ifs.bad())// || ifs.fail())
 	{
 		if (_path == DEFAULT_CONFIG_FILE)
-			throw runtime_error("Could not open default config file: " + _path + ": " + strerror(errno));
+			throw runtime_error("Could not open default config ifs: " + _path + ": " + strerror(errno));
 		else
-			throw runtime_error("Could not open file: " + _path + ": " + strerror(errno));
+			throw runtime_error("Could not open ifs: " + _path + ": " + strerror(errno));
 	}
-	else
-		cout << "Config file opened successfully." << endl;
+
+	while (getline(ifs, tmp))
+		file.push_back(tmp);
+	
+	ifs.close();
+	
+	return file;
 }
 
+
+void Config::parse(string &config_file)
+{
+	_path = config_file;
+
+	vector<string> file = getFileVector(); 
+	Tokenizer tokenizer(file);
+	
+	vector<Token> tokens = tokenizer.tokenize();
+
+	//vector<Token>::iterator begin = tokens.begin();
+	//vector<Token>::iterator end = findBlockEnd(begin);
+}
 

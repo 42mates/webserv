@@ -61,7 +61,7 @@ class Config
 		vector<ServerConfig *> _servers; // List of configured servers
 		string _path;                    // Path to the configuration file
 
-		void openFile(std::ifstream& file);
+		vector<string> getFileVector();
 
 	public:
 		Config();

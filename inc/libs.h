@@ -35,6 +35,8 @@
 # include <cstdio>        // Standard I/O (for CGI)
 # include <cerrno>        // Error handling
 
-#include "macros.h"
+# include "macros.h"      // Macros for the project
+
+# include "utils.hpp"     // Utilities functions (like itostr)
 
 #endif

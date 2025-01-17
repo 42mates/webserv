@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 16:27:24 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/15 17:49:49 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/17 15:50:03 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,32 @@
 #include "libs.h"
 #include "macros.h"
 
+struct Token
+{
+	string		token;
+	TokenType	type;
+	int			line;
+};
+
 /**
  * @brief Tokenizer for configuration files.
  */
 class Tokenizer
 {
 	private:
-		vector<string> _file;      // File stream for the configuration file.
-		vector<string> _tokens;    // File stream for the configuration file.
-		int            _line;      // Line number where the block starts.
-		bool		   _in_quotes; // Boolean to keep track of quotes.
+		vector<string> _file;       // File stream for the configuration file.
+		vector<Token>  _tokens;     // File stream for the configuration file.
+		int            _line;       // Line number where the block starts.
+		bool		   _in_quotes;  // Boolean to keep track of quotes.
+		char		   _quote_type; // Delimiter for the current block.
 
-		void skipSpaces(string &line);
 		string getNextToken(string &line, string &result);
+		void addToken(string &token, int line);
 
 	public:
-		Tokenizer(vector<string> &file, int line);
+		Tokenizer(vector<string> &file);
 
-		void tokenize();
-		//vector<string> getTokens();
+		vector<Token> tokenize();
+		vector<Token> getTokens();
 		
 };
