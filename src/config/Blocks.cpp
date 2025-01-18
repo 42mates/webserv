@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:38:12 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/15 16:53:12 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/18 16:54:44 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,87 +14,140 @@
 
 /************ ABSTRACT DEFINITIONS *************/
 
-void ABlock::parseField()
+bool ABlock::isAllowedField(string token)
 {
-	string key;
+	return (_allowed_fields.find(token) != _allowed_fields.end());
+}
+
+bool ABlock::isAllowedBlock(string token)
+{
+	return (find(_allowed_blocks.begin(), _allowed_blocks.end(), token) != _allowed_blocks.end());
+}
+
+void ABlock::parseField(vector<Token>::iterator &start)
+{
+	vector<Token>::iterator end = start + 1;
 	vector<string> val;
+	
+	while (end != _tokens.end() && end->type == TKN_VALUE)
+	{
+		
+		val.push_back(end->token);
+		end++;
+	}
+	if (val.empty())
+		throw runtime_error("missing value for directive \"" + start->token + "\" in " + _path + ":" + itostr(start->line));
 
-	key = "server_name";
-	string example = "localhost";
-	val.push_back(example);
+	(this->*_allowed_fields[start->token])(val);
 
-	(this->*_std_fields[key])(val);
+	start = end;
 }
 
-
-
-void ABlock::identifyDirectives()
+/**
+ * @brief Stores a block of tokens starting from a given iterator.
+ * 
+ * @param start An iterator pointing to first iterator after the given directive (location).
+ */
+void ABlock::storeBlock(vector<Token>::iterator &start)
 {
+	string location_value = start->token;
 
-	//"nginx: [emerg] duplicate location "/" in /home/mbecker/nginx/conf/nginx.conf:15"
+	if (start == _tokens.end() || start->type != TKN_VALUE)
+		throw runtime_error("missing value for directive \"" + (start - 1)->token + "\" in " + _path + ":" + itostr((start - 1)->line));
+	start++;
+	if (start->type != TKN_BLOCK_START)
+		throw runtime_error("missing block start in " + _path + ":" + itostr(start->line));
 
-	//do line by line to keep track !
+	vector<Token>::iterator end = findBlockEnd(start);
+	vector<Token> block_tokens(start, end + 1);
 
-	//scan first token.
-		//FIELD
-			//parseField()
-		//BLOCK
-			//extractBlock() - store everything until next "}" in a string (keep count of "{" to avoid conflicting blocks). 
-			//extractBlock in queue !!
-			//store str in _directives as "block".
-		//UNKNOWN
-			//unknown directive "[token]" in [stream]:8
-		//progress in `stream` to avoid repeating the same line.
+	if (block_tokens.size() < 2)
+		throw runtime_error("empty block in " + _path + ":" + itostr((start - 1)->line));
 
+	_subblocks.push_back(block_tokens);
+
+	start = end;
 }
 
+void ABlock::process(vector<Token> &tokens)
+{
+	_tokens = tokens;
+
+	for (vector<Token>::iterator it = _tokens.begin(); it != _tokens.end(); it++)
+	{
+		if (isAllowedField(it->token))
+			parseField(it);
+		else if (isAllowedBlock(it->token))
+			storeBlock(++it);
+		else
+			throw runtime_error("unknown directive \"" + it->token + "\" in " + _path + ":" + itostr(it->line));
+
+	}
+}
 
 /************ SERVER BLOCK *************/
 
-ServerBlock::ServerBlock(struct ServerConfig *config, int line)
+ServerBlock::ServerBlock(struct ServerConfig *config, string &path) 
+	: _config(config)
 {
-	_config = config;
-	_line = line;
-
-	_std_fields["server_name"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseServerName);
-	_std_fields["error_page"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseErrorPage);
-	_std_fields["client_max_body_size"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseClientMaxBodySize);
-
-	_std_blocks.push_back("location");
+	_path = path;
+	initAllowedDirectives();
 }
 
-void ServerBlock::parse(vector<string> &file)
+/** 
+ * Allowed fields:
+ * - `server_name`
+ * - `error_page`
+ * - `client_max_body_size`
+ * 
+ * Allowed blocks:
+ * - `location`
+*/
+void ServerBlock::initAllowedDirectives()
 {
-	_file = file;
+	_allowed_fields["listen"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseListen);
+	_allowed_fields["server_name"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseServerName);
+	_allowed_fields["error_page"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseErrorPage);
+	_allowed_fields["client_max_body_size"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseClientMaxBodySize);
 
-	std::cout << "no call in ServerBlock::parse" << std::endl; 
+	_allowed_blocks.push_back("location");
 }
-
 
 /************ LOCATION BLOCK *************/
 
-LocationBlock::LocationBlock(struct RouteConfig *config, int line)
+LocationBlock::LocationBlock(struct RouteConfig *config, string &path) 
+	: _config(config)
 {
-	_config = config;
-	_line = line;
-	
-    _std_fields["root"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseRoot);
-    _std_fields["methods"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseMethods);
-    _std_fields["directory_listing"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseDirectoryListing);
-    _std_fields["index_file"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseIndexFile);
-    _std_fields["cgi_path"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseCgiPath);
-    _std_fields["upload_dir"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseUploadDir);
-    _std_fields["http_redirect"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseHttpRedirect);
-    _std_fields["return"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseReturn);
-
-	_std_blocks.push_back("location");
+	_path = path;
+	initAllowedDirectives();
 }
 
-void LocationBlock::parse(vector<string> &file)
+/** 
+ * Allowed fields:
+ * - `root`
+ * - `methods`
+ * - `directory_listing`
+ * - `index_file`
+ * - `cgigetPath()`
+ * - `upload_dir`
+ * - `http_redirect`
+ * - `return`
+ * 
+ * Allowed blocks:
+ * - `location`
+*/
+void LocationBlock::initAllowedDirectives()
 {
-	_file = file;
+	_allowed_fields["root"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseRoot);
+	_allowed_fields["methods"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseMethods);
+	_allowed_fields["directory_listing"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseDirectoryListing);
+	_allowed_fields["index_file"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseIndexFile);
+	_allowed_fields["cgigetPath()"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseCgiPath);
+	_allowed_fields["upload_dir"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseUploadDir);
+	_allowed_fields["http_redirect"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseHttpRedirect);
+	_allowed_fields["return"] = static_cast<void (ABlock::*)(vector <string>)>(&LocationBlock::parseReturn);
 
-	std::cout << "no call in LocationBlock::parse" << std::endl;
+	_allowed_blocks.push_back("location");
 }
 
 

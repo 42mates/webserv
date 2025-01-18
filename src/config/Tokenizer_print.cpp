@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 16:27:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/17 17:06:18 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/18 16:38:27 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,20 +30,20 @@ void Tokenizer::print(vector<Token>::iterator begin, vector<Token>::iterator end
 		print(*it);
 }
 
-void Tokenizer::print(const Token &new_token)
+void Tokenizer::print(const Token &token)
 {
-	cout << GREEN << "token [" << NC << new_token.line << GREEN << "]: " << NC;
+	cout << GREEN << "token [" << NC << token.line << GREEN << "]: " << NC;
 	string type;
-	if (new_token.type == TKN_BLOCK_START)
+	if (token.type == TKN_BLOCK_START)
 		type = "(BLOCK_START):     ";
-	else if (new_token.type == TKN_BLOCK_END)
+	else if (token.type == TKN_BLOCK_END)
 		type = "(BLOCK_END):       ";
-	else if (new_token.type == TKN_FIELD_DELIMITER)
+	else if (token.type == TKN_FIELD_DELIMITER)
 		type = "(FIELD_DELIMITER): ";
-	else if (new_token.type == TKN_DIRECTIVE)
+	else if (token.type == TKN_DIRECTIVE)
 		type = "(DIRECTIVE):       ";
-	else if (new_token.type == TKN_VALUE)
+	else if (token.type == TKN_VALUE)
 		type = "(VALUE):           ";
 	cout << MAGENTA << type << NC;
-	cout << GREEN << "'" << NC << new_token.token << GREEN << "'" << NC << endl;
+	cout << GREEN << "'" << NC << token.token << GREEN << "'" << NC << endl;
 }

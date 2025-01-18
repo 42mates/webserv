@@ -11,18 +11,24 @@
 /* ************************************************************************** */
 
 #include "Config.hpp"
-
+#include "Blocks.hpp"
 
 Config::Config() 
-	: _path(""), _tokens()
+	: _tokens(), _path("DEFAULT")
 {
 	_std_blocks.push_back("server");
 }
 
 Config::~Config()
 {
-	for (vector<ServerConfig *>::iterator it = _servers.begin(); it != _servers.end(); it++)
-		delete *it;
+	for (vector<ServerConfig *>::iterator server = _servers.begin(); server != _servers.end(); server++)
+		delete *server;
+}
+
+
+vector<ServerConfig *> Config::getServers()
+{
+	return _servers;
 }
 
 
@@ -52,9 +58,9 @@ vector<string> Config::getFileVector()
 	if (!ifs.is_open() || ifs.bad())// || ifs.fail())
 	{
 		if (_path == DEFAULT_CONFIG_FILE)
-			throw runtime_error("Could not open default config ifs: " + _path + ": " + strerror(errno));
+			throw runtime_error("could not open default config file: " + _path + ": " + strerror(errno));
 		else
-			throw runtime_error("Could not open ifs: " + _path + ": " + strerror(errno));
+			throw runtime_error("could not open file: " + _path + ": " + strerror(errno));
 	}
 
 	while (getline(ifs, tmp))
@@ -65,6 +71,13 @@ vector<string> Config::getFileVector()
 	return file;
 }
 
+/**
+ * @brief Finds the end of a block starting from the given iterator.
+ *
+ * @param begin An iterator pointing to the start of the block.
+ * @return An iterator pointing to the end of the block.
+ * @throws runtime_error If the end of the file is reached before finding the end of the block.
+ */
 vector<Token>::iterator Config::findBlockEnd(vector<Token>::iterator begin)
 {
 	vector<Token>::iterator end = begin;
@@ -87,38 +100,41 @@ vector<Token>::iterator Config::findBlockEnd(vector<Token>::iterator begin)
 	return end;
 }
 
-
-
 void Config::parse(string &config_file)
 {
 	_path = config_file;
 
 	vector<string> file = getFileVector(); 
 	Tokenizer tokenizer(file);
-	
+
+	//ToDo: handle empty file: test with nginx. if not allowed, uncomment following lines
+	//if (file.size() == 0)
+	//	throw runtime_error("empty file: " + _path);
+
 	_tokens = tokenizer.tokenize();
 
-	cout << "Tokens length: " << _tokens.size() << endl;
 	for (vector<Token>::iterator it = _tokens.begin(); it != _tokens.end(); it++)
 	{
-		if (find(_std_blocks.begin(), _std_blocks.end(), it->token) == _std_blocks.end()) // not a block known in _std_blocks
+		// if not a block known in _std_blocks (like server), throw error
+		if (find(_std_blocks.begin(), _std_blocks.end(), it->token) == _std_blocks.end())
 			throw runtime_error("unknown directive \"" + it->token + "\" in " + _path + ":" + itostr(it->line));
+
 		it++;
 
 		vector<Token>::iterator end = findBlockEnd(it);
-		vector<Token> block_tokens(it, end + 1);
+		if (end == it)
+			throw runtime_error("empty block in " + _path + ":" + itostr((it - 1)->line));
+		vector<Token> block_tokens(it + 1, end);
 
-		//if enough tokens to form a block
-			//ServerConfig *sconfig = new ServerConfig();
+		//? if enough tokens to form a block ? or useless if ?
 
-		//Block block(sconfig);
-		//block.parse(block_tokens);
-
-		//_servers.push_back(sconfig);
+		ServerConfig *sconfig = new ServerConfig();
+		ServerBlock block(sconfig, _path);
+		block.process(block_tokens);
+	
+		_servers.push_back(sconfig);
 
 		it = end;
 	}
-
-
 }
 

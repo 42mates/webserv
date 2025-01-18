@@ -6,13 +6,18 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/14 16:45:32 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/18 16:20:27 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Blocks.hpp"
 
 /*********** SERVER BLOCK ***********/
+
+void ServerBlock::parseListen(vector<string> val)
+{
+	cout << "parseServerName(" << val[0] << ")" << endl;
+}
 
 void ServerBlock::parseServerName(vector<string> val)
 {

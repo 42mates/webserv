@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/15 16:52:46 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/18 16:34:15 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,26 +15,29 @@
 #include "../libs.h"
 #include "../macros.h"
 
+#include "Config.hpp"
+#include "Tokenizer.hpp"
+
 /**
  * @brief Base class for handling configuration blocks.
  */
-class ABlock
+class ABlock : public Config
 {
 	protected:
-		int            _line;                                   // Line number where the block starts.
-		vector<string> _file;                                      // File stream for the configuration file.
-		vector<string> _tokens;                                    // File stream for the configuration file.
+		vector<Token> _tokens;                                         // Tokens found in the current block.
+		map<string, void (ABlock::*)(vector<string>)> _allowed_fields; // Allowed fields that can be found in a block.
+		vector<string> _allowed_blocks;                                // Allowed blocks that can be found in a block.
+		vector< vector<Token> > _subblocks;                            // Blocks found in the current block.		
+		string _path;                                                  // Path of the configuration file.
 
-		map<string, void (ABlock::*)(vector<string>)> _std_fields; // Allowed fields that can be found in a block.
-		vector<string> _std_blocks;                                // Allowed blocks that can be found in a block.
+		bool isAllowedField(string token);
+		bool isAllowedBlock(string token);
+		void parseField(vector<Token>::iterator &start);
+		void storeBlock(vector<Token>::iterator &start);
 
-		vector<string> _subblocks;                                 // Blocks found in the current block.		
-
-		void identifyDirectives();
-		void parseField();
-
-	public:
-		virtual void parse(vector<string> &file) = 0;	
+	public:	
+		virtual void initAllowedDirectives() = 0;	
+		virtual void process(vector<Token> &tokens);	
 };
 
 /**
@@ -45,13 +48,14 @@ class ServerBlock : public ABlock
 	private:
 		struct ServerConfig *_config;
 
+		void parseListen(vector<string> val);
 		void parseServerName(vector<string> val);
 		void parseErrorPage(vector<string> val);
 		void parseClientMaxBodySize(vector<string> val);
 
 	public:
-		ServerBlock(struct ServerConfig *config, int line);
-		void parse(vector<string> &file);
+		ServerBlock(struct ServerConfig *config, string &path);
+		void initAllowedDirectives();
 };
 
 /**
@@ -72,6 +76,6 @@ class LocationBlock : public ABlock
 		void parseReturn(vector<string> val);
 
 	public:
-		LocationBlock(struct RouteConfig *config, int line);
-		void parse(vector<string> &file);
+		LocationBlock(struct RouteConfig *config, string &path);
+		void initAllowedDirectives();
 };

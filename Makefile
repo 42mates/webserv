@@ -6,7 +6,7 @@
 #    By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/18 13:05:21 by mbecker           #+#    #+#              #
-#    Updated: 2025/01/14 16:14:59 by mbecker          ###   ########.fr        #
+#    Updated: 2025/01/18 12:07:22 by mbecker          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME = webserv
 CC = c++
 CFLAG = -Wall -Wextra -Werror -std=c++98
 INCLUDES = $(shell find inc -type d -exec echo -I{} \;)
-DEBUGGER = -g3
+#DEBUGGER = -g3
 
 SRC_DIR = src
 OBJ_DIR = .obj
