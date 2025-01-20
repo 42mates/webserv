@@ -15,6 +15,7 @@
 #ifndef LIBS_H
 # define LIBS_H
 
+# include  <algorithm>	  // Functions operating on ranges (search, sort...)
 # include <iostream>      // General I/O operations
 # include <string>        // String operations
 # include <sstream>       // String operations

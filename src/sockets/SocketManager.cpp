@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketManager.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/14 16:45:32 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/17 09:51:10 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	SocketManager::createSocket(int index, int port_at_index)
 	int	socket_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); //Address family (IPv4), type of socket, protocol (TCP). 
 	if (socket_fd == -1)
 		throw runtime_error(SOCKET_CREATION_ERROR);
-	
+
 	_ports_info[index].server_socket = socket_fd;
 	_ports_info[index].port = port_at_index;
 
@@ -103,4 +103,4 @@ void	SocketManager::listenSocket(int index)
 		throw runtime_error(SOCKET_LISTENING_ERROR);
 }
 
-vector<struct port_info>	SocketManager::getPortsInfo(void) const { return (_ports_info); }
+vector<struct PortInfo>	SocketManager::getPortsInfo(void) const { return (_ports_info); }
