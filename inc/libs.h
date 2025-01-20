@@ -1,26 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.h                                          :+:      :+:    :+:   */
+/*   libs.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:25:20 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/08 15:04:44 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/09 16:35:14 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// ! This file is the main header file for the webserv project.
-// ! It contains all the includes and the main structure of the project.
+// ! This file contains all the librairies for the authorized functions in the project.
 
-#ifndef WEBSERV_H
-# define WEBSERV_H
+#ifndef LIBS_H
+# define LIBS_H
 
-
-// ! System Librairies
-
+# include  <algorithm>	  // Functions operating on ranges (search, sort...)
 # include <iostream>      // General I/O operations
 # include <string>        // String operations
+# include <sstream>       // String operations
 # include <fstream>       // File operations (configuration file)
 # include <map>           // Storing configuration parameters
 # include <vector>        // Storing multiple sockets
@@ -36,12 +34,6 @@
 # include <cstdio>        // Standard I/O (for CGI)
 # include <cerrno>        // Error handling
 
-
-// ! Custom Librairies
-
-# include "WebServ.hpp"
-
-
-
+#include "macros.h"
 
 #endif

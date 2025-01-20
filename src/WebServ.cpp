@@ -1,27 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Webserv.cpp                                        :+:      :+:    :+:   */
+/*   WebServ.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/08 14:52:16 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/14 16:45:32 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/webserv.h"
+#include "../inc/WebServ.hpp"
 
 WebServ::WebServ()
-{
-}
+{}
 
-WebServ::~WebServ()
-{
-}
+WebServ::~WebServ() {}
 
-int WebServ::run()
+void WebServ::run(const char* arg, int &ret)
 {
-	std::cout << "Hello World!" << std::endl;
-	return 0;
+	string _config_file = (arg) ? arg : DEFAULT_CONFIG_FILE;
+
+	try
+	{
+		_conf.parse(_config_file);
+		cout << "Config Parsing OK ✅" << endl;
+	}
+	catch(const exception& e)
+	{
+		cerr << "webserv: " << e.what() << endl;
+		ret = 1;
+	}
+
 }

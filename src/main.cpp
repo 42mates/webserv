@@ -6,32 +6,32 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:43:34 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/14 15:12:59 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/17 10:27:45 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/webserv.h"
-#include "SocketManager.hpp"
+#include "../inc/WebServ.hpp"
 
-int main()
+void testBlocks_parsing();
+
+int main( void )
 {
-	std::vector<int> ports;
-	ports.push_back(80);
-	ports.push_back(2001);
-	ports.push_back(2002);
-	std::vector<port_info>	p;
-	SocketManager	sockets(ports);
-
-	p = sockets.getPortsInfo();
-
-	// for (size_t i = 0; i < ports.size(); i++)
-	// {
-	// 	std::cout
-	// 	<< "socket fd : " << p[i].server_socket << "\n"
-	// 	<< "port : " << p[i].port << "\n"
-	// 	<< "IP family : " << p[i].server_address.sin_family << "\n"
-	// 	<< "IP : " << p[i].server_address.sin_addr.s_addr << "\n"
-	// 	<< "port (htons) : " << p[i].server_address.sin_port << "\n\n";
-		
-	// }
+	testBlocks_parsing();
 }
+
+// int main(int argc, char **argv)
+// {
+// 	if (argc > 2)
+// 	{
+// 		cerr << "Usage: " << argv[0] << " [configuration file]" << endl;
+// 		return (1);
+// 	}
+
+// 	WebServ webserv;
+// 	int ret = 0;
+//     const char* config_file = (argc == 2) ? argv[1] : NULL;
+
+// 	webserv.run(config_file, ret);
+
+// 	return (ret);
+// }

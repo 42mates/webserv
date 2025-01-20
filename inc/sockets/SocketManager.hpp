@@ -6,19 +6,18 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/14 15:03:30 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/17 09:50:59 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SOCKET_MANAGER_HPP
-# define SOCKET_MANAGER_HPP
+# pragma once
 
-# include "webserv.h"
+# include "libs.h"
 
 class SocketManager 
 {
 	private:
-		std::vector<struct port_info>		_ports_info;
+		vector<struct PortInfo>		_ports_info;
 
 			/*Individual manager. If ports are added dynamically
 				might need to make them public*/
@@ -27,20 +26,18 @@ class SocketManager
 		void			listenSocket(int index);
 
 	public:
-		SocketManager(const std::vector<int>& ports);
+		SocketManager(const vector<int>& ports);
 		~SocketManager( void );
 
 								/*GETERS*/
-		std::vector<struct port_info>		getPortsInfo( void ) const;
+		vector<struct PortInfo>		getPortsInfo( void ) const;
 };	
 
-struct port_info
+struct PortInfo
 {
 	int								port;
 	int								server_socket;
 	struct sockaddr_in				server_address;
-	std::vector<int>				client_socket;
-	std::vector<struct sockaddr_in>	client_address;
+	vector<int>						client_socket;
+	vector<struct sockaddr_in>		client_address;
 };
-
-#endif

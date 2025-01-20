@@ -6,22 +6,16 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/14 15:55:17 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/17 09:51:10 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketManager.hpp"
 
-
-/*N.B: Every variable starting with a r is a reference (to make the reading easier)*/
-
-# define SOCKET_CREATION_ERROR "Error.\nUnable to create socket's fd."
-# define SOCKET_BINDING_ERROR "Error.\nUnable to bind socket."
-# define SOCKET_LISTENING_ERROR "Error.\nUnable to set one socket to a listening state."
 /**
  * @brief Generates a server socket and its informations for each ports given as a parameter.
  */
-SocketManager::SocketManager(const std::vector<int>& ports)
+SocketManager::SocketManager(const vector<int>& ports)
 {
 	for (size_t i = 0; i < ports.size(); i++)
 	{
@@ -31,9 +25,9 @@ SocketManager::SocketManager(const std::vector<int>& ports)
 			bindSocket(i);
 			listenSocket(i);
 		}
-		catch(std::exception& e)
+		catch(exception& e)
 		{
-			std::cout << e.what() << std::endl;
+			cout << e.what() << endl;
 		}
 	}
 }
@@ -46,7 +40,7 @@ SocketManager::~SocketManager(void)
 {
 	for (size_t i = 0; i < _ports_info.size(); i++)
 	{
-		std::vector<int>& r_clients = _ports_info[i].client_socket;
+		vector<int>& r_clients = _ports_info[i].client_socket;
 		for (size_t j = 0; j < r_clients.size(); j++)
 		{
 			if (r_clients[j] != -1) 
@@ -71,8 +65,8 @@ void	SocketManager::createSocket(int index, int port_at_index)
 
 	int	socket_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); //Address family (IPv4), type of socket, protocol (TCP). 
 	if (socket_fd == -1)
-		throw std::runtime_error(SOCKET_CREATION_ERROR);
-	
+		throw runtime_error(SOCKET_CREATION_ERROR);
+
 	_ports_info[index].server_socket = socket_fd;
 	_ports_info[index].port = port_at_index;
 
@@ -92,7 +86,7 @@ void	SocketManager::bindSocket(int index)
 	int&			r_server_socket = _ports_info[index].server_socket;
 
 	if (bind(r_server_socket, (struct sockaddr*)(&r_server_address), sizeof(r_server_address)) < 0)
-		throw std::runtime_error(SOCKET_BINDING_ERROR);
+		throw runtime_error(SOCKET_BINDING_ERROR);
 }
 
 /**
@@ -106,7 +100,7 @@ void	SocketManager::listenSocket(int index)
 	//second parameter is basically a connexion queue, it sets the the maximum number
 	// of connection requests that can be queued
 	if (listen(_ports_info[index].server_socket, 1) < 0) // the second parameter will probably change
-		throw std::runtime_error(SOCKET_LISTENING_ERROR);
+		throw runtime_error(SOCKET_LISTENING_ERROR);
 }
 
-std::vector<struct port_info>	SocketManager::getPortsInfo(void) const { return (_ports_info); }
+vector<struct PortInfo>	SocketManager::getPortsInfo(void) const { return (_ports_info); }
