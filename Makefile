@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+         #
+#    By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/18 13:05:21 by mbecker           #+#    #+#              #
-#    Updated: 2025/01/14 17:37:11 by sokaraku         ###   ########.fr        #
+#    Updated: 2025/01/20 15:16:19 by mbecker          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME = webserv
 CC = c++
 CFLAG = -Wall -Wextra -Werror -std=c++98 -Wno-unused #REMOVE
 INCLUDES = $(shell find inc -type d -exec echo -I{} \;)
-DEBUGGER = -g3
+#DEBUGGER = -g3
 
 SRC_DIR = src
 OBJ_DIR = .obj

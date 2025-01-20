@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/20 13:05:31 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/20 15:22:47 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,29 +15,32 @@
 #include "../libs.h"
 #include "../macros.h"
 
-#include "Config.hpp" // Include the header file that defines ServerConfig
-
+#include "Config.hpp"
+#include "Tokenizer.hpp"
 
 /**
  * @brief Base class for handling configuration blocks.
  */
-class ABlock
+class ABlock : public Config
 {
 	protected:
-		int _line_nb;                                                          // Line number where the block starts.
-		ifstream *_infile;                                             // File stream for the configuration file.
+		vector<Token> _tokens;                                         // Tokens found in the current block.
+		string _filepath;                                              // Path of the configuration file.
 
-		map<string, void (ABlock::*)(vector<string>)> _std_fields; // Allowed fields that can be found in a block.
-		vector<string> _std_blocks;                               // Allowed blocks that can be found in a block.
-		vector<string> _subblocks;                                // Blocks found in the current block.		
+		map<string, void (ABlock::*)(vector<string>)> _allowed_fields; // Allowed fields that can be found in a block.
+		vector<string> _allowed_blocks;                                // Allowed blocks that can be found in a block.
 
-		void identifyDirectives();
-		void extractBlock();
-		void parseField();
+		list< pair<string, vector<Token> > > _subblocks;               // Route Blocks found in the current block.		
 
-	public:
-		virtual void parse(ifstream &stream) = 0;
-		virtual ~ABlock() {};
+		bool isAllowedField(string token);
+		bool isAllowedBlock(string token);
+		void parseField(vector<Token>::iterator &start);
+		void storeBlock(vector<Token>::iterator &start);
+		virtual void parseBlock(string context, vector<Token> tokens) = 0;
+
+	public:	
+		virtual void initAllowedDirectives() = 0;	
+		virtual void process(vector<Token> &tokens);	
 };
 
 /**
@@ -48,16 +51,16 @@ class ServerBlock : public ABlock
 	private:
 		struct ServerConfig *_config;
 
-
 	public:
+		void parseBlock(string context, vector<Token> tokens);
 		void parseListen(vector<string> val);
 		void parseServerName(vector<string> val);
 		void parseErrorPage(vector<string> val);
 		void parseClientMaxBodySize(vector<string> val);
-		
-		ServerBlock(struct ServerConfig *config, int line);
-		void parse(ifstream &stream);
-		~ServerBlock( void );
+
+		ServerBlock(struct ServerConfig *config, string &path);
+		~ServerBlock();
+		void initAllowedDirectives();
 };
 
 /**
@@ -66,10 +69,11 @@ class ServerBlock : public ABlock
 class LocationBlock : public ABlock
 {
 	private:
-		struct RouteConfig *_config;
-		
+		struct RouteConfig _config;
+		string _context;
 
-	public:
+	public:		
+		void parseBlock(string context, vector<Token> tokens);
 		void parseRoot(vector<string> val);
 		void parseMethods(vector<string> val);
 		void parseDirectoryListing(vector<string> val);
@@ -78,7 +82,8 @@ class LocationBlock : public ABlock
 		void parseUploadDir(vector<string> val);
 		void parseHttpRedirect(vector<string> val);
 		void parseReturn(vector<string> val);
-		LocationBlock(struct RouteConfig *config, int line);
+
+		LocationBlock(struct RouteConfig &config, string context, string &path);\
 		~LocationBlock();
-		void parse(ifstream &stream);
+		void initAllowedDirectives();
 };

@@ -1,30 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   utils.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/08 14:43:34 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/20 15:31:48 by mbecker          ###   ########.fr       */
+/*   Created: 2025/01/17 15:33:23 by mbecker           #+#    #+#             */
+/*   Updated: 2025/01/17 15:35:01 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/WebServ.hpp"
+#pragma once
 
- int main(int argc, char **argv)
- {
- 	if (argc > 2)
- 	{
- 		cerr << "Usage: " << argv[0] << " [configuration file]" << endl;
- 		return (1);
- 	}
+#include "libs.h"
 
- 	WebServ webserv;
- 	int ret = 0;
-     const char* config_file = (argc == 2) ? argv[1] : NULL;
-
- 	webserv.run(config_file, ret);
-
- 	return (ret);
- }
+std::string itostr(int num);

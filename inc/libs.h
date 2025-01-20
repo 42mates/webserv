@@ -20,8 +20,11 @@
 # include <string>        // String operations
 # include <sstream>       // String operations
 # include <fstream>       // File operations (configuration file)
-# include <map>           // Storing configuration parameters
-# include <vector>        // Storing multiple sockets
+# include <algorithm>     // String operations
+# include <map>           // STL
+# include <list>          // STL
+# include <vector>        // STL
+# include <sys/stat.h>    // for stat
 # include <sys/types.h>   // Socket functions
 # include <sys/socket.h>  // Socket functions
 # include <netinet/in.h>  // Socket functions
@@ -34,6 +37,8 @@
 # include <cstdio>        // Standard I/O (for CGI)
 # include <cerrno>        // Error handling
 
-#include "macros.h"
+# include "macros.h"      // Macros for the project
+
+# include "utils.hpp"     // Utilities functions (like itostr)
 
 #endif

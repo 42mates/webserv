@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks_parsing.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/20 14:38:59 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/20 15:35:30 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,8 @@ void ServerBlock::parseClientMaxBodySize(vector<string> val)
 }
 
 ServerBlock::~ServerBlock(void) {}
+
+
 /*********** LOCATION BLOCK ***********/
 
 void LocationBlock::parseRoot(vector<string> val)
@@ -142,8 +144,8 @@ void LocationBlock::parseRoot(vector<string> val)
 
 	if (val.size() != 1 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"root\" directive\n"));
-	this->_config->root = val.at(0);
-	cout << "parseRoot ✅\n root : " << this->_config->root << '\n';
+	this->_config.root = val.at(0);
+	cout << "parseRoot ✅\n root : " << this->_config.root << '\n';
 
 }
 
@@ -153,17 +155,17 @@ void LocationBlock::parseMethods(vector<string> val)
 
 	if (val.size() == 0 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"methods\" directive\n"));
-	this->_config->methods.resize(0); //! just for testing purposes
+	this->_config.methods.resize(0); //! just for testing purposes
 	for (size_t i = 0; i < val.size(); i++)
 	{
 		string	tmp(val[i]); //? does the copy operator do a deep copy ?
 		transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper); //applies toupper to each char
 		if (tmp != "GET" && tmp != "POST" && tmp != "DELETE")
 			throw runtime_error(METHOD_UNKNOWN + val[i] + " in \"methods\" directive\n");
-		this->_config->methods.push_back(tmp);
+		this->_config.methods.push_back(tmp);
 	}
 	cout << "parseMethods ✅\nmethods are\n";
-	printVector(this->_config->methods);
+	printVector(this->_config.methods);
 }
 
 void LocationBlock::parseDirectoryListing(vector<string> val)
@@ -190,24 +192,24 @@ void LocationBlock::parseIndexFile(vector<string> val)
 	//todo invalid characters in filename
 	if (val.size() != 1 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"index_file\" directive\n"));
-	this->_config->index_file = val.at(0);
-	cout << "parseIndexFile ✅\nindex_file : " << this->_config->index_file << '\n';
+	this->_config.index_file = val.at(0);
+	cout << "parseIndexFile ✅\nindex_file : " << this->_config.index_file << '\n';
 }
 
 void LocationBlock::parseCgiPath(vector<string> val)
 {
 	if (val.size() != 1 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"cgi_pass\" directive\n"));
-	this->_config->cgi_path = val.at(0);
-	cout << "parseCgiPass✅\ncgi_path " << this->_config->cgi_path << '\n';
+	this->_config.cgi_path = val.at(0);
+	cout << "parseCgiPass✅\ncgi_path " << this->_config.cgi_path << '\n';
 }
 
 void LocationBlock::parseUploadDir(vector<string> val)
 {
 	if (val.size() != 1 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"upload_dir\" directive\n"));
-	this->_config->upload_dir = val.at(0);
-	cout << "parseUploadDir ✅\n" << this->_config->upload_dir << '\n';
+	this->_config.upload_dir = val.at(0);
+	cout << "parseUploadDir ✅\n" << this->_config.upload_dir << '\n';
 
 }
 
@@ -225,8 +227,8 @@ void LocationBlock::parseHttpRedirect(vector<string> val)
 	return_value = strtol(val[0].c_str(), NULL, 10);
 	if (return_value < 300 || return_value > 399)
 		throw runtime_error(INVALID_RETURN_CODE + val[0] + http_redirect + '\n');
-	this->_config->http_redirect = val.at(0);
-	cout << "parseHttpRedirect ✅\nhttp_redirect = " << this->_config->http_redirect << '\n';
+	this->_config.http_redirect = val.at(0);
+	cout << "parseHttpRedirect ✅\nhttp_redirect = " << this->_config.http_redirect << '\n';
 
 }
 
