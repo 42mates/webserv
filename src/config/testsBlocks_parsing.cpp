@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 09:39:05 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/17 15:18:35 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/20 14:26:18 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void testParseCgiPath();
 void testParseUploadDir();
 void testParseHttpRedirect();
 void testParseReturn();
-
+void runAll();
 
 map<string, void(*)()> functionMap;
 
@@ -57,7 +57,6 @@ void	testBlocks_parsing( void )
 	vector<string>	val;
 	string			buf;
 
-	initializeFunctionMap();
 	while (1)
 	{
 		buf.clear();
@@ -67,6 +66,11 @@ void	testBlocks_parsing( void )
 		transform(buf.begin(), buf.end(), buf.begin(), ::toupper);
 		if (buf == "EXIT")
 			break ;
+		else if (buf == "ALL")
+		{
+			runAll();
+			continue ;
+		}
 		if (functionMap.count(buf))
 		{
 			cout << "\033[2J\033[H";
@@ -193,7 +197,7 @@ void testParseErrorPage()
 {
     struct ServerConfig svr;
 
-    vector<string> test_error_page = createStringVector(2, "404", "/404.html");
+    vector<string> test_error_page = createStringVector(5, "404", "403", "407", "310", "/404.html");
     vector<string> out_of_bound = createStringVector(2, "700", "/500.html");
     vector<string> negative_return = createStringVector(2, "-500", "/500.html");
 	vector<string> alpha_char = createStringVector(2, "404a", "/500.html");
@@ -617,4 +621,34 @@ void testParseReturn()
     } catch (const exception &e) {
        cerr << e.what();
     }
+}
+
+# define MAGENTA "\033[1;35m"
+
+void runAll()
+{
+	cout << MAGENTA << "\t\t\tLISTEN DIRECTIVE\n" << NEUTRAL;
+	testParseListen();
+	cout << MAGENTA << "\t\t\tSERVER_NAME DIRECTIVE\n" << NEUTRAL;
+	testParseServerName();
+	cout << MAGENTA << "\t\t\tERROR_PAGE DIRECTIVE\n" << NEUTRAL;
+	testParseErrorPage();
+	cout << MAGENTA << "\t\t\tCLIENT_MAX_BODY_SIZE DIRECTIVE\n" << NEUTRAL;
+	testParseClientMaxBodySize();
+	cout << MAGENTA << "\t\t\tROOT DIRECTIVE\n" << NEUTRAL;
+	testParseRoot();
+	cout << MAGENTA << "\t\t\tMETHODS DIRECTIVE\n" << NEUTRAL;
+	testParseMethods();
+	cout << MAGENTA << "\t\t\tDIRECTORY_LISTING DIRECTIVE\n" << NEUTRAL;
+	testParseDirectoryListing();
+	cout << MAGENTA << "\t\t\tINDEX_FILE DIRECTIVE\n" << NEUTRAL;
+	testParseIndexFile();
+	cout << MAGENTA << "\t\t\tCGI_PATH DIRECTIVE\n" << NEUTRAL;
+	testParseCgiPath();
+	cout << MAGENTA << "\t\t\tUPLOAD_DIR DIRECTIVE\n" << NEUTRAL;
+	testParseUploadDir();
+	cout << MAGENTA << "\t\t\tHTTP_REDIRECT DIRECTIVE\n" << NEUTRAL;
+	testParseHttpRedirect();
+	cout << MAGENTA << "\t\t\tRETURN DIRECTIVE\n" << NEUTRAL;
+	testParseReturn();
 }

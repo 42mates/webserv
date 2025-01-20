@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/17 15:53:23 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/20 14:34:23 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ using namespace std;
 
 # define INVALID_VALUE "Error.\nInvalid value "
 # define INVALID_RETURN_CODE "Error.\nInvalid return code "
-# define ERROR_PAGE_OUT_OF_BOUND "Error.\nerror_page's value must be between 300 and 599\n"
+# define ERROR_PAGE_OUT_OF_BOUND "Error.\nerror_page's value must be between 300 and 599"
 # define PORT_OUT_OF_BOUND "Error.\nPort's value must be between 0 and 65535\n"
 # define METHOD_UNKNOWN "Error.\nUnknown method "
 

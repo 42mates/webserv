@@ -6,13 +6,26 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/17 15:53:36 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/20 14:38:59 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Blocks.hpp"
 
 
+/*********** UTILS FOR TESTING *************** */
+
+void printMap(const map<int, string>& m)
+{
+    for (map<int, string>::const_iterator it = m.begin(); it != m.end(); ++it)
+        cout << "map[" << it->first << "] : " << it->second << '\n';
+}
+
+void printVector(const vector<string>& v)
+{
+	for (size_t i = 0; i < v.size(); i++)
+		cout << v.at(i) << '\n';
+}
 /*********** SERVER BLOCK ***********/
 
 void ServerBlock::parseListen(vector<string> val)
@@ -30,17 +43,19 @@ void ServerBlock::parseListen(vector<string> val)
 		throw runtime_error(PORT_OUT_OF_BOUND);
 	this->_config->port = tmp_port;
 	cout << "parseListen successful ✅\n this->port = "
-	<< tmp_port << "\n";
+	<< this->_config->port << "\n";
 }
 
 void ServerBlock::parseServerName(vector<string> val)
 {
 	if (val.size() == 0 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("server_name directive\n"));
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"server_name\" directive\n"));
 	//todo not empty ✅
+	this->_config->server_names.resize(0); //! just for testing purposes
 	for (size_t i = 0; i < val.size(); i++)
 		this->_config->server_names.push_back(val[i]);
-	cout << "parseServerName successful ✅\n";
+	cout << "parseServerName successful ✅\nserver_names are ";
+	printVector(this->_config->server_names);
 }
 
 void ServerBlock::parseErrorPage(vector<string> val)
@@ -55,10 +70,10 @@ void ServerBlock::parseErrorPage(vector<string> val)
 		else
 		{
 			if (val[i].find_first_not_of("0123456789") != string::npos)
-				throw runtime_error(INVALID_VALUE + val[i] + " in \"error_page\" directive\n");
+				throw runtime_error(INVALID_VALUE + val[i] + string(" in \"error_page\" directive\n"));
 			long tmp = atol(val[i].c_str());
 			if (tmp < 300 || tmp > 599)
-				throw runtime_error(ERROR_PAGE_OUT_OF_BOUND);
+				throw runtime_error(ERROR_PAGE_OUT_OF_BOUND + string( " in \"error_page\" directive\n"));
 			this->_config->error_pages[tmp] = val.back();
 		}
 	}
@@ -66,8 +81,8 @@ void ServerBlock::parseErrorPage(vector<string> val)
 	//todo only alpha char ✅ 
 	//todo check bounds ✅
 	//! CAREFUL
-	cout << "parseErrorPage successful ✅\n";
-
+	cout << "parseErrorPage successful ✅\nerror_pages are\n";
+	printMap(this->_config->error_pages);
 }
 
 void ServerBlock::parseClientMaxBodySize(vector<string> val)
@@ -99,7 +114,7 @@ void ServerBlock::parseClientMaxBodySize(vector<string> val)
 		throw runtime_error("iss conv"); //todo might fail here if there is the unit so check
 	bytes *= bytes_multiplier;
 	if (bytes == 0)
-		this->_config->client_max_body_size = string::npos;
+		this->_config->client_max_body_size = string::npos; //* disables the limit
 	else
 		this->_config->client_max_body_size = bytes;
 	//todo only one argument ✅
@@ -127,7 +142,8 @@ void LocationBlock::parseRoot(vector<string> val)
 
 	if (val.size() != 1 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"root\" directive\n"));
-	cout << "parseRoot ✅\n";
+	this->_config->root = val.at(0);
+	cout << "parseRoot ✅\n root : " << this->_config->root << '\n';
 
 }
 
@@ -137,16 +153,17 @@ void LocationBlock::parseMethods(vector<string> val)
 
 	if (val.size() == 0 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"methods\" directive\n"));
-
+	this->_config->methods.resize(0); //! just for testing purposes
 	for (size_t i = 0; i < val.size(); i++)
 	{
 		string	tmp(val[i]); //? does the copy operator do a deep copy ?
 		transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper); //applies toupper to each char
 		if (tmp != "GET" && tmp != "POST" && tmp != "DELETE")
 			throw runtime_error(METHOD_UNKNOWN + val[i] + " in \"methods\" directive\n");
+		this->_config->methods.push_back(tmp);
 	}
-	cout << "parseMethods ✅\n";
-
+	cout << "parseMethods ✅\nmethods are\n";
+	printVector(this->_config->methods);
 }
 
 void LocationBlock::parseDirectoryListing(vector<string> val)
@@ -173,23 +190,24 @@ void LocationBlock::parseIndexFile(vector<string> val)
 	//todo invalid characters in filename
 	if (val.size() != 1 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"index_file\" directive\n"));
-	cout << "parseIndexFile ✅\n";
-
+	this->_config->index_file = val.at(0);
+	cout << "parseIndexFile ✅\nindex_file : " << this->_config->index_file << '\n';
 }
 
 void LocationBlock::parseCgiPath(vector<string> val)
 {
 	if (val.size() != 1 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"cgi_pass\" directive\n"));
-	cout << "parseCgiPass✅\n";
+	this->_config->cgi_path = val.at(0);
+	cout << "parseCgiPass✅\ncgi_path " << this->_config->cgi_path << '\n';
 }
 
 void LocationBlock::parseUploadDir(vector<string> val)
 {
-if (val.size() != 1 || val[0].empty() == true)
+	if (val.size() != 1 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"upload_dir\" directive\n"));
-	
-	cout << "parseUploadDir ✅\n";
+	this->_config->upload_dir = val.at(0);
+	cout << "parseUploadDir ✅\n" << this->_config->upload_dir << '\n';
 
 }
 
@@ -207,7 +225,8 @@ void LocationBlock::parseHttpRedirect(vector<string> val)
 	return_value = strtol(val[0].c_str(), NULL, 10);
 	if (return_value < 300 || return_value > 399)
 		throw runtime_error(INVALID_RETURN_CODE + val[0] + http_redirect + '\n');
-	cout << "parseHttpRedirect ✅\n";
+	this->_config->http_redirect = val.at(0);
+	cout << "parseHttpRedirect ✅\nhttp_redirect = " << this->_config->http_redirect << '\n';
 
 }
 
