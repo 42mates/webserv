@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/18 16:34:15 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/20 15:03:01 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,18 @@ class ABlock : public Config
 {
 	protected:
 		vector<Token> _tokens;                                         // Tokens found in the current block.
+		string _filepath;                                              // Path of the configuration file.
+
 		map<string, void (ABlock::*)(vector<string>)> _allowed_fields; // Allowed fields that can be found in a block.
 		vector<string> _allowed_blocks;                                // Allowed blocks that can be found in a block.
-		vector< vector<Token> > _subblocks;                            // Blocks found in the current block.		
-		string _path;                                                  // Path of the configuration file.
+
+		list< pair<string, vector<Token> > > _subblocks;               // Route Blocks found in the current block.		
 
 		bool isAllowedField(string token);
 		bool isAllowedBlock(string token);
 		void parseField(vector<Token>::iterator &start);
 		void storeBlock(vector<Token>::iterator &start);
+		virtual void parseBlock(string context, vector<Token> tokens) = 0;
 
 	public:	
 		virtual void initAllowedDirectives() = 0;	
@@ -48,6 +51,7 @@ class ServerBlock : public ABlock
 	private:
 		struct ServerConfig *_config;
 
+		void parseBlock(string context, vector<Token> tokens);
 		void parseListen(vector<string> val);
 		void parseServerName(vector<string> val);
 		void parseErrorPage(vector<string> val);
@@ -64,8 +68,10 @@ class ServerBlock : public ABlock
 class LocationBlock : public ABlock
 {
 	private:
-		struct RouteConfig *_config;
+		struct RouteConfig _config;
+		string _context;
 		
+		void parseBlock(string context, vector<Token> tokens);
 		void parseRoot(vector<string> val);
 		void parseMethods(vector<string> val);
 		void parseDirectoryListing(vector<string> val);
@@ -76,6 +82,6 @@ class LocationBlock : public ABlock
 		void parseReturn(vector<string> val);
 
 	public:
-		LocationBlock(struct RouteConfig *config, string &path);
+		LocationBlock(struct RouteConfig &config, string context, string &path);
 		void initAllowedDirectives();
 };

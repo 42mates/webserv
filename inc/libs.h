@@ -20,8 +20,9 @@
 # include <sstream>       // String operations
 # include <fstream>       // File operations (configuration file)
 # include <algorithm>     // String operations
-# include <map>           // Storing configuration parameters
-# include <vector>        // Storing multiple sockets
+# include <map>           // STL
+# include <list>          // STL
+# include <vector>        // STL
 # include <sys/stat.h>    // for stat
 # include <sys/types.h>   // Socket functions
 # include <sys/socket.h>  // Socket functions
