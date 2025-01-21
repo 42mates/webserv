@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:43:34 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/20 15:31:48 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/21 17:46:16 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,3 +28,7 @@
 
  	return (ret);
  }
+
+/*testing purposes*/
+// void	testBlocks_parsing( void );
+// int main ( void ) { testBlocks_parsing(); }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   macros.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/20 15:31:13 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/21 17:52:14 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,20 +41,20 @@ enum TokenType
 /************ ERRORS ************/
 
 //--> SocketManager.cpp
-# define SOCKET_CREATION_ERROR "Error.\nUnable to create socket's fd\n"
-# define SOCKET_BINDING_ERROR "Error.\nUnable to bind socket\n"
-# define SOCKET_LISTENING_ERROR "Error.\nUnable to set one socket to a listening state\n"
+# define SOCKET_CREATION_ERROR "unable to create socket's fd\n"
+# define SOCKET_BINDING_ERROR "unable to bind socket\n"
+# define SOCKET_LISTENING_ERROR "unable to set one socket to a listening state\n"
 
 //--> Blocks_parsing.cpp
-# define INVALID_NUMBER_OF_ARGUMENTS_IN "Error.\nInvalid number of arguments in " //*Will be used with the block's name
-# define INVALID_VALUE_IN "Error.\nInvalid value in "
-# define INVALID_PARAMETER_IN "Error.\nInvalid parameter "
+# define INVALID_NUMBER_OF_ARGUMENTS_IN "invalid number of arguments in "
+# define INVALID_VALUE_IN "invalid value in "
+# define HOST_NOT_FOUND "host not found in "
 
-# define INVALID_VALUE "Error.\nInvalid value "
-# define INVALID_RETURN_CODE "Error.\nInvalid return code "
-# define ERROR_PAGE_OUT_OF_BOUND "Error.\nerror_page's value must be between 300 and 599"
-# define PORT_OUT_OF_BOUND "Error.\nPort's value must be between 0 and 65535\n"
-# define METHOD_UNKNOWN "Error.\nUnknown method "
+# define INVALID_PARAMETER "invalid parameter "
+# define INVALID_VALUE "invalid value "
+# define INVALID_RETURN_CODE "invalid return code "
+# define PORT_OUT_OF_BOUND "invalid port in "
+# define METHOD_UNKNOWN "unknown method "
 
 
 /************ COLORS ************/
