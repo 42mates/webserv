@@ -98,4 +98,5 @@ class Config
 
 		virtual void parse(string &config_file);
 		vector<ServerConfig *> getServers();
+		struct RouteConfig	getRoute(const string &server_name, const string &uri);
 };

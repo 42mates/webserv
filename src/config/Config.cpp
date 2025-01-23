@@ -134,3 +134,49 @@ void Config::parse(string &config_file)
 	printConfig(_servers);
 }
 
+// Need to handle nested location blocks beyond two layers
+struct RouteConfig Config::getRoute(const string &server_name, const string &uri)
+{
+	string						matched;
+	RouteConfig					route_matched;
+	map<string, RouteConfig>	a_routes;
+	map<string, RouteConfig>	a_subroutes;
+
+	for (size_t i = 0; i < _servers.size(); i++) //*finds the pointer to the correct ServerConfig structure, by matching server_name
+	{
+		ServerConfig	*server = _servers.at(i);
+        if (find(server->server_names.begin(), server->server_names.end(), server_name) != server->server_names.end())
+		{
+            a_routes = server->routes;
+            break;
+        }
+	}
+	if (a_routes.empty())
+		throw runtime_error("No matching server name found"); //! THrow an exception or return defaut / location?
+
+	for (map<string, RouteConfig>::iterator it = a_routes.begin(); it != a_routes.end(); it++) //*finds a route
+	{
+		string	route_path = it->first;
+		if (uri.find(route_path) == 0 && (matched.empty() || matched.size() < route_path.size()))
+			a_subroutes = it->second.subroutes;
+	}
+
+	for (map<string, RouteConfig>::iterator it = a_subroutes.begin(); it != a_subroutes.end(); it++) //*finds a subroute
+	{
+		string	subroute_path = it->first;
+		if (uri.find(subroute_path) == 0 && (matched.empty() == true || matched.size() < subroute_path.size()))
+		{
+			matched = subroute_path;
+			route_matched = it->second;
+		}
+	}
+    if (!matched.empty()) {
+		cout << route_matched.root << endl;
+        return route_matched;
+    }
+    if (a_routes.count("/")) {
+		cout << route_matched.root << endl;
+        return a_routes.at("/");
+    }
+	return route_matched;
+}

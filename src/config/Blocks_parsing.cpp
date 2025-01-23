@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks_parsing.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/23 16:51:40 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/23 18:09:57 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ void ServerBlock::parseServerName(vector<string> val)
 {
 	if (val.size() == 0 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"server_name\" directive in ") + _filepath);
-	//todo not empty ✅
 	this->_config->server_names.resize(0); //! just for testing purposes
 	for (size_t i = 0; i < val.size(); i++)
 		this->_config->server_names.push_back(val[i]);
@@ -81,10 +80,6 @@ void ServerBlock::parseErrorPage(vector<string> val)
 			this->_config->error_pages[tmp] = val.back();
 		}
 	}
-	//todo at least 2 arguments ✅
-	//todo only alpha char ✅ 
-	//todo check bounds ✅
-	//! CAREFUL
 }
 
 void ServerBlock::parseClientMaxBodySize(vector<string> val)
@@ -113,19 +108,12 @@ void ServerBlock::parseClientMaxBodySize(vector<string> val)
 	istringstream	iss(val[0]);
 	iss >> bytes;
 	if (iss.fail())
-		throw runtime_error("iss conv"); //todo might fail here if there is the unit so check. ok
+		throw runtime_error("iss conv");
 	bytes *= bytes_multiplier;
 	if (bytes == 0)
 		this->_config->client_max_body_size = string::npos; //* disables the limit
 	else
 		this->_config->client_max_body_size = bytes;
-	//todo only one argument ✅
-	//todo start with num char (negative values arent accepted) ✅
-	//todo ends with k, m or g (case insensitive, and just one of them) ✅
-	//todo and nothing after the last alpha char (k, m, g) ✅
-	//todo 0 disables the limit ✅
-	//todo without units, treated as bytes ✅
-	//todo check here if overflow
 	//? set a maximum value (so that it doesn't exceed system limits)
 }
 
@@ -147,15 +135,13 @@ void LocationBlock::parseRoot(vector<string> val)
 
 void LocationBlock::parseMethods(vector<string> val)
 {
-	//todo valid methods (GET, POST, DELETE), case insensitive ✅
-
 	if (val.size() == 0 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"methods\" directive ") + _filepath);
 	this->_config->methods.resize(0); //! just for testing purposes
 	for (size_t i = 0; i < val.size(); i++)
 	{
-		string	tmp(val[i]); //? does the copy operator do a deep copy ?
-		transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper); //applies toupper to each char
+		string	tmp(val[i]);
+		transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper);
 		if (tmp != "GET" && tmp != "POST" && tmp != "DELETE")
 			throw runtime_error(METHOD_UNKNOWN + qString(val[i]) + " in \"methods\" directive\n");
 		this->_config->methods.push_back(tmp);
@@ -164,8 +150,6 @@ void LocationBlock::parseMethods(vector<string> val)
 
 void LocationBlock::parseDirectoryListing(vector<string> val)
 {
-	//todo format is "autoindex on" or "autoindex off" ✅
-	//todo so there should just be on or off (therefore one argument only) ✅
 	//! is triggered only if no index_file is found
 	string	auto_index("\"auto_index\" directive\n");
 
@@ -180,8 +164,6 @@ void LocationBlock::parseDirectoryListing(vector<string> val)
 
 void LocationBlock::parseIndexFile(vector<string> val)
 {
-	//todo empty or missing ✅
-	//todo invalid characters in filename
 	if (val.size() < 1 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"index_file\" directive"));
 	this->_config->index_file = val.at(0);
