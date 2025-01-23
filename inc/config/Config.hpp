@@ -35,6 +35,8 @@ struct RouteConfig {
 	string upload_dir;       // Upload directory for sent files	
 	string http_redirect;    // HTTP redirection (e.g., "301 https://example.com")
 	
+	map<string, RouteConfig> subroutes; // List of subroutes
+
 	RouteConfig() :
 		directory_listing(false)
 	{}
@@ -44,20 +46,19 @@ struct RouteConfig {
  * @brief Configuration data for a specific server in the web server (`server` block).
  */
 struct ServerConfig {	
-	string host;                  // Server IP address (default: 0.0.0.0)	
-	int port;                     // Server listening port (default: 80)	
-	vector<string> server_names;  // Domain names associated with the server	
-	map<int, string> error_pages; // Error pages (key: HTTP code, value: file path)	
-	size_t client_max_body_size;  // Max body size (default: 1 MB)	
-	vector<RouteConfig> routes;   // List of configured routes
-	
+	string host;                     // Server IP address (default: 0.0.0.0)	
+	int port;                        // Server listening port (default: 80)	
+	vector<string> server_names;     // Domain names associated with the server	
+	map<int, string> error_pages;    // Error pages (key: HTTP code, value: file path)	
+	size_t client_max_body_size;     // Max body size (default: 1 MB)	
+	map<string, RouteConfig> routes; // List of configured routes
+
 	ServerConfig() : 
 		host("0.0.0.0"), 
 		port(80), 
 		client_max_body_size(1 * 1024 * 1024) 
 	{}
 };
-
 
 /**
  * @brief Manages and stores the configuration settings for the web server.
