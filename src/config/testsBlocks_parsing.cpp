@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   testsBlocks_parsing.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 09:39:05 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/21 15:02:26 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/23 15:02:03 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ struct RouteConfig route;
 string	path("[PATH]");
 string context("[CONTEXT]");
 ServerBlock serverBlock(&svr, path);
-LocationBlock locationBlock(route, context, path);
+LocationBlock locationBlock(route, path);
 
 
 void	testBlocks_parsing( void )

@@ -107,10 +107,6 @@ void Config::parse(string &config_file)
 	vector<string> file = getFileVector(); 
 	Tokenizer tokenizer(file);
 
-	//ToDo: handle empty file: test with nginx. if not allowed, uncomment following lines
-	//if (file.size() == 0)
-	//	throw runtime_error("empty file: " + _path);
-
 	_tokens = tokenizer.tokenize();
 
 	for (vector<Token>::iterator it = _tokens.begin(); it != _tokens.end(); it++)
@@ -126,8 +122,6 @@ void Config::parse(string &config_file)
 			throw runtime_error("empty block in " + _path + ":" + itostr((it - 1)->line));
 		vector<Token> block_tokens(it + 1, end);
 
-		//? if enough tokens to form a block ? or useless if ?
-
 		ServerConfig *sconfig = new ServerConfig();
 		ServerBlock block(sconfig, _path);
 		block.process(block_tokens);
@@ -136,5 +130,7 @@ void Config::parse(string &config_file)
 
 		it = end;
 	}
+
+	printConfig(_servers);
 }
 

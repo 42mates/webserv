@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks_parsing.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/21 17:52:37 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/23 16:51:40 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,6 @@ void ServerBlock::parseListen(vector<string> val)
 	if (tmp_port > 65535)
 		throw runtime_error(PORT_OUT_OF_BOUND + qString(val[0]) + string(" of the \"listen\" directive in ") + _filepath);
 	this->_config->port = tmp_port;
-	cout << "parseListen successful ✅\n this->port = "
-	<< this->_config->port << "\n";
 }
 
 void ServerBlock::parseServerName(vector<string> val)
@@ -60,8 +58,6 @@ void ServerBlock::parseServerName(vector<string> val)
 	this->_config->server_names.resize(0); //! just for testing purposes
 	for (size_t i = 0; i < val.size(); i++)
 		this->_config->server_names.push_back(val[i]);
-	cout << "parseServerName successful ✅\nserver_names are ";
-	printVector(this->_config->server_names);
 }
 
 void ServerBlock::parseErrorPage(vector<string> val)
@@ -89,8 +85,6 @@ void ServerBlock::parseErrorPage(vector<string> val)
 	//todo only alpha char ✅ 
 	//todo check bounds ✅
 	//! CAREFUL
-	cout << "parseErrorPage successful ✅\nerror_pages are\n";
-	printMap(this->_config->error_pages);
 }
 
 void ServerBlock::parseClientMaxBodySize(vector<string> val)
@@ -133,10 +127,6 @@ void ServerBlock::parseClientMaxBodySize(vector<string> val)
 	//todo without units, treated as bytes ✅
 	//todo check here if overflow
 	//? set a maximum value (so that it doesn't exceed system limits)
-	cout
-	<< "parseClientMaxBodySizesuccessful ✅\n this->client_size = "
-	<< this->_config->client_max_body_size << "\n";
-
 }
 
 ServerBlock::~ServerBlock(void) {}
@@ -152,9 +142,7 @@ void LocationBlock::parseRoot(vector<string> val)
 
 	if (val.size() != 1 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"root\" directive in ") + _filepath);
-	this->_config.root = val.at(0);
-	cout << "parseRoot ✅\n root : " << this->_config.root << '\n';
-
+	this->_config->root = val.at(0);
 }
 
 void LocationBlock::parseMethods(vector<string> val)
@@ -163,17 +151,15 @@ void LocationBlock::parseMethods(vector<string> val)
 
 	if (val.size() == 0 || val[0].empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"methods\" directive ") + _filepath);
-	this->_config.methods.resize(0); //! just for testing purposes
+	this->_config->methods.resize(0); //! just for testing purposes
 	for (size_t i = 0; i < val.size(); i++)
 	{
 		string	tmp(val[i]); //? does the copy operator do a deep copy ?
 		transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper); //applies toupper to each char
 		if (tmp != "GET" && tmp != "POST" && tmp != "DELETE")
 			throw runtime_error(METHOD_UNKNOWN + qString(val[i]) + " in \"methods\" directive\n");
-		this->_config.methods.push_back(tmp);
+		this->_config->methods.push_back(tmp);
 	}
-	cout << "parseMethods ✅\nmethods are\n";
-	printVector(this->_config.methods);
 }
 
 void LocationBlock::parseDirectoryListing(vector<string> val)
@@ -190,34 +176,29 @@ void LocationBlock::parseDirectoryListing(vector<string> val)
 	transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
 	if (tmp != "off" && tmp != "on")
 		throw runtime_error(INVALID_VALUE + qString(val[0]) + " in " + auto_index);
-	cout << "parseDirectoryListing ✅\n";
-
 }
 
 void LocationBlock::parseIndexFile(vector<string> val)
 {
 	//todo empty or missing ✅
 	//todo invalid characters in filename
-	if (val.size() != 1 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"index_file\" directive\n"));
-	this->_config.index_file = val.at(0);
-	cout << "parseIndexFile ✅\nindex_file : " << this->_config.index_file << '\n';
+	if (val.size() < 1 || val[0].empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"index_file\" directive"));
+	this->_config->index_file = val.at(0);
 }
 
 void LocationBlock::parseCgiPath(vector<string> val)
 {
 	if (val.size() != 1 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"cgi_path\" directive\n"));
-	this->_config.cgi_path = val.at(0);
-	cout << "parseCgiPass✅\ncgi_path " << this->_config.cgi_path << '\n';
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"cgi_path\" directive"));
+	this->_config->cgi_path = val.at(0);
 }
 
 void LocationBlock::parseUploadDir(vector<string> val)
 {
 	if (val.size() != 1 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"upload_dir\" directive\n"));
-	this->_config.upload_dir = val.at(0);
-	cout << "parseUploadDir ✅\n" << this->_config.upload_dir << '\n';
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"upload_dir\" directive"));
+	this->_config->upload_dir = val.at(0);
 
 }
 
@@ -235,8 +216,7 @@ void LocationBlock::parseHttpRedirect(vector<string> val)
 	return_value = strtol(val[0].c_str(), NULL, 10);
 	if (return_value < 300 || return_value > 399)
 		throw runtime_error(INVALID_RETURN_CODE + qString(val[0]) + " in " + return_string + _filepath);
-	this->_config.http_redirect = val.at(0);
-	cout << "parseHttpRedirect ✅\nhttp_redirect = " << this->_config.http_redirect << '\n';
+	this->_config->http_redirect = val.at(0);
 
 }
 
@@ -245,7 +225,7 @@ void LocationBlock::parseReturn(vector<string> val)
 	long	return_value;
 
 	if (val.size() == 0 || val.size() > 2 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"return\" directive\n"));
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"return\" directive"));
 
 	if (val[0].find_first_not_of("0123465789") != string::npos)
 		throw runtime_error(INVALID_RETURN_CODE + qString(val[0]) + " in " + _filepath);
@@ -253,7 +233,6 @@ void LocationBlock::parseReturn(vector<string> val)
 	return_value = strtol(val[0].c_str(), NULL, 10);
 	if (return_value > 999)
 		throw runtime_error(INVALID_RETURN_CODE + qString(val[0]) + " in " + _filepath);
-	cout << "parseReturn ✅\n";
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:38:12 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/20 15:18:05 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/23 17:24:12 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void ABlock::parseField(vector<Token>::iterator &start)
 	
 	while (end != _tokens.end() && end->type == TKN_VALUE)
 	{
-		
 		val.push_back(end->token);
 		end++;
 	}
@@ -89,7 +88,7 @@ void ABlock::process(vector<Token> &tokens)
 	}
 	for (list<pair<string, vector<Token> > >::iterator it = _subblocks.begin(); it != _subblocks.end(); ++it)
 		parseBlock(it->first, it->second);
-		//cout << "parseBlock(" << it->first << ", " << "[vector]" << ")" << endl;
+	
 }
 
 /************ SERVER BLOCK *************/
@@ -122,20 +121,27 @@ void ServerBlock::initAllowedDirectives()
 
 void ServerBlock::parseBlock(string context, vector<Token> tokens)
 {
-	RouteConfig route;
+	//remove '{' and '}' tokens
 	tokens.erase(tokens.begin());
 	tokens.pop_back();
-	LocationBlock block(route, context, _filepath);
+
+	//init default route, and update path for route
+	RouteConfig route;
+	route.path = context;
+	
+	LocationBlock block(route, _filepath);
 	block.process(tokens);
-	_config->routes.push_back(route);
+
+	_config->routes[context] = route;
 }
 
 /************ LOCATION BLOCK *************/
 
-LocationBlock::LocationBlock(struct RouteConfig &config, string context, string &filepath) 
-	: _config(config), _context(context)
+LocationBlock::LocationBlock(struct RouteConfig &config, string &filepath) 
+	: _config(&config)
 {
 	_filepath = filepath;
+	_config->subroutes.clear();
 	initAllowedDirectives();
 }
 
@@ -167,13 +173,38 @@ void LocationBlock::initAllowedDirectives()
 	_allowed_blocks.push_back("location");
 }
 
+RouteConfig LocationBlock::duplicateConfig(RouteConfig &config)
+{
+	RouteConfig new_config = config;
+	new_config.methods = config.methods;
+	new_config.directory_listing = config.directory_listing;
+	new_config.index_file = config.index_file;
+	new_config.cgi_path = config.cgi_path;
+	new_config.upload_dir = config.upload_dir;
+	new_config.http_redirect = config.http_redirect;
+
+	//new_config.return_code = config.return_code;
+	//new_config.return_value = config.return_value;
+
+	return new_config;
+}
+
 void LocationBlock::parseBlock(string context, vector<Token> tokens)
 {
-	RouteConfig route;
+	//remove '{' and '}' tokens
 	tokens.erase(tokens.begin());
 	tokens.pop_back();
-	LocationBlock block(route, context, _filepath);
+
+	//check if location is inside current location
+	if (context.find(_config->path) != 0)
+		throw runtime_error("location \"" + context + "\" is outside location \"" + _config->path + "\" in " + _filepath + ":" + itostr(tokens.front().line));
+
+	//get current config, and update path for subroute
+	RouteConfig route = duplicateConfig(*_config);
+	route.path = context;
+
+	LocationBlock block(route, _filepath);
 	block.process(tokens);
 
-	//TODO: handle context in nested location.
+	_config->subroutes[context] = route;
 }

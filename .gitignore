@@ -31,8 +31,9 @@
 *.out
 *.app
 webserv
+
 # Personal
 todo.md
 chatgpt*
 test.cpp
-.vscode
+.vscode/

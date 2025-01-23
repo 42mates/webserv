@@ -6,14 +6,14 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/20 15:22:47 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/23 17:23:30 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "../libs.h"
-#include "../macros.h"
+#include "libs.h"
+#include "macros.h"
 
 #include "Config.hpp"
 #include "Tokenizer.hpp"
@@ -40,7 +40,7 @@ class ABlock : public Config
 
 	public:	
 		virtual void initAllowedDirectives() = 0;	
-		virtual void process(vector<Token> &tokens);	
+		virtual void process(vector<Token> &tokens);
 };
 
 /**
@@ -69,8 +69,8 @@ class ServerBlock : public ABlock
 class LocationBlock : public ABlock
 {
 	private:
-		struct RouteConfig _config;
-		string _context;
+		struct RouteConfig *_config;
+		RouteConfig duplicateConfig(RouteConfig &config);
 
 	public:		
 		void parseBlock(string context, vector<Token> tokens);
@@ -83,7 +83,7 @@ class LocationBlock : public ABlock
 		void parseHttpRedirect(vector<string> val);
 		void parseReturn(vector<string> val);
 
-		LocationBlock(struct RouteConfig &config, string context, string &path);\
+		LocationBlock(struct RouteConfig &config, string &path);
 		~LocationBlock();
 		void initAllowedDirectives();
 };

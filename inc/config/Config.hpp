@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "../libs.h"
-#include "../macros.h"
+#include "libs.h"
+#include "macros.h"
 
 #include "Tokenizer.hpp"
 
@@ -26,8 +26,8 @@ class LocationBlock;
  * @brief Configuration data for a specific route in the web server (`location` block).
  */
 struct RouteConfig {	
-	string path;             // Path of the route (e.g., "/upload")	
 	string root;             // Root directory associated with the route	
+	string path;             // Path of the route (e.g., "/upload")	
 	vector<string> methods;  // Accepted HTTP methods (e.g., {"GET", "POST"})	
 	bool directory_listing;  // Enable or disable directory listing	
 	string index_file;       // Default file for a directory (e.g., "index.html")	
@@ -38,8 +38,17 @@ struct RouteConfig {
 	map<string, RouteConfig> subroutes; // List of subroutes
 
 	RouteConfig() :
-		directory_listing(false)
-	{}
+		root("tools/html"),
+		path("/"),
+		directory_listing(false),
+		index_file("index.html"),
+		cgi_path(""),
+		upload_dir("tools/uploads"),
+		http_redirect("")
+	{
+		methods.push_back("GET");
+		methods.push_back("POST");
+	}
 };
 
 /**
@@ -51,13 +60,20 @@ struct ServerConfig {
 	vector<string> server_names;     // Domain names associated with the server	
 	map<int, string> error_pages;    // Error pages (key: HTTP code, value: file path)	
 	size_t client_max_body_size;     // Max body size (default: 1 MB)	
+
 	map<string, RouteConfig> routes; // List of configured routes
 
 	ServerConfig() : 
-		host("0.0.0.0"), 
-		port(80), 
-		client_max_body_size(1 * 1024 * 1024) 
-	{}
+		host("0.0.0.0"),
+		port(8080),
+		client_max_body_size(1 * 1024 * 1024)
+	{
+		server_names.push_back("localhost");
+		//error_pages[400] = "tools/html/error_pages/400.html";
+		//error_pages[401] = "tools/html/error_pages/401.html";
+		//error_pages[403] = "tools/html/error_pages/403.html";
+		//error_pages[404] = "tools/html/error_pages/404.html";
+	}
 };
 
 /**
