@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/24 17:59:47 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/24 18:05:37 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,24 +36,6 @@ void printVector(const vector<Token>& v)
  * @brief Puts a string between double quotes and returns it.
  */
 string	qString(string to_quote) { return "\"" + to_quote + "\""; }
-
-void ServerBlock::parseRoot(vector<Token> val)
-{
-	LocationBlock block(_config->routes["/"], _filepath);
-	block.parseRoot(val);
-}
-
-void ServerBlock::parseIndexFile(vector<Token> val)
-{
-	LocationBlock block(_config->routes["/"], _filepath);
-	block.parseIndexFile(val);
-}
-
-void ServerBlock::parseReturn(vector<Token> val)
-{
-	LocationBlock block(_config->routes["/"], _filepath);
-	block.parseReturn(val);
-}
 
 void ServerBlock::parseRoot(vector<Token> val)
 {
