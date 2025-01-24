@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:34:33 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/24 11:36:04 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/24 15:32:28 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,29 @@ vector<Token>::iterator Config::findBlockEnd(vector<Token>::iterator begin)
 	return end;
 }
 
+bool Config::isDuplicateServer(ServerConfig *sconfig)
+{
+	for (vector<ServerConfig *>::iterator it = _servers.begin(); it != _servers.end(); it++)
+	{
+		long sname_i = vectorsShareValue<string>(sconfig->server_names, (*it)->server_names);
+
+		if (sname_i >= 0 && (*it)->port == sconfig->port)
+		{
+			cerr << "nginx: warning: conflicting server name \""
+				<< sconfig->server_names[sname_i] << "\" on " 
+				<< sconfig->host << ":" << sconfig->port
+				<< ", ignored" << endl;
+			return true;
+		}
+	}
+	return false;
+}
+
 void Config::parse(string &config_file)
 {
 	_path = config_file;
-
 	vector<string> file = getFileVector(); 
 	Tokenizer tokenizer(file);
-
 	_tokens = tokenizer.tokenize();
 
 	for (vector<Token>::iterator it = _tokens.begin(); it != _tokens.end(); it++)
@@ -106,12 +122,19 @@ void Config::parse(string &config_file)
 		ServerConfig *sconfig = new ServerConfig();
 		ServerBlock block(sconfig, _path);
 		block.process(block_tokens);
-	
-		_servers.push_back(sconfig);
+
+		if (!isDuplicateServer(sconfig))
+		{ // debug
+			_servers.push_back(sconfig);
+			cout << "Server added" << endl; // debug
+			printConfig(*sconfig); // debug
+		} // debug
+		else
+			delete sconfig;
 
 		it = end;
 	}
 
-	printConfig(_servers);
+	//printConfig(_servers);
 	
 }

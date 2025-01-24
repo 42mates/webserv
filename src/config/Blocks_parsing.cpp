@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/24 16:26:38 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/24 17:59:47 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ void printVector(const vector<Token>& v)
 	for (size_t i = 0; i < v.size(); i++)
 		cout << v.at(i).token << '\n';
 }
+
+
 /*********** SERVER BLOCK ***********/
 
 //TODO listen directive accepts an IP and/or a port.
@@ -35,6 +37,41 @@ void printVector(const vector<Token>& v)
  */
 string	qString(string to_quote) { return "\"" + to_quote + "\""; }
 
+void ServerBlock::parseRoot(vector<Token> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseRoot(val);
+}
+
+void ServerBlock::parseIndexFile(vector<Token> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseIndexFile(val);
+}
+
+void ServerBlock::parseReturn(vector<Token> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseReturn(val);
+}
+
+void ServerBlock::parseRoot(vector<Token> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseRoot(val);
+}
+
+void ServerBlock::parseIndexFile(vector<Token> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseIndexFile(val);
+}
+
+void ServerBlock::parseReturn(vector<Token> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseReturn(val);
+}
 void ServerBlock::parseListen(vector<Token> val)
 {
 	

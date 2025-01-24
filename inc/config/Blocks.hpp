@@ -6,9 +6,10 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/24 15:09:49 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/24 17:53:13 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #pragma once
 
@@ -50,6 +51,10 @@ class ServerBlock : public ABlock
 {
 	private:
 		struct ServerConfig *_config;
+
+		void parseRoot(vector<Token> val);
+		void parseIndexFile(vector<Token> val);
+		void parseReturn(vector<Token> val);
 
 	public:
 		void parseBlock(string context, vector<Token> tokens);
