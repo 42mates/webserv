@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks_parsing.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/23 18:09:57 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/24 16:30:12 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,32 @@ void printVector(const vector<string>& v)
 	for (size_t i = 0; i < v.size(); i++)
 		cout << v.at(i) << '\n';
 }
+
+
 /*********** SERVER BLOCK ***********/
 
 /**
  * @brief Puts a string between double quotes and returns it.
  */
 string	qString(string to_quote) { return "\"" + to_quote + "\""; }
+
+void ServerBlock::parseRoot(vector<string> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseRoot(val);
+}
+
+void ServerBlock::parseIndexFile(vector<string> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseIndexFile(val);
+}
+
+void ServerBlock::parseReturn(vector<string> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseReturn(val);
+}
 
 void ServerBlock::parseListen(vector<string> val)
 {

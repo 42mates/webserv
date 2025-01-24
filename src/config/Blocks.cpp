@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:38:12 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/24 12:01:10 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/24 16:21:23 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,11 @@ void ServerBlock::initAllowedDirectives()
 	_allowed_fields["server_name"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseServerName);
 	_allowed_fields["error_page"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseErrorPage);
 	_allowed_fields["client_max_body_size"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseClientMaxBodySize);
+
+	//default route fields
+	_allowed_fields["root"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseRoot);
+	_allowed_fields["index"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseIndexFile);
+	_allowed_fields["return"] = static_cast<void (ABlock::*)(vector <string>)>(&ServerBlock::parseReturn);
 
 	_allowed_blocks.push_back("location");
 }

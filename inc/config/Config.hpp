@@ -65,14 +65,17 @@ struct ServerConfig {
 
 	ServerConfig() : 
 		host("0.0.0.0"),
-		port(8080),
 		client_max_body_size(1 * 1024 * 1024)
 	{
 		server_names.push_back("localhost");
+
 		//error_pages[400] = "tools/html/error_pages/400.html";
 		//error_pages[401] = "tools/html/error_pages/401.html";
 		//error_pages[403] = "tools/html/error_pages/403.html";
 		//error_pages[404] = "tools/html/error_pages/404.html";
+
+		RouteConfig default_route;
+		routes["/"] = default_route;
 	}
 };
 
@@ -87,6 +90,7 @@ class Config
 		vector<Token> _tokens;           // Tokens from the configuration file
 
 		vector<string> getFileVector();
+		bool isDuplicateServer(ServerConfig *sconfig);
 
 	protected:
 		string _path;                    // Path to the configuration file
@@ -98,7 +102,6 @@ class Config
 
 		virtual void parse(string &config_file);
 
-		ServerConfig getServer(const string &server_name);
 		RouteConfig getRoute(const ServerConfig *server, const string &uri);
-
+		ServerConfig* getServer(const string &host, int port, const string &server_name);
 };

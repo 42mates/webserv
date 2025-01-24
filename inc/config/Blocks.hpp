@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/23 17:23:30 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/24 16:23:05 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,10 @@ class ServerBlock : public ABlock
 {
 	private:
 		struct ServerConfig *_config;
+
+		void parseRoot(vector<string> val);
+		void parseIndexFile(vector<string> val);
+		void parseReturn(vector<string> val);
 
 	public:
 		void parseBlock(string context, vector<Token> tokens);
