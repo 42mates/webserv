@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   testsBlocks_parsing.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 09:39:05 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/23 15:02:03 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/24 00:05:02 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "Blocks.hpp"
 #include "WebServ.hpp"
 #include "Config.hpp"
+#include <cstdarg>
 
 void testParseListen();
 void testParseServerName();
