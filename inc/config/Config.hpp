@@ -99,5 +99,6 @@ class Config
 		virtual void parse(string &config_file);
 
 		ServerConfig getServer(const string &server_name);
-		RouteConfig getRoute(const string &server_name, const string &uri);
+		RouteConfig getRoute(const ServerConfig *server, const string &uri);
+
 };
