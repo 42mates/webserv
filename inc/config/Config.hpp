@@ -30,7 +30,7 @@ struct RouteConfig {
 	string path;             // Path of the route (e.g., "/upload")	
 	vector<string> methods;  // Accepted HTTP methods (e.g., {"GET", "POST"})	
 	bool directory_listing;  // Enable or disable directory listing	
-	string index_file;       // Default file for a directory (e.g., "index.html")	
+	string index_file;       // Default file for a directory (e.g., "index.html")	//todo pass index_file as vector
 	string cgi_path;         // Path to the CGI program (e.g., "/usr/bin/php-cgi")	
 	string upload_dir;       // Upload directory for sent files	
 	string http_redirect;    // HTTP redirection (e.g., "301 https://example.com")

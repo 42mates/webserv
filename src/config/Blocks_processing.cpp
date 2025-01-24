@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks_processing.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:44:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/24 12:01:21 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/24 15:34:11 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@ bool ABlock::isAllowedBlock(string token)
 void ABlock::parseField(vector<Token>::iterator &start)
 {
 	vector<Token>::iterator end = start + 1;
-	vector<string> val;
+	vector<Token> val;
 	
 	while (end != _tokens.end() && end->type == TKN_VALUE)
 	{
-		val.push_back(end->token);
+		val.push_back(*end);
 		end++;
 	}
 	if (val.empty())

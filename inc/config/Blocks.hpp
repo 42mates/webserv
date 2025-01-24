@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/23 17:23:30 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/24 15:09:49 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ class ABlock : public Config
 		vector<Token> _tokens;                                         // Tokens found in the current block.
 		string _filepath;                                              // Path of the configuration file.
 
-		map<string, void (ABlock::*)(vector<string>)> _allowed_fields; // Allowed fields that can be found in a block.
+		map<string, void (ABlock::*)(vector<Token>)> _allowed_fields; // Allowed fields that can be found in a block.
 		vector<string> _allowed_blocks;                                // Allowed blocks that can be found in a block.
 
 		list< pair<string, vector<Token> > > _subblocks;               // Route Blocks found in the current block.		
@@ -53,10 +53,10 @@ class ServerBlock : public ABlock
 
 	public:
 		void parseBlock(string context, vector<Token> tokens);
-		void parseListen(vector<string> val);
-		void parseServerName(vector<string> val);
-		void parseErrorPage(vector<string> val);
-		void parseClientMaxBodySize(vector<string> val);
+		void parseListen(vector<Token> val);
+		void parseServerName(vector<Token> val);
+		void parseErrorPage(vector<Token> val);
+		void parseClientMaxBodySize(vector<Token> val);
 
 		ServerBlock(struct ServerConfig *config, string &path);
 		~ServerBlock();
@@ -74,14 +74,14 @@ class LocationBlock : public ABlock
 
 	public:		
 		void parseBlock(string context, vector<Token> tokens);
-		void parseRoot(vector<string> val);
-		void parseMethods(vector<string> val);
-		void parseDirectoryListing(vector<string> val);
-		void parseIndexFile(vector<string> val);
-		void parseCgiPath(vector<string> val);
-		void parseUploadDir(vector<string> val);
-		void parseHttpRedirect(vector<string> val);
-		void parseReturn(vector<string> val);
+		void parseRoot(vector<Token> val);
+		void parseMethods(vector<Token> val);
+		void parseDirectoryListing(vector<Token> val);
+		void parseIndexFile(vector<Token> val);
+		void parseCgiPath(vector<Token> val);
+		void parseUploadDir(vector<Token> val);
+		void parseHttpRedirect(vector<Token> val);
+		void parseReturn(vector<Token> val);
 
 		LocationBlock(struct RouteConfig &config, string &path);
 		~LocationBlock();

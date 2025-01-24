@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   testsBlocks_parsing.cpp                            :+:      :+:    :+:   */
+/*   Blocks_parsing.test.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 09:39:05 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/24 00:05:02 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/24 16:21:32 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,8 @@ void initializeFunctionMap() {
     functionMap["RETURN"] = testParseReturn;
 }
 
-vector<string> createStringVector(int count, ...);
-vector<string> empty = createStringVector(1, "");
+vector<Token> createTokenVector(int count, ...);
+vector<Token> empty = createTokenVector(1, "");
 struct ServerConfig	svr;
 struct RouteConfig route;
 string	path("[PATH]");
@@ -59,47 +59,56 @@ LocationBlock locationBlock(route, path);
 
 void	testBlocks_parsing( void )
 {
-	vector<string>	val;
-	string			buf;
+    vector<Token>	val;
+    string			buf;
 
-	initializeFunctionMap();
-	while (1)
+    initializeFunctionMap();
+    while (1)
+    {
+        buf.clear();
+        cout << "Enter the block's name (case insensitive)\n";
+        if ((!getline(cin, buf)))
+            break ;
+        transform(buf.begin(), buf.end(), buf.begin(), ::toupper);
+        if (buf == "EXIT")
+            break ;
+        else if (buf == "ALL")
+        {
+            runAll();
+            continue ;
+        }
+        if (functionMap.count(buf))
+        {
+            cout << "\033[2J\033[H";
+            functionMap[buf]();
+        }
+        else
+            cout << "Wrong name (ctrl+D or \"EXIT\" to quit)\n";
+    }
+}
+
+void	printVector(vector<Token>& v)
+{
+    for (size_t i = 0; i < v.size(); i++)
+        cout << GREY << "v[" << i << "] = " << NC << v[i].token << "\n";
+}
+
+vector<Token> createTokenVector(int count, ...)
+{
+	static bool run_seed = true;
+	if (run_seed)
 	{
-		buf.clear();
-		cout << "Enter the block's name (case insensitive)\n";
-		if ((!getline(cin, buf)))
-			break ;
-		transform(buf.begin(), buf.end(), buf.begin(), ::toupper);
-		if (buf == "EXIT")
-			break ;
-		else if (buf == "ALL")
-		{
-			runAll();
-			continue ;
-		}
-		if (functionMap.count(buf))
-		{
-			cout << "\033[2J\033[H";
-			functionMap[buf]();
-		}
-		else
-			cout << "Wrong name (ctrl+D or \"EXIT\" to quit)\n";
+		run_seed = false;
+		srand(time(NULL));
 	}
-}
-
-void	printVector(vector<string>& v)
-{
-	for (size_t i = 0; i < v.size(); i++)
-		cout << GREY << "v[" << i << "] = " << NC << v[i] << "\n";
-}
-
-vector<string> createStringVector(int count, ...)
-{
-    vector<string> vec;
+    vector<Token> vec;
     va_list args;
     va_start(args, count);
     for (int i = 0; i < count; ++i) {
-        vec.push_back(va_arg(args, const char*));
+        Token token;
+        token.token = va_arg(args, const char*);
+		token.line = rand() % 100;
+        vec.push_back(token);
     }
     va_end(args);
     return vec;
@@ -107,11 +116,11 @@ vector<string> createStringVector(int count, ...)
 
 void testParseListen()
 {
-    vector<string> port1 = createStringVector(1, "8080");
-    vector<string> out_of_bound = createStringVector(1, "99999");
-    vector<string> alpha_char = createStringVector(1, "80a80");
-	vector<string> negative_value = createStringVector(1, "-1");
-	vector<string> too_many_value = createStringVector(2, "1", "80");
+    vector<Token> port1 = createTokenVector(1, "8080");
+    vector<Token> out_of_bound = createTokenVector(1, "99999");
+    vector<Token> alpha_char = createTokenVector(1, "80a80");
+	vector<Token> negative_value = createTokenVector(1, "-1");
+	vector<Token> too_many_value = createTokenVector(2, "1", "80");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(port1);
@@ -159,9 +168,9 @@ void testParseListen()
 
 void testParseServerName()
 {
-    vector<string> test_server_name1 = createStringVector(1, "example.com");
-    vector<string> test_server_name2 = createStringVector(1, "localhost");
-    vector<string> test_server_name3 = createStringVector(3, "localhost", "anotherHost", "MarinIloveYou");
+    vector<Token> test_server_name1 = createTokenVector(1, "example.com");
+    vector<Token> test_server_name2 = createTokenVector(1, "localhost");
+    vector<Token> test_server_name3 = createTokenVector(3, "localhost", "anotherHost", "MarinIloveYou");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_server_name1);
@@ -195,12 +204,12 @@ void testParseServerName()
 
 void testParseErrorPage()
 {
-    vector<string> test_error_page = createStringVector(5, "404", "403", "407", "310", "/404.html");
-    vector<string> out_of_bound = createStringVector(2, "700", "/500.html");
-    vector<string> negative_return = createStringVector(2, "-500", "/500.html");
-	vector<string> alpha_char = createStringVector(2, "404a", "/500.html");
-	vector<string> wrong_num_args = createStringVector(1, "404");
-	vector<string> file_not_at_end = createStringVector(3, "404", "/404", "405");
+    vector<Token> test_error_page = createTokenVector(5, "404", "403", "407", "310", "/404.html");
+    vector<Token> out_of_bound = createTokenVector(2, "700", "/500.html");
+    vector<Token> negative_return = createTokenVector(2, "-500", "/500.html");
+	vector<Token> alpha_char = createTokenVector(2, "404a", "/500.html");
+	vector<Token> wrong_num_args = createTokenVector(1, "404");
+	vector<Token> file_not_at_end = createTokenVector(3, "404", "/404", "405");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_error_page);
@@ -255,11 +264,11 @@ void testParseErrorPage()
 
 void testParseClientMaxBodySize()
 {
-    vector<string> test_client_max_body_size1 = createStringVector(1, "10M");
-    vector<string> test_client_max_body_size2 = createStringVector(1, "10m");
-    vector<string> test_client_max_body_size3 = createStringVector(1, "1024");
-    vector<string> not_valid_unit = createStringVector(1, "1024mk");
-    vector<string> not_valid_size = createStringVector(1, "-1024m");
+    vector<Token> test_client_max_body_size1 = createTokenVector(1, "10M");
+    vector<Token> test_client_max_body_size2 = createTokenVector(1, "10m");
+    vector<Token> test_client_max_body_size3 = createTokenVector(1, "1024");
+    vector<Token> not_valid_unit = createTokenVector(1, "1024mk");
+    vector<Token> not_valid_size = createTokenVector(1, "-1024m");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_client_max_body_size1);
@@ -309,8 +318,8 @@ void testParseRoot()
 {
     struct RouteConfig svr;
 
-    vector<string> test_root1 = createStringVector(1, "/var/www/html");
-    vector<string> test_root2 = createStringVector(1, "/usr/local/www");
+    vector<Token> test_root1 = createTokenVector(1, "/var/www/html");
+    vector<Token> test_root2 = createTokenVector(1, "/usr/local/www");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_root1);
@@ -339,9 +348,9 @@ void testParseMethods()
 {
     struct RouteConfig svr;
 
-    vector<string> test_methods1 = createStringVector(2, "GET", "post");
-    vector<string> test_methods2 = createStringVector(1, "delete");
-	vector<string> unknown_method = createStringVector(4, "geT", "POST", "HEAD", "delete");
+    vector<Token> test_methods1 = createTokenVector(2, "GET", "post");
+    vector<Token> test_methods2 = createTokenVector(1, "delete");
+	vector<Token> unknown_method = createTokenVector(4, "geT", "POST", "HEAD", "delete");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_methods1);
@@ -377,9 +386,9 @@ void testParseDirectoryListing()
 {
     struct RouteConfig svr;
 
-    vector<string> test_directory_listing1 = createStringVector(1, "on");
-    vector<string> test_directory_listing2 = createStringVector(1, "off");
-	vector<string> not_valid_name = createStringVector(1, "enable");
+    vector<Token> test_directory_listing1 = createTokenVector(1, "on");
+    vector<Token> test_directory_listing2 = createTokenVector(1, "off");
+	vector<Token> not_valid_name = createTokenVector(1, "enable");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_directory_listing1);
@@ -415,8 +424,8 @@ void testParseIndexFile()
 {
     struct RouteConfig svr;
 
-    vector<string> test_index_file1 = createStringVector(1, "index.html");
-    vector<string> test_index_file2 = createStringVector(1, "home.html");
+    vector<Token> test_index_file1 = createTokenVector(1, "index.html");
+    vector<Token> test_index_file2 = createTokenVector(1, "home.html");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_index_file1);
@@ -445,8 +454,8 @@ void testParseCgiPath()
 {
     struct RouteConfig svr;
 
-    vector<string> testCgiPath1 = createStringVector(1, "/usr/bin/python3");
-    vector<string> testCgiPath2 = createStringVector(1, "/usr/local/bin/php");
+    vector<Token> testCgiPath1 = createTokenVector(1, "/usr/bin/python3");
+    vector<Token> testCgiPath2 = createTokenVector(1, "/usr/local/bin/php");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(testCgiPath1);
@@ -475,8 +484,8 @@ void testParseUploadDir()
 {
     struct RouteConfig svr;
 
-    vector<string> test_upload_dir1 = createStringVector(1, "/var/www/uploads");
-    vector<string> test_upload_dir2 = createStringVector(1, "/usr/local/uploads");
+    vector<Token> test_upload_dir1 = createTokenVector(1, "/var/www/uploads");
+    vector<Token> test_upload_dir2 = createTokenVector(1, "/usr/local/uploads");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_upload_dir1);
@@ -505,11 +514,11 @@ void testParseHttpRedirect()
 {
     struct RouteConfig svr;
 
-    vector<string> test_http_redirect1 = createStringVector(2, "301", "https://example.com");
-    vector<string> test_http_redirect2 = createStringVector(2, "302", "https://example.org");
-	vector<string> too_many_args = createStringVector(3, "301", "302", "https://example.com");
-	vector<string>	out_of_bound_return_value = createStringVector(2, "299", "https://example.com");
-	vector<string>	alpha_char_in_return = createStringVector(2, "30a1", "https://example.com");
+    vector<Token> test_http_redirect1 = createTokenVector(2, "301", "https://example.com");
+    vector<Token> test_http_redirect2 = createTokenVector(2, "302", "https://example.org");
+	vector<Token> too_many_args = createTokenVector(3, "301", "302", "https://example.com");
+	vector<Token>	out_of_bound_return_value = createTokenVector(2, "299", "https://example.com");
+	vector<Token>	alpha_char_in_return = createTokenVector(2, "30a1", "https://example.com");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_http_redirect1);
@@ -559,11 +568,11 @@ void testParseReturn()
 {
     struct RouteConfig svr;
 
-    vector<string> test_return1 = createStringVector(2, "200", "/index.html");
-    vector<string> test_return2 = createStringVector(2, "404", "/404.html");
-	vector<string> too_many_args = createStringVector(3, "301", "302", "https://example.com");
-	vector<string> out_of_bound_return_value = createStringVector(2, "-1","https://example.com");
-	vector<string>	alpha_char_in_return = createStringVector(2, "30a1", "https://example.com");
+    vector<Token> test_return1 = createTokenVector(2, "200", "/index.html");
+    vector<Token> test_return2 = createTokenVector(2, "404", "/404.html");
+	vector<Token> too_many_args = createTokenVector(3, "301", "302", "https://example.com");
+	vector<Token> out_of_bound_return_value = createTokenVector(2, "-1","https://example.com");
+	vector<Token>	alpha_char_in_return = createTokenVector(2, "30a1", "https://example.com");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_return1);
