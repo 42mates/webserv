@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/24 18:05:37 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/28 16:02:06 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,36 +54,78 @@ void ServerBlock::parseReturn(vector<Token> val)
 	LocationBlock block(_config->routes["/"], _filepath);
 	block.parseReturn(val);
 }
+
+
+static void	findIpAndPort(string &ip, string &port, const string &token)
+{
+	bool	no_colon = (token.find(':') == string::npos) ? true : false;
+
+	if (no_colon)
+	{
+		if (countOccurrences(token, '.') != 0)
+			ip = token, port = DEFAULT_PORT;
+		else
+			port = token, ip = DEFAULT_HOST;
+		return ;
+	}
+	ip = token.substr(0, token.find(':'));
+	port = token.substr(token.find(':') + 1);
+}
+
+static bool checkIpFormat(const string &ip)
+{
+    istringstream iss(ip);
+    string token;
+    vector<size_t> components;
+
+    while (getline(iss, token, '.'))
+	{
+        istringstream components_stream(token);
+        size_t component;
+        components_stream >> component;
+        if (components_stream.fail() || component > 255)
+            return false;
+        components.push_back(component);
+    }
+    return (components.size() == 4);
+}
+
 void ServerBlock::parseListen(vector<Token> val)
 {
-	
 	if (val.size() == 0 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
 	if (val.size() > 1)
 		throw runtime_error(INVALID_PARAMETER + qString(val[1].token) + " of the \"listen\" directive in " + _filepath + ":" + itostr(val[1].line));
 
-	if (val[0].token.find_first_not_of("0123456789") != string::npos)
+	if (val[0].token.find_first_not_of("0123456789.:") != string::npos)
 		throw runtime_error(HOST_NOT_FOUND + qString(val[0].token) + string(" of the \"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
 
-	long tmp_port = strtol(val[0].token.c_str(), NULL, 10);
+	string	ip, port;
+	findIpAndPort(ip, port, val[0].token);
+
+	if (ip.find_first_not_of("0123456789.") != string::npos || port.find_first_not_of("0123456789") != string::npos)
+		throw runtime_error(HOST_NOT_FOUND + qString(val[0].token) + string(" of the \"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
+	
+	if (checkIpFormat(ip) == false)
+		throw runtime_error(INVALID_IP + qString(ip) + string(" of the \"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
+
+	long tmp_port = strtol(port.c_str(), NULL, 10);
 	if (tmp_port > 65535)
-		throw runtime_error(PORT_OUT_OF_BOUND + qString(val[0].token) + string(" of the \"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
-	this->_config->port = tmp_port;
+		throw runtime_error(INVALID_PORT + qString(val[0].token) + string(" of the \"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
+	_config->port = tmp_port;
 }
 
 void ServerBlock::parseServerName(vector<Token> val)
 {
 	if (val.size() == 0 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"server_name\" directive in ") + _filepath + ":" + itostr(val[0].line));
-	this->_config->server_names.resize(0); //! just for testing purposes
+	_config->server_names.resize(0); //! just for testing purposes
 	for (size_t i = 0; i < val.size(); i++)
-		this->_config->server_names.push_back(val[i].token);
+		_config->server_names.push_back(val[i].token);
 }
 
 void ServerBlock::parseErrorPage(vector<Token> val)
 {
-	string out_of_bound = " must be between 300 and 599 in ";
-
 	if (val.size() < 2)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"error_page\" directive in ") + _filepath + ":" + itostr(val[0].line));
 
@@ -97,8 +139,8 @@ void ServerBlock::parseErrorPage(vector<Token> val)
 				throw runtime_error(INVALID_VALUE + qString(val[i].token)	 + string(" in ") + _filepath + ":" + itostr(val[i].line));
 			long tmp = atol(val[i].token.c_str());
 			if (tmp < 300 || tmp > 599)
-				throw runtime_error(string("value ") + qString(val[i].token) + out_of_bound + _filepath + ":" + itostr(val[i].line));
-			this->_config->error_pages[tmp] = val.back().token;
+				throw runtime_error(string("value ") + qString(val[i].token) + string(" must be between 300 and 599 in ") + _filepath + ":" + itostr(val[i].line));
+			_config->error_pages[tmp] = val.back().token;
 		}
 	}
 }
@@ -132,9 +174,9 @@ void ServerBlock::parseClientMaxBodySize(vector<Token> val)
 		throw runtime_error("string stream conversion error in parseClientMaxBodySize");
 	bytes *= bytes_multiplier;
 	if (bytes == 0)
-		this->_config->client_max_body_size = string::npos; //* disables the limit
+		_config->client_max_body_size = string::npos; //* disables the limit
 	else
-		this->_config->client_max_body_size = bytes;
+		_config->client_max_body_size = bytes;
 	//? set a maximum value (so that it doesn't exceed system limits)
 }
 
@@ -151,21 +193,21 @@ void LocationBlock::parseRoot(vector<Token> val)
 
 	if (val.size() != 1 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"root\" directive in ") + _filepath + ":" + itostr(val[0].line));
-	this->_config->root = val[0].token;
+	_config->root = val[0].token;
 }
 
 void LocationBlock::parseMethods(vector<Token> val)
 {
 	if (val.size() == 0 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"methods\" directive ") + _filepath + ":" + itostr(val[0].line));
-	this->_config->methods.resize(0); //! just for testing purposes
+	_config->methods.resize(0); //! just for testing purposes
 	for (size_t i = 0; i < val.size(); i++)
 	{
 		string	tmp(val[i].token);
 		transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper);
 		if (tmp != "GET" && tmp != "POST" && tmp != "DELETE")
 			throw runtime_error(METHOD_UNKNOWN + qString(val[i].token) + " in \"methods\" directive " + _filepath + ":" + itostr(val[i].line));
-		this->_config->methods.push_back(tmp);
+		_config->methods.push_back(tmp);
 	}
 }
 
@@ -187,21 +229,23 @@ void LocationBlock::parseIndexFile(vector<Token> val)
 {
 	if (val.size() < 1 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"index_file\" directive ") + _filepath + ":" + itostr(val[0].line));
-	this->_config->index_file = val[0].token;
+	_config->index_file.resize(0); //! just for testing purposes
+	for (size_t i = 0; i < val.size(); i++)
+		_config->index_file.push_back(val[i].token);
 }
 
 void LocationBlock::parseCgiPath(vector<Token> val)
 {
 	if (val.size() != 1 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"cgi_path\" directive ") + _filepath + ":" + itostr(val[0].line));
-	this->_config->cgi_path = val[0].token;
+	_config->cgi_path = val[0].token;
 }
 
 void LocationBlock::parseUploadDir(vector<Token> val)
 {
 	if (val.size() != 1 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"upload_dir\" directive ") + _filepath + ":" + itostr(val[0].line));
-	this->_config->upload_dir = val[0].token;
+	_config->upload_dir = val[0].token;
 
 }
 
@@ -217,7 +261,7 @@ void LocationBlock::parseHttpRedirect(vector<Token> val)
 
 	if (val.size() == 1)
 	{
-		this->_config->http_redirect = val[0].token;
+		_config->http_redirect = val[0].token;
 		return ;
 	}
 
@@ -227,7 +271,7 @@ void LocationBlock::parseHttpRedirect(vector<Token> val)
 	return_value = strtol(val[0].token.c_str(), NULL, 10);
 	if (return_value < 300 || return_value > 399)
 		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + return_string + _filepath + ":" + itostr(val[0].line));
-	this->_config->http_redirect = val[1].token;
+	_config->http_redirect = val[1].token;
 
 }
 

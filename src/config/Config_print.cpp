@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Config_utils.cpp                                   :+:      :+:    :+:   */
+/*   Config_print.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 15:14:12 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/23 17:11:07 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/27 14:57:39 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	printConfig(RouteConfig &config)
 		cout << *it << " ";
 	cout << endl;
 	cout << "Directory listing: " << (config.directory_listing ? "on" : "off") << endl;
-	cout << "Index file:        " << config.index_file << endl;
+	cout << "Index file:        " << config.index_file[0] << endl;
 	cout << "CGI path:          " << config.cgi_path << endl;
 	cout << "Upload directory:  " << config.upload_dir << endl;
 	cout << "HTTP redirect:     " << config.http_redirect << endl;
@@ -65,7 +65,7 @@ void	printConfig(RouteConfig &config, int indent_level)
 		cout << *it << " ";
 	cout << endl;
 	cout << il << "Directory listing: " << (config.directory_listing ? "on" : "off") << endl;
-	cout << il << "Index file:        " << config.index_file << endl;
+	cout << il << "Index file:        " << config.index_file[0] << endl;
 	cout << il << "CGI path:          " << config.cgi_path << endl;
 	cout << il << "Upload directory:  " << config.upload_dir << endl;
 	cout << il << "HTTP redirect:     " << config.http_redirect << endl;
