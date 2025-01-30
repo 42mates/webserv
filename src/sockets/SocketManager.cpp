@@ -6,22 +6,24 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/17 09:51:10 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/30 18:44:51 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketManager.hpp"
 
+
+//? Can there be multiple ServerConfing on one given port ?
 /**
  * @brief Generates a server socket and its informations for each ports given as a parameter.
  */
-SocketManager::SocketManager(const vector<int>& ports)
+SocketManager::SocketManager(const vector <ServerConfig*>* servers)
 {
-	for (size_t i = 0; i < ports.size(); i++)
+	for (size_t i = 0; i < servers->size(); i++)
 	{
-		try 
+		try
 		{
-			createSocket(i, ports.at(i));
+			createSocket(i, servers->at(i)->port);
 			bindSocket(i);
 			listenSocket(i);
 		}
@@ -59,7 +61,7 @@ SocketManager::~SocketManager(void)
 void	SocketManager::createSocket(int index, int port_at_index)
 {
 	if (static_cast<size_t>(index) >= _ports_info.size())
-		_ports_info.resize((index + (index == 0)) * 2);
+		_ports_info.resize(index + 1);
 
 	struct sockaddr_in&	r_server_address = _ports_info[index].server_address;
 
@@ -103,4 +105,27 @@ void	SocketManager::listenSocket(int index)
 		throw runtime_error(SOCKET_LISTENING_ERROR);
 }
 
-vector<struct PortInfo>	SocketManager::getPortsInfo(void) const { return (_ports_info); }
+vector<PortInfo>*	SocketManager::getPortsInfo(void) { return &_ports_info; }
+
+PortInfo*	SocketManager::getPortInfo(int index)
+{
+	if (index > static_cast<int>(_ports_info.size()))
+	{
+		cerr << "port informations at index [" << index << "] not found" << endl;
+		return NULL;
+	}
+	return &_ports_info.at(index);
+}
+				//! testing purposes omly
+ostream& operator<<(ostream& o, const PortInfo& rhs) 
+{
+    o << "Port: " << rhs.port << "\n";
+    o << "Server Socket: " << rhs.server_socket << "\n";
+    o << "Server Address: " << inet_ntoa(rhs.server_address.sin_addr) << ":" << ntohs(rhs.server_address.sin_port) << "\n";
+    o << "Client Sockets: ";
+    for (size_t i = 0; i < rhs.client_socket.size(); ++i) {
+        o << rhs.client_socket[i] << " ";
+    }
+    o << "\n";
+    return o;
+}

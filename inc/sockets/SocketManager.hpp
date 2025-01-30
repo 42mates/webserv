@@ -6,32 +6,14 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/17 09:50:59 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/30 17:09:15 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # pragma once
 
 # include "libs.h"
-
-class SocketManager 
-{
-	private:
-		vector<struct PortInfo>		_ports_info;
-
-			/*Individual manager. If ports are added dynamically
-				might need to make them public*/
-		void			createSocket(int index, int port_at_index);
-		void			bindSocket(int index);
-		void			listenSocket(int index);
-
-	public:
-		SocketManager(const vector<int>& ports);
-		~SocketManager( void );
-
-								/*GETERS*/
-		vector<struct PortInfo>		getPortsInfo( void ) const;
-};	
+# include "Config.hpp"
 
 struct PortInfo
 {
@@ -41,3 +23,25 @@ struct PortInfo
 	vector<int>						client_socket;
 	vector<struct sockaddr_in>		client_address;
 };
+
+class SocketManager 
+{
+	private:
+		vector<PortInfo>		_ports_info;
+		
+		void			createSocket(int index, int port_at_index);
+		void			bindSocket(int index);
+		void			listenSocket(int index);
+
+	public:
+		SocketManager(const vector <ServerConfig*>* servers);
+		~SocketManager( void );
+
+								/*GETERS*/
+		vector<PortInfo>*		getPortsInfo( void );
+		PortInfo*				getPortInfo(int index);
+};	
+
+ostream&	operator<<(ostream& o, PortInfo& rhs); //! testing purposes only
+
+

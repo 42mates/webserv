@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config_parsing.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:34:33 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/24 15:32:28 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/30 18:58:31 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,8 @@ bool Config::isDuplicateServer(ServerConfig *sconfig)
 	}
 	return false;
 }
-
+#include "SocketManager.hpp"
+ostream& operator<<(ostream& o, const PortInfo& rhs);
 void Config::parse(string &config_file)
 {
 	_path = config_file;
@@ -134,7 +135,20 @@ void Config::parse(string &config_file)
 
 		it = end;
 	}
-
+	//*ugly but here just for making debugging easier
+	SocketManager	sockets(&_servers);
+	vector<PortInfo>*	vec = sockets.getPortsInfo();
+	for (size_t i = 0; i < vec->size(); i++)
+	{
+		cout << "Port: " << vec->at(i).port << "\n";
+    	cout << "Server Socket: " << vec->at(i).server_socket << "\n";
+    	cout << "Server Address: " << inet_ntoa(vec->at(i).server_address.sin_addr) << ":" << ntohs(vec->at(i).server_address.sin_port) << "\n";
+    	cout << "Client Sockets: ";
+    	for (size_t i = 0; i < vec->at(i).client_socket.size(); ++i) {
+        cout << vec->at(i).client_socket[i] << " ";
+    	}
+    	cout << "\n";
+	}
 	//printConfig(_servers);
 	
 }
