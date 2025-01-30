@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "../libs.h"
-#include "../macros.h"
+#include "libs.h"
+#include "macros.h"
 
 #include "Tokenizer.hpp"
 
@@ -26,38 +26,59 @@ class LocationBlock;
  * @brief Configuration data for a specific route in the web server (`location` block).
  */
 struct RouteConfig {	
-	string path;             // Path of the route (e.g., "/upload")	
-	string root;             // Root directory associated with the route	
-	vector<string> methods;  // Accepted HTTP methods (e.g., {"GET", "POST"})	
-	bool directory_listing;  // Enable or disable directory listing	
-	string index_file;       // Default file for a directory (e.g., "index.html")	
-	string cgi_path;         // Path to the CGI program (e.g., "/usr/bin/php-cgi")	
-	string upload_dir;       // Upload directory for sent files	
-	string http_redirect;    // HTTP redirection (e.g., "301 https://example.com")
+	string root;             	// Root directory associated with the route	
+	string path;             	// Path of the route (e.g., "/upload")	
+	vector<string> methods;  	// Accepted HTTP methods (e.g., {"GET", "POST"})	
+	bool directory_listing;  	// Enable or disable directory listing	
+	vector<string> index_file;  // Default file for a directory (e.g., "index.html")	//todo pass index_file as vector
+	string cgi_path;         	// Path to the CGI program (e.g., "/usr/bin/php-cgi")	
+	string upload_dir;       	// Upload directory for sent files	
+	string http_redirect;    	// HTTP redirection (e.g., "301 https://example.com")
 	
+	map<string, RouteConfig> subroutes; // List of subroutes
+
 	RouteConfig() :
-		directory_listing(false)
-	{}
+		root("tools/html"),
+		path("/"),
+		directory_listing(false),
+		cgi_path(""),
+		upload_dir("tools/uploads"),
+		http_redirect("")
+	{
+		methods.push_back("GET");
+		methods.push_back("POST");
+		index_file.push_back("index.html");
+	}
 };
 
 /**
  * @brief Configuration data for a specific server in the web server (`server` block).
  */
 struct ServerConfig {	
-	string host;                  // Server IP address (default: 0.0.0.0)	
-	int port;                     // Server listening port (default: 80)	
-	vector<string> server_names;  // Domain names associated with the server	
-	map<int, string> error_pages; // Error pages (key: HTTP code, value: file path)	
-	size_t client_max_body_size;  // Max body size (default: 1 MB)	
-	vector<RouteConfig> routes;   // List of configured routes
-	
-	ServerConfig() : 
-		host("0.0.0.0"), 
-		port(80), 
-		client_max_body_size(1 * 1024 * 1024) 
-	{}
-};
+	string host;                     // Server IP address (default: 0.0.0.0)	
+	int port;                        // Server listening port (default: 80)	
+	vector<string> server_names;     // Domain names associated with the server	
+	map<int, string> error_pages;    // Error pages (key: HTTP code, value: file path)	
+	size_t client_max_body_size;     // Max body size (default: 1 MB)	
 
+	map<string, RouteConfig> routes; // List of configured routes
+
+	ServerConfig() : 
+		host("0.0.0.0"),
+		port(80),
+		client_max_body_size(1 * 1024 * 1024)
+	{
+		server_names.push_back("localhost");
+
+		//error_pages[400] = "tools/html/error_pages/400.html";
+		//error_pages[401] = "tools/html/error_pages/401.html";
+		//error_pages[403] = "tools/html/error_pages/403.html";
+		//error_pages[404] = "tools/html/error_pages/404.html";
+
+		RouteConfig default_route;
+		routes["/"] = default_route;
+	}
+};
 
 /**
  * @brief Manages and stores the configuration settings for the web server.
@@ -70,6 +91,7 @@ class Config
 		vector<Token> _tokens;           // Tokens from the configuration file
 
 		vector<string> getFileVector();
+		bool isDuplicateServer(ServerConfig *sconfig);
 
 	protected:
 		string _path;                    // Path to the configuration file
@@ -80,5 +102,7 @@ class Config
 		~Config();
 
 		virtual void parse(string &config_file);
-		vector<ServerConfig *> getServers();
+
+		RouteConfig getRoute(const ServerConfig *server, const string &uri);
+		ServerConfig* getServer(const string &host, int port, const string &server_name);
 };

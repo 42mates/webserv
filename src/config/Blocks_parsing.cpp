@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks_parsing.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/20 15:35:30 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/28 16:02:06 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,114 +21,163 @@ void printMap(const map<int, string>& m)
         cout << "map[" << it->first << "] : " << it->second << '\n';
 }
 
-void printVector(const vector<string>& v)
+void printVector(const vector<Token>& v)
 {
 	for (size_t i = 0; i < v.size(); i++)
-		cout << v.at(i) << '\n';
+		cout << v.at(i).token << '\n';
 }
+
+
 /*********** SERVER BLOCK ***********/
 
-void ServerBlock::parseListen(vector<string> val)
+//TODO listen directive accepts an IP and/or a port.
+
+/**
+ * @brief Puts a string between double quotes and returns it.
+ */
+string	qString(string to_quote) { return "\"" + to_quote + "\""; }
+
+void ServerBlock::parseRoot(vector<Token> val)
 {
-	if (val.size() == 0 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"listen\" directive\n"));
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseRoot(val);
+}
+
+void ServerBlock::parseIndexFile(vector<Token> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseIndexFile(val);
+}
+
+void ServerBlock::parseReturn(vector<Token> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseReturn(val);
+}
+
+
+static void	findIpAndPort(string &ip, string &port, const string &token)
+{
+	bool	no_colon = (token.find(':') == string::npos) ? true : false;
+
+	if (no_colon)
+	{
+		if (countOccurrences(token, '.') != 0)
+			ip = token, port = DEFAULT_PORT;
+		else
+			port = token, ip = DEFAULT_HOST;
+		return ;
+	}
+	ip = token.substr(0, token.find(':'));
+	port = token.substr(token.find(':') + 1);
+}
+
+static bool checkIpFormat(const string &ip)
+{
+    istringstream iss(ip);
+    string token;
+    vector<size_t> components;
+
+    while (getline(iss, token, '.'))
+	{
+        istringstream components_stream(token);
+        size_t component;
+        components_stream >> component;
+        if (components_stream.fail() || component > 255)
+            return false;
+        components.push_back(component);
+    }
+    return (components.size() == 4);
+}
+
+void ServerBlock::parseListen(vector<Token> val)
+{
+	if (val.size() == 0 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
 	if (val.size() > 1)
-		throw runtime_error(INVALID_PARAMETER_IN + val[1] + " of the \"listen\" directive\n");
+		throw runtime_error(INVALID_PARAMETER + qString(val[1].token) + " of the \"listen\" directive in " + _filepath + ":" + itostr(val[1].line));
 
-	if (val[0].find_first_not_of("0123456789") != string::npos)
-		throw runtime_error(INVALID_VALUE_IN + val[0] + string(" of the \"listen\" directive\n"));
+	if (val[0].token.find_first_not_of("0123456789.:") != string::npos)
+		throw runtime_error(HOST_NOT_FOUND + qString(val[0].token) + string(" of the \"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
 
-	long tmp_port = strtol(val[0].c_str(), NULL, 10);
+	string	ip, port;
+	findIpAndPort(ip, port, val[0].token);
+
+	if (ip.find_first_not_of("0123456789.") != string::npos || port.find_first_not_of("0123456789") != string::npos)
+		throw runtime_error(HOST_NOT_FOUND + qString(val[0].token) + string(" of the \"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
+	
+	if (checkIpFormat(ip) == false)
+		throw runtime_error(INVALID_IP + qString(ip) + string(" of the \"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
+
+	long tmp_port = strtol(port.c_str(), NULL, 10);
 	if (tmp_port > 65535)
-		throw runtime_error(PORT_OUT_OF_BOUND);
-	this->_config->port = tmp_port;
-	cout << "parseListen successful ✅\n this->port = "
-	<< this->_config->port << "\n";
+		throw runtime_error(INVALID_PORT + qString(val[0].token) + string(" of the \"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
+	_config->port = tmp_port;
 }
 
-void ServerBlock::parseServerName(vector<string> val)
+void ServerBlock::parseServerName(vector<Token> val)
 {
-	if (val.size() == 0 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"server_name\" directive\n"));
-	//todo not empty ✅
-	this->_config->server_names.resize(0); //! just for testing purposes
+	if (val.size() == 0 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"server_name\" directive in ") + _filepath + ":" + itostr(val[0].line));
+	_config->server_names.resize(0); //! just for testing purposes
 	for (size_t i = 0; i < val.size(); i++)
-		this->_config->server_names.push_back(val[i]);
-	cout << "parseServerName successful ✅\nserver_names are ";
-	printVector(this->_config->server_names);
+		_config->server_names.push_back(val[i].token);
 }
 
-void ServerBlock::parseErrorPage(vector<string> val)
+void ServerBlock::parseErrorPage(vector<Token> val)
 {
 	if (val.size() < 2)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"error_page\" directive\n"));
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"error_page\" directive in ") + _filepath + ":" + itostr(val[0].line));
 
-	for (size_t i = 0; i < val.size(); i++) //? can val store multiple empty strings at the end of parsing?
+	for (size_t i = 0; i < val.size(); i++)
 	{
 		if (i == val.size() - 1)
 			continue ;
 		else
 		{
-			if (val[i].find_first_not_of("0123456789") != string::npos)
-				throw runtime_error(INVALID_VALUE + val[i] + string(" in \"error_page\" directive\n"));
-			long tmp = atol(val[i].c_str());
+			if (val[i].token.find_first_not_of("0123456789") != string::npos)
+				throw runtime_error(INVALID_VALUE + qString(val[i].token)	 + string(" in ") + _filepath + ":" + itostr(val[i].line));
+			long tmp = atol(val[i].token.c_str());
 			if (tmp < 300 || tmp > 599)
-				throw runtime_error(ERROR_PAGE_OUT_OF_BOUND + string( " in \"error_page\" directive\n"));
-			this->_config->error_pages[tmp] = val.back();
+				throw runtime_error(string("value ") + qString(val[i].token) + string(" must be between 300 and 599 in ") + _filepath + ":" + itostr(val[i].line));
+			_config->error_pages[tmp] = val.back().token;
 		}
 	}
-	//todo at least 2 arguments ✅
-	//todo only alpha char ✅ 
-	//todo check bounds ✅
-	//! CAREFUL
-	cout << "parseErrorPage successful ✅\nerror_pages are\n";
-	printMap(this->_config->error_pages);
 }
 
-void ServerBlock::parseClientMaxBodySize(vector<string> val)
+void ServerBlock::parseClientMaxBodySize(vector<Token> val)
 {
 	int		bytes_multiplier = 1024;
-	string	client_max_body_size("client_max_body_size ");
+	string	err_msg = qString("client_max_body_size") + " directive invalid value in " + _filepath + ":" + itostr(val[0].line);
 	size_t	first_not_of;
 	size_t	bytes;
 
-	if (val.size() != 1 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"client_max_body_size\" directive\n"));
+	if (val.size() != 1 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"client_max_body_size\" directive in ") + _filepath + ":" + itostr(val[0].line));
 
-	if (isdigit(val[0].at(0)) == false)
-		throw runtime_error(INVALID_VALUE + val[0] + " in \"client_max_body_size\" directive\n");
+	if (isdigit(val[0].token.at(0)) == false)
+		throw runtime_error(err_msg);
 
-	first_not_of = val[0].find_first_not_of("0123456789");
+	first_not_of = val[0].token.find_first_not_of("0123456789");
 	if (first_not_of != string::npos)
 	{
-		char	tmp = toupper(val[0].at(first_not_of));
+		char	tmp = toupper(val[0].token.at(first_not_of));
 		if (tmp != 'K' && tmp != 'M' && tmp != 'G')
-			throw runtime_error(INVALID_VALUE + val[0] + " in \"client_max_body_size\" directive\n");
+			throw runtime_error(err_msg);
 		(tmp == 'M') ? bytes_multiplier *= 1024 : bytes_multiplier *= (1024 * 1024);
-		if (val[0].size() != first_not_of + 1) //* means that there is something after the unit
-			throw runtime_error(INVALID_VALUE + val[0] + " in \"client_max_body_size\" directive\n");
+		if (val[0].token.size() != first_not_of + 1) //* means that there is something after the unit
+			throw runtime_error(err_msg);
 	}
-	istringstream	iss(val[0]);
+	istringstream	iss(val[0].token);
 	iss >> bytes;
 	if (iss.fail())
-		throw runtime_error("iss conv"); //todo might fail here if there is the unit so check
+		throw runtime_error("string stream conversion error in parseClientMaxBodySize");
 	bytes *= bytes_multiplier;
 	if (bytes == 0)
-		this->_config->client_max_body_size = string::npos; //* disables the limit
+		_config->client_max_body_size = string::npos; //* disables the limit
 	else
-		this->_config->client_max_body_size = bytes;
-	//todo only one argument ✅
-	//todo start with num char (negative values arent accepted) ✅
-	//todo ends with k, m or g (case insensitive, and just one of them) ✅
-	//todo and nothing after the last alpha char (k, m, g) ✅
-	//todo 0 disables the limit ✅
-	//todo without units, treated as bytes ✅
-	//todo check here if overflow
+		_config->client_max_body_size = bytes;
 	//? set a maximum value (so that it doesn't exceed system limits)
-	cout
-	<< "parseClientMaxBodySizesuccessful ✅\n this->client_size = "
-	<< this->_config->client_max_body_size << "\n";
-
 }
 
 ServerBlock::~ServerBlock(void) {}
@@ -136,117 +185,109 @@ ServerBlock::~ServerBlock(void) {}
 
 /*********** LOCATION BLOCK ***********/
 
-void LocationBlock::parseRoot(vector<string> val)
+void LocationBlock::parseRoot(vector<Token> val)
 {
 	//todo only one argument ✅
 	//todo starts with / (but nginx doesnt throw an error when it is not)
 	//? so does that cause error at the execution?
 
-	if (val.size() != 1 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"root\" directive\n"));
-	this->_config.root = val.at(0);
-	cout << "parseRoot ✅\n root : " << this->_config.root << '\n';
-
+	if (val.size() != 1 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"root\" directive in ") + _filepath + ":" + itostr(val[0].line));
+	_config->root = val[0].token;
 }
 
-void LocationBlock::parseMethods(vector<string> val)
+void LocationBlock::parseMethods(vector<Token> val)
 {
-	//todo valid methods (GET, POST, DELETE), case insensitive ✅
-
-	if (val.size() == 0 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"methods\" directive\n"));
-	this->_config.methods.resize(0); //! just for testing purposes
+	if (val.size() == 0 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"methods\" directive ") + _filepath + ":" + itostr(val[0].line));
+	_config->methods.resize(0); //! just for testing purposes
 	for (size_t i = 0; i < val.size(); i++)
 	{
-		string	tmp(val[i]); //? does the copy operator do a deep copy ?
-		transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper); //applies toupper to each char
+		string	tmp(val[i].token);
+		transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper);
 		if (tmp != "GET" && tmp != "POST" && tmp != "DELETE")
-			throw runtime_error(METHOD_UNKNOWN + val[i] + " in \"methods\" directive\n");
-		this->_config.methods.push_back(tmp);
+			throw runtime_error(METHOD_UNKNOWN + qString(val[i].token) + " in \"methods\" directive " + _filepath + ":" + itostr(val[i].line));
+		_config->methods.push_back(tmp);
 	}
-	cout << "parseMethods ✅\nmethods are\n";
-	printVector(this->_config.methods);
 }
 
-void LocationBlock::parseDirectoryListing(vector<string> val)
+void LocationBlock::parseDirectoryListing(vector<Token> val)
 {
-	//todo format is "autoindex on" or "autoindex off" ✅
-	//todo so there should just be on or off (therefore one argument only) ✅
 	//! is triggered only if no index_file is found
-	string	auto_index("\"auto_index\" directive\n");
+	string	auto_index("\"auto_index\" directive ");
 
-	if (val.size() != 1 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + auto_index);
+	if (val.size() != 1 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + auto_index + _filepath + ":" + itostr(val[0].line));
 
-	string	tmp = val[0];
+	string	tmp = val[0].token;
 	transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
 	if (tmp != "off" && tmp != "on")
-		throw runtime_error(INVALID_VALUE_IN + auto_index);
-	cout << "parseDirectoryListing ✅\n";
-
+		throw runtime_error(INVALID_VALUE + qString(val[0].token) + " in " + auto_index + _filepath + ":" + itostr(val[0].line));
 }
 
-void LocationBlock::parseIndexFile(vector<string> val)
+void LocationBlock::parseIndexFile(vector<Token> val)
 {
-	//todo empty or missing ✅
-	//todo invalid characters in filename
-	if (val.size() != 1 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"index_file\" directive\n"));
-	this->_config.index_file = val.at(0);
-	cout << "parseIndexFile ✅\nindex_file : " << this->_config.index_file << '\n';
+	if (val.size() < 1 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"index_file\" directive ") + _filepath + ":" + itostr(val[0].line));
+	_config->index_file.resize(0); //! just for testing purposes
+	for (size_t i = 0; i < val.size(); i++)
+		_config->index_file.push_back(val[i].token);
 }
 
-void LocationBlock::parseCgiPath(vector<string> val)
+void LocationBlock::parseCgiPath(vector<Token> val)
 {
-	if (val.size() != 1 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"cgi_pass\" directive\n"));
-	this->_config.cgi_path = val.at(0);
-	cout << "parseCgiPass✅\ncgi_path " << this->_config.cgi_path << '\n';
+	if (val.size() != 1 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"cgi_path\" directive ") + _filepath + ":" + itostr(val[0].line));
+	_config->cgi_path = val[0].token;
 }
 
-void LocationBlock::parseUploadDir(vector<string> val)
+void LocationBlock::parseUploadDir(vector<Token> val)
 {
-	if (val.size() != 1 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"upload_dir\" directive\n"));
-	this->_config.upload_dir = val.at(0);
-	cout << "parseUploadDir ✅\n" << this->_config.upload_dir << '\n';
+	if (val.size() != 1 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"upload_dir\" directive ") + _filepath + ":" + itostr(val[0].line));
+	_config->upload_dir = val[0].token;
 
 }
 
-void LocationBlock::parseHttpRedirect(vector<string> val)
+//TODO when there is no return code, 302 is assumed
+//? Store error code somewhere?
+void LocationBlock::parseHttpRedirect(vector<Token> val)
 {
 	long	return_value;
-	string	http_redirect(" in \"http_redirect\" directive ");
+	string	return_string = "\"return\" directive in ";
 
-	if (val.size() == 0 || val.size() > 2 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"http_redirect\" directive\n")); //?nginx doesn't throw an error when one arg only
+	if (val.size() == 0 || val.size() > 2 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + return_string + _filepath + ":" + itostr(val[0].line)); //?nginx doesn't throw an error when one arg only
 
-	if (val[0].find_first_not_of("0123465789") != string::npos)
-		throw runtime_error(INVALID_VALUE + val[0] + http_redirect + '\n');
+	if (val.size() == 1)
+	{
+		_config->http_redirect = val[0].token;
+		return ;
+	}
 
-	return_value = strtol(val[0].c_str(), NULL, 10);
+	if (val[0].token.find_first_not_of("0123465789") != string::npos)
+		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + return_string + _filepath + ":" + itostr(val[0].line));
+
+	return_value = strtol(val[0].token.c_str(), NULL, 10);
 	if (return_value < 300 || return_value > 399)
-		throw runtime_error(INVALID_RETURN_CODE + val[0] + http_redirect + '\n');
-	this->_config.http_redirect = val.at(0);
-	cout << "parseHttpRedirect ✅\nhttp_redirect = " << this->_config.http_redirect << '\n';
+		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + return_string + _filepath + ":" + itostr(val[0].line));
+	_config->http_redirect = val[1].token;
 
 }
 
-void LocationBlock::parseReturn(vector<string> val)
+void LocationBlock::parseReturn(vector<Token> val)
 {
 	long	return_value;
-	string	return_str(" in \"return\" directive ");
 
-	if (val.size() == 0 || val.size() > 2 || val[0].empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"return\" directive\n"));
+	if (val.size() == 0 || val.size() > 2 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"return\" directive ") + _filepath + ":" + itostr(val[0].line));
 
-	if (val[0].find_first_not_of("0123465789") != string::npos)
-		throw runtime_error(INVALID_VALUE + val[0] + return_str + '\n');
+	if (val[0].token.find_first_not_of("0123465789") != string::npos)
+		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + _filepath + ":" + itostr(val[0].line));
 
-	return_value = strtol(val[0].c_str(), NULL, 10);
+	return_value = strtol(val[0].token.c_str(), NULL, 10);
 	if (return_value > 999)
-		throw runtime_error(INVALID_RETURN_CODE + val[0] + return_str + '\n');
-	cout << "parseReturn ✅\n";
+		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + _filepath + ":" + itostr(val[0].line));
 }
 
 
