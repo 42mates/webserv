@@ -65,6 +65,7 @@ struct ServerConfig {
 
 	ServerConfig() : 
 		host("0.0.0.0"),
+		port(80),
 		client_max_body_size(1 * 1024 * 1024)
 	{
 		server_names.push_back("localhost");
