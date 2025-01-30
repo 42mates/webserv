@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/21 17:52:14 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/28 15:29:17 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ using namespace std;
 /************ CONFIG ************/
 
 # define DEFAULT_CONFIG_FILE "tools/config/webserv.conf"
+# define DEFAULT_HOST "0.0.0.0"
+# define DEFAULT_PORT "8080"
 
 # define BLOCK_START '{'
 # define BLOCK_END '}'
@@ -53,7 +55,8 @@ enum TokenType
 # define INVALID_PARAMETER "invalid parameter "
 # define INVALID_VALUE "invalid value "
 # define INVALID_RETURN_CODE "invalid return code "
-# define PORT_OUT_OF_BOUND "invalid port in "
+# define INVALID_PORT "invalid port in "
+# define INVALID_IP "invalid ip in "
 # define METHOD_UNKNOWN "unknown method "
 
 

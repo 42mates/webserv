@@ -26,14 +26,14 @@ class LocationBlock;
  * @brief Configuration data for a specific route in the web server (`location` block).
  */
 struct RouteConfig {	
-	string root;             // Root directory associated with the route	
-	string path;             // Path of the route (e.g., "/upload")	
-	vector<string> methods;  // Accepted HTTP methods (e.g., {"GET", "POST"})	
-	bool directory_listing;  // Enable or disable directory listing	
-	string index_file;       // Default file for a directory (e.g., "index.html")	//todo pass index_file as vector
-	string cgi_path;         // Path to the CGI program (e.g., "/usr/bin/php-cgi")	
-	string upload_dir;       // Upload directory for sent files	
-	string http_redirect;    // HTTP redirection (e.g., "301 https://example.com")
+	string root;             	// Root directory associated with the route	
+	string path;             	// Path of the route (e.g., "/upload")	
+	vector<string> methods;  	// Accepted HTTP methods (e.g., {"GET", "POST"})	
+	bool directory_listing;  	// Enable or disable directory listing	
+	vector<string> index_file;  // Default file for a directory (e.g., "index.html")	//todo pass index_file as vector
+	string cgi_path;         	// Path to the CGI program (e.g., "/usr/bin/php-cgi")	
+	string upload_dir;       	// Upload directory for sent files	
+	string http_redirect;    	// HTTP redirection (e.g., "301 https://example.com")
 	
 	map<string, RouteConfig> subroutes; // List of subroutes
 
@@ -41,13 +41,13 @@ struct RouteConfig {
 		root("tools/html"),
 		path("/"),
 		directory_listing(false),
-		index_file("index.html"),
 		cgi_path(""),
 		upload_dir("tools/uploads"),
 		http_redirect("")
 	{
 		methods.push_back("GET");
 		methods.push_back("POST");
+		index_file.push_back("index.html");
 	}
 };
 

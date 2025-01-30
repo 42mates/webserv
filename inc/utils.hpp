@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:33:23 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/24 15:31:19 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/01/28 14:46:18 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 
 #include "libs.h"
 
+//utils.cpp
 std::string itostr(int num);
+int	countOccurrences(const string s, char c);
 
 /**
  * @brief Checks if two vectors share any common value and returns the index of the first common value found in the first vector.
