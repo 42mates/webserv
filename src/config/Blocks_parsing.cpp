@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/28 16:02:06 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/31 09:14:13 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@ void printVector(const vector<Token>& v)
 
 
 /*********** SERVER BLOCK ***********/
-
-//TODO listen directive accepts an IP and/or a port.
 
 /**
  * @brief Puts a string between double quotes and returns it.

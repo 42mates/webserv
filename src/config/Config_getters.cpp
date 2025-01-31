@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:37:29 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/30 16:02:52 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/31 10:02:56 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,20 +74,18 @@ static void getRouteHelper(const string& uri, map<string, RouteConfig>& current,
  * @return RouteConfig The best matching route configuration.
  * @throws runtime_error If no matching route or default route is found.
  */
-RouteConfig* Config::getRoute(const ServerConfig *server, const string &uri)
+RouteConfig* Config::getRoute(ServerConfig *server, const string &uri)
 {
 	RouteConfig* best = NULL;
 	size_t best_len = 0;
-	map<string, RouteConfig> routes;
 
-	routes = server->routes;
-	getRouteHelper(uri, routes, best, best_len);
+	getRouteHelper(uri, server->routes, best, best_len);
 	if (best)
 		return best;
-	if (routes.count("/"))
-		return &routes.at("/");
+	if (server->routes.count("/"))
+		return &server->routes.at("/");
 	else
-		return &routes.begin()->second;
+		return &server->routes.begin()->second;
 	throw runtime_error("No route found and no default route defined");
 }
 

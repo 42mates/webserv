@@ -105,5 +105,5 @@ class Config
 
 		const vector<ServerConfig *>*	getServers();
 		ServerConfig* getServer(const string &host, int port, const string &server_name);
-		RouteConfig* getRoute(const ServerConfig *server, const string &uri);
+		RouteConfig* getRoute(ServerConfig *server, const string &uri);
 };

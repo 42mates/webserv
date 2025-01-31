@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/30 17:09:15 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/01/31 09:32:29 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,9 @@ class SocketManager
 								/*GETERS*/
 		vector<PortInfo>*		getPortsInfo( void );
 		PortInfo*				getPortInfo(int index);
+
+		void			setToNonBlockingMode(int socket_fd); //ToDo set non blocking for server's socket and the accept() soclet
+		//? Client's socket in non blocking ? (i.e. should it wait for an answer?)
 };	
 
 ostream&	operator<<(ostream& o, PortInfo& rhs); //! testing purposes only
