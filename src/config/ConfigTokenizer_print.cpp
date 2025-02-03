@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Tokenizer_print.cpp                                :+:      :+:    :+:   */
+/*   ConfigTokenizer_print.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,27 +10,27 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Tokenizer.hpp"
+#include "ConfigTokenizer.hpp"
 
-void Tokenizer::print()
+void ConfigTokenizer::print()
 {
 	for (size_t i = 0; i < _tokens.size(); ++i)
 		print(_tokens[i]);
 }
 
-void Tokenizer::print(vector<Token> &tokens)
+void ConfigTokenizer::print(vector<ConfigToken> &tokens)
 {
 	for (size_t i = 0; i < tokens.size(); ++i)
 		print(tokens[i]);
 }
 
-void Tokenizer::print(vector<Token>::iterator begin, vector<Token>::iterator end)
+void ConfigTokenizer::print(vector<ConfigToken>::iterator begin, vector<ConfigToken>::iterator end)
 {
-	for (vector<Token>::iterator it = begin; it != end; ++it)
+	for (vector<ConfigToken>::iterator it = begin; it != end; ++it)
 		print(*it);
 }
 
-void Tokenizer::print(const Token &token)
+void ConfigTokenizer::print(const ConfigToken &token)
 {
 	cout << GREEN << "token [" << NC << token.line << GREEN << "]: " << NC;
 	string type;

@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Tokenizer.cpp                                      :+:      :+:    :+:   */
+/*   ConfigTokenizer.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Tokenizer.hpp"
+#include "ConfigTokenizer.hpp"
 
-Tokenizer::Tokenizer(vector<string> &file) 
+ConfigTokenizer::ConfigTokenizer(vector<string> &file) 
 	: _file(file), _line(0), _in_quotes(false), _quote_type('\0')
 {}
 
@@ -44,7 +44,7 @@ Tokenizer::Tokenizer(vector<string> &file)
  * - It extracts the token based on the first occurrence of spaces, field
  *   delimiters, block start, or quotes.
  */
-string Tokenizer::getNextToken(string &line, string &result)
+string ConfigTokenizer::getNextToken(string &line, string &result)
 {
 	size_t end;
 
@@ -101,9 +101,9 @@ string Tokenizer::getNextToken(string &line, string &result)
  * @param token The string representation of the token to be added.
  * @param line The line number where the token was found.
  */
-void Tokenizer::addToken(string &token, int line)
+void ConfigTokenizer::addToken(string &token, int line)
 {
-	Token new_token;
+	ConfigToken new_token;
 
 	new_token.token = token;
 	new_token.line = line;
@@ -148,7 +148,7 @@ void Tokenizer::addToken(string &token, int line)
  * 
  * @throws If a quoted string is not properly closed.
  */
-vector<Token> Tokenizer::tokenize()
+vector<ConfigToken> ConfigTokenizer::tokenize()
 {
 	string token;
 	

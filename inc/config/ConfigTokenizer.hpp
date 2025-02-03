@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Tokenizer.hpp                                      :+:      :+:    :+:   */
+/*   ConfigConfigTokenizer.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -15,21 +15,21 @@
 #include "libs.h"
 #include "macros.h"
 
-struct Token
+struct ConfigToken
 {
 	string		token;
-	TokenType	type;
+	ConfigTokenType	type;
 	int			line;
 };
 
 /**
- * @brief Tokenizer for configuration files.
+ * @brief ConfigTokenizer for configuration files.
  */
-class Tokenizer
+class ConfigTokenizer
 {
 	private:
 		vector<string> _file;       // File stream for the configuration file.
-		vector<Token>  _tokens;     // File stream for the configuration file.
+		vector<ConfigToken>  _tokens;     // File stream for the configuration file.
 		int            _line;       // Line number where the block starts.
 		bool		   _in_quotes;  // Boolean to keep track of quotes.
 		char		   _quote_type; // Delimiter for the current block.
@@ -38,14 +38,12 @@ class Tokenizer
 		void addToken(string &token, int line);
 
 	public:
-		Tokenizer(vector<string> &file);
+		ConfigTokenizer(vector<string> &file);
 
-		vector<Token> tokenize();
-		
-		vector<Token> getTokens();
+		vector<ConfigToken> tokenize();
 
 		void print();
-		static void print(const Token &token);
-		static void print(vector<Token> &tokens);
-		static void print(vector<Token>::iterator begin, vector<Token>::iterator end);
+		static void print(const ConfigToken &token);
+		static void print(vector<ConfigToken> &tokens);
+		static void print(vector<ConfigToken>::iterator begin, vector<ConfigToken>::iterator end);
 };
