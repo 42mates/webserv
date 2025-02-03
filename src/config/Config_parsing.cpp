@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:34:33 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/30 18:58:31 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/03 15:10:56 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,15 +137,16 @@ void Config::parse(string &config_file)
 	}
 	//*ugly but here just for making debugging easier
 	SocketManager	sockets(&_servers);
-	vector<PortInfo>*	vec = sockets.getPortsInfo();
-	for (size_t i = 0; i < vec->size(); i++)
+	map<int, PortInfo>*	ports = sockets.getPortsInfo();
+	for (map<int, PortInfo>::iterator it = ports->begin(); it != ports->end(); ++it)
 	{
-		cout << "Port: " << vec->at(i).port << "\n";
-    	cout << "Server Socket: " << vec->at(i).server_socket << "\n";
-    	cout << "Server Address: " << inet_ntoa(vec->at(i).server_address.sin_addr) << ":" << ntohs(vec->at(i).server_address.sin_port) << "\n";
+		cout << "Port: " << it->first << "\n";
+    	cout << "Server Socket: " << it->second.server_socket << "\n";
+    	cout << "Server Address: " << inet_ntoa(it->second.server_address.sin_addr) << ":" << ntohs(it->second.server_address.sin_port) << "\n";
     	cout << "Client Sockets: ";
-    	for (size_t i = 0; i < vec->at(i).client_socket.size(); ++i) {
-        cout << vec->at(i).client_socket[i] << " ";
+    	for (map<int, ClientInfo>::iterator client_it = it->second.clients.begin(); client_it != it->second.clients.end(); ++client_it)
+    	{
+    	    cout << client_it->first << " (" << inet_ntoa(client_it->second.address.sin_addr) << ":" << ntohs(client_it->second.address.sin_port) << ") ";
     	}
     	cout << "\n";
 	}

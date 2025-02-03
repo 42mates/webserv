@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:35:19 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/31 11:36:19 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/03 15:56:12 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,25 +16,25 @@
 /**
  * @brief Creates a socket for the specified port index. At this point, the socket
  * is just a file descriptor, and isn't bound to any IP address or port yet.
- * @param port_at_index The index of the port to which the socket is to be created.
+ * @param index Vector's index.
+ * @param port Port's value.
  */
-void	SocketManager::createSocket(int index, int port_at_index)
+void	SocketManager::createSocket(int port)
 {
-	if (static_cast<size_t>(index) >= _ports_info.size())
-		_ports_info.resize(index + 1);
+	if (_ports_info.find(port) != _ports_info.end())
+		throw runtime_error(string("[") + itostr(port) + "] : " + PORT_ALREADY_IN_USE);
 
-	struct sockaddr_in&	r_server_address = _ports_info[index].server_address;
+	struct sockaddr_in&	a_server_address = _ports_info[port].server_address;
 
 	int	socket_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); //Address family (IPv4), type of socket, protocol (TCP). 
 	if (socket_fd == -1)
 		throw runtime_error(SOCKET_CREATION_ERROR);
 
-	_ports_info[index].server_socket = socket_fd;
-	_ports_info[index].port = port_at_index;
+	_ports_info[port].server_socket = socket_fd;
 
-	r_server_address.sin_family = AF_INET; //same as before, sets the address family as IPv4
-	r_server_address.sin_port = htons(_ports_info[index].port); // sets the bits to big-endian (consistent with network protocols)
-	r_server_address.sin_addr.s_addr = INADDR_ANY; // COME BACK INADDR_ANY = server accessible from all interfaces
+	a_server_address.sin_family = AF_INET; //same as before, sets the address family as IPv4
+	a_server_address.sin_port = htons(port); // sets the bits to big-endian (consistent with network protocols)
+	a_server_address.sin_addr.s_addr = INADDR_ANY; // COME BACK INADDR_ANY = server accessible from all interfaces
 }
 
 /**
@@ -44,20 +44,14 @@ void	SocketManager::createSocket(int index, int port_at_index)
  * Before binding, the socket is set to SO_REUSADDR to avoid a binding fail when the server is restarted
  * (EADDRINUSE).
  * 
- * @param index index of the port to which the socket is to be bound.
+ * @param port Port's number.
  */
-void	SocketManager::bindSocket(int index)
+void	SocketManager::bindSocket(int port)
 {
-	sockaddr_in&	r_server_address = _ports_info[index].server_address;
-	int&			r_server_socket = _ports_info[index].server_socket;
+	sockaddr_in&	a_server_address = _ports_info[port].server_address;
+	int&			a_server_socket = _ports_info[port].server_socket;
 
-	int	opt = 1;
-	setsockopt(r_server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-	//*when a TCP connection closes, the port is kept in TIME_WAIT by the OS (default is 60 seconds)
-	//*it prevents delayed packets to interfere with new connections.
-	//*By enabling SO_REUSADDR, the port can be reused immediately.
-	//*i.e. if the program is launched, then stopped, and launched immediately after, without SO_REUSEADDR, binding will fail.
-	if (bind(r_server_socket, (struct sockaddr*)(&r_server_address), sizeof(r_server_address)) < 0)
+	if (bind(a_server_socket, (struct sockaddr*)(&a_server_address), sizeof(a_server_address)) < 0)
 		throw runtime_error(SOCKET_BINDING_ERROR);
 }
 
@@ -65,13 +59,12 @@ void	SocketManager::bindSocket(int index)
  * @brief Sets a socket to a passive listening state, so that it can wait for 
  * incoming connection requests, using accept(). At this point, the socket can't send
  * or receive data directly, it can just accept requests.
- * @param index The index of the port for which the socket is to listen.
+ * @param port Port's number.
  */
-void	SocketManager::listenSocket(int index)
+void	SocketManager::listenSocket(int port)
 {
 	//COME BACK connexion queue
-	//second parameter is basically a connexion queue, it sets the the maximum number
-	// of connection requests that can be queued
-	if (listen(_ports_info[index].server_socket, 1) < 0) // the second parameter will probably change
+	//second parameter is basically a connexion queue, it sets the the maximum number of connection requests that can be queued
+	if (listen(_ports_info[port].server_socket, 1) < 0) // the second parameter will probably change
 		throw runtime_error(SOCKET_LISTENING_ERROR);
 }

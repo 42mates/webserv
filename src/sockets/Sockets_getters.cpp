@@ -6,13 +6,13 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:34:48 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/31 09:34:59 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/03 15:09:35 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketManager.hpp"
 
-vector<PortInfo>*	SocketManager::getPortsInfo(void) { return &_ports_info; }
+map<int, PortInfo>*	SocketManager::getPortsInfo(void) { return &_ports_info; }
 
 PortInfo*	SocketManager::getPortInfo(int index)
 {

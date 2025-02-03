@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/28 15:29:17 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/03 15:15:10 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,11 @@ enum TokenType
 /************ ERRORS ************/
 
 //--> SocketManager.cpp
-# define SOCKET_CREATION_ERROR "unable to create socket's fd\n"
-# define SOCKET_BINDING_ERROR "unable to bind socket\n"
-# define SOCKET_LISTENING_ERROR "unable to set one socket to a listening state\n"
+# define PORT_ALREADY_IN_USE "port already in use"
+
+# define SOCKET_CREATION_ERROR "unable to create socket's fd"
+# define SOCKET_BINDING_ERROR "unable to bind socket"
+# define SOCKET_LISTENING_ERROR "unable to set one socket to a listening state"
 
 //--> Blocks_parsing.cpp
 # define INVALID_NUMBER_OF_ARGUMENTS_IN "invalid number of arguments in "
