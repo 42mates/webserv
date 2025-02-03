@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:34:33 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/03 15:19:26 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/03 17:27:12 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,11 +124,7 @@ void Config::parse(string &config_file)
 		block.process(block_tokens);
 
 		if (!isDuplicateServer(sconfig))
-		{ // debug
 			_servers.push_back(sconfig);
-			cout << "Server added" << endl; // debug
-			printConfig(*sconfig); // debug
-		} // debug
 		else
 			delete sconfig;
 

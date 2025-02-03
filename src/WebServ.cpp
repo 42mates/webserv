@@ -6,11 +6,11 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/14 16:45:32 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/03 17:20:50 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/WebServ.hpp"
+#include "WebServ.hpp"
 
 WebServ::WebServ()
 {}
@@ -25,6 +25,9 @@ void WebServ::run(const char* arg, int &ret)
 	{
 		_conf.parse(_config_file);
 		cout << "Config Parsing OK ✅" << endl;
+
+		Request req;
+		req.test();
 	}
 	catch(const exception& e)
 	{
