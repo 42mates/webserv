@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/04 12:49:39 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/04 17:58:22 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,6 @@ Request::Request()
 
 void Request::parseStartLine(string start_line)
 {
-	// Method SP Request-URI SP HTTP-Version CRLF
-
 	istringstream stream(start_line);
 	string method, uri, version;
 
@@ -58,10 +56,9 @@ void Request::parseStartLine(string start_line)
 
 void Request::parseHeaderLine(string header_line)
 {
-	
 	size_t pos = header_line.find(":");
 	if (pos == string::npos)
-		throw runtime_error("debug: invalid header line format");
+		throw runtime_error("debug: 400 Bad Request (invalid header line format)");
 	
 	string key = header_line.substr(0, pos);
 	header_line.erase(0, pos + 1);
@@ -69,26 +66,56 @@ void Request::parseHeaderLine(string header_line)
 		header_line.erase(0, 1);
 	
 	while (!header_line.empty()
-		&& (header_line[header_line.size() - 1] == ' ' 
-		||  header_line[header_line.size() - 1] == '\r' 
-		||  header_line[header_line.size() - 1] == '\n'))
+		&& (header_line[header_line.size() - 1] == (' ' | '\t' | '\r' | '\n')))
 		header_line.erase(header_line.size() - 1);
 
 	if (header_line.empty())
-		throw runtime_error("debug: empty header value");
+		throw runtime_error("debug: 400 Bad Request (empty header value)");
 	
 	transform(key.begin(), key.end(), key.begin(), ::tolower);
 
 	if (_header.find(key) == _header.end())
-		throw runtime_error(string("debug: ") + key + ": invalid header key");
+		throw runtime_error(string("debug: ") + key + ": 400 Bad Request (invalid header key)");
 
 	_header[key] = header_line;
 }
 
+string Request::decodeChunked(string body)
+{
+	string decoded;
+	size_t pos = 0;
+	size_t chunk_size;
+	string chunk;
+
+	while (pos < body.size())
+	{
+		chunk_size = strtol(body.c_str() + pos, NULL, 16);
+		if (chunk_size == 0)
+			break;
+		pos = body.find("\r\n", pos) + 2;
+		chunk = body.substr(pos, chunk_size);
+		decoded += chunk;
+		pos += chunk_size + 2;
+	}
+	return decoded;
+}
+
 void Request::parseBody(string body)
 {
-	// Parse the body
-	_body = body;
+	if (_header["content-length"].empty())
+		throw runtime_error("debug: 400 Bad Request (missing content-length header)");
+	
+	if ( _header["transfer-encoding"] == "chunked")
+		_body = decodeChunked(body);
+	else if (!_header["transfer-encoding"].empty()
+		&& _header["transfer-encoding"] != "identity")
+		throw runtime_error("debug: 501 Not Implemented (transfer-encoding value not supported)"); 
+	else
+	{
+		if (body.size() != atoi(_header["content-length"].c_str()))
+			throw runtime_error("debug: 400 Bad Request (invalid content-length)");
+		_body = body;
+	}
 }
 
 void Request::parseRequest(string raw_request)
@@ -99,7 +126,7 @@ void Request::parseRequest(string raw_request)
 	while ((pos = raw_request.find("\r\n")) == 0)
 		raw_request.erase(0, 2);
 	if (raw_request.empty())
-		throw runtime_error("debug: empty request (replace me by 4XX error)");
+		throw runtime_error("debug: 400 Bad Request (empty request)");
 
 	parseStartLine(raw_request.substr(0, pos));
 	raw_request.erase(0, pos + 2);
@@ -113,10 +140,10 @@ void Request::parseRequest(string raw_request)
 		raw_request.erase(0, pos + 2);
 	}
 	if (pos == string::npos)
-		throw runtime_error("debug: no CRLF at the end of the headers");
+		throw runtime_error("debug: 400 Bad Request (no CRLF at the end of the headers)");
 	raw_request.erase(0, 2);
-
-	parseBody(raw_request);
+	if (!raw_request.empty())
+		parseBody(raw_request);
 }
 
 

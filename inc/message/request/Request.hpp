@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/03 17:17:09 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/04 17:23:51 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class Request : public AMessage
 		void parseHeaderLine(string header_line);
 		void parseStartLine(string start_line);
 		void parseBody(string body);
+		string decodeChunked(string body);
 
 	public:
 		Request();
