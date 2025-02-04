@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/03 18:00:04 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/04 12:49:39 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void Request::parseRequest(string raw_request)
 	}
 	if (pos == string::npos)
 		throw runtime_error("debug: no CRLF at the end of the headers");
-
+	raw_request.erase(0, 2);
 
 	parseBody(raw_request);
 }
@@ -126,8 +126,6 @@ void Request::test()
 	ifstream file("test.txt");
 	for (string tmp; getline(file, tmp);)
 		input += tmp + "\r\n";
-	if (input.size() > 2)
-		input.erase(input.size() - 2);
 	file.close();
 	
 
