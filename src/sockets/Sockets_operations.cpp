@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:35:36 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/03 15:58:20 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/04 17:47:28 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,20 @@
  * In non-blocking mode, socket operations such as `read` and `write` will return immediately
  * if they cannot be completed, rather than blocking the calling thread.
  * 
- * @param socket_fd The file descriptor of the socket to set to non-blocking mode.
+ * @param socket The file descriptor of the socket to set to non-blocking mode.
  * @throws std::runtime_error If an error occurs while setting the socket to non-blocking mode.
  */
-void	SocketManager::setToNonBlockingMode(int socket_fd)
+void	SocketManager::setToNonBlockingMode(t_sockfd socket)
 {
-	int	flags = fcntl(socket_fd, F_GETFL, 0);
+	int	flags = fcntl(socket, F_GETFL, 0);
 
 	if (flags == -1)
 		throw runtime_error(string("SocketManager: ") + strerror(errno));
 
-	if (fcntl(socket_fd, F_SETFL, flags | O_NONBLOCK) == -1) //*not using fcntl directly cause it'll overwrite all flags
+	if (fcntl(socket, F_SETFL, flags | O_NONBLOCK) == -1) //*not using fcntl directly cause it'll overwrite all flags
 		throw runtime_error(string("SocketManager: ") + strerror(errno));
 	//! testing purposes
-	cout << "Socket: " << socket_fd << " set to non blocking mode\n";
+	cout << "Socket: " << socket << " set to non blocking mode\n";
 }
 
 /**
@@ -45,7 +45,7 @@ void	SocketManager::setToNonBlockingMode(int socket_fd)
  * 
  * @param socket The file descriptor of the socket to set to be reusable.
  */
-void	SocketManager::setReusability(int socket)
+void	SocketManager::setReusability(t_sockfd socket)
 {
 	int	opt = 1;
 	setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
@@ -55,4 +55,16 @@ void	SocketManager::setReusability(int socket)
 	//*it prevents delayed packets to interfere with new connections.
 	//*By enabling SO_REUSADDR, the port can be reused immediately.
 	//*TL;DR if the program is launched, then stopped, and launched immediately after, without SO_REUSEADDR, binding will fail.
+}
+
+void	SocketManager::addSocketToPoll(t_sockfd socket, short options)
+{
+	pollfd	tmp;
+
+	tmp.fd = socket;
+	tmp.events = options;
+
+	_poll_fds.push_back(tmp); //*socket is copied, so no dangling pointer issue
+	_socket_to_poll[socket] = _poll_fds.back();
+
 }

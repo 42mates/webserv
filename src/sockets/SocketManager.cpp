@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/03 15:59:14 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/04 17:14:50 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 
 /*
 
-
+mapping socket fd to a given nfds structure
+	
 
 */
 
@@ -30,11 +31,13 @@ SocketManager::SocketManager(const vector <ServerConfig*>* servers)
 		try
 		{
 			int port = servers->at(i)->port;
-			createSocket(port);
-			setReusability(_ports_info[port].server_socket);
-			setToNonBlockingMode(_ports_info[port].server_socket);
+			createSocket(servers->at(i)->host, port);
+			setReusability(_ports_info[port].server);
+			setToNonBlockingMode(_ports_info[port].server);
 			bindSocket(port);
 			listenSocket(port);
+			addSocketToPoll(_ports_info[port].server, POLLIN);
+			
 		}
 		catch(exception& e) { cout << e.what() << endl; }
 	}
@@ -48,25 +51,25 @@ SocketManager::~SocketManager(void)
 {
 	for (map<int, PortInfo>::iterator port_it = _ports_info.begin(); port_it != _ports_info.end(); port_it++)
 	{
-		map<int, ClientInfo>	&a_clients = port_it->second.clients;
-		for (map<int, ClientInfo>::iterator client_it = a_clients.begin(); client_it != a_clients.end(); client_it++)
+		vector<ClientInfo>&	a_client = port_it->second.clients; 
+		for (size_t i = 0; i  < a_client.size(); i++)
 		{
-			if (client_it->second.socket != -1)
-				close(client_it->second.socket);
+			if (a_client[i].client != -1)
+				close(a_client[i].client);
 		}
-		if (port_it->second.server_socket != -1)
-			close(port_it->second.server_socket);
+		if (port_it->second.server != -1)
+			close(port_it->second.server);
 	}
 }
 
 				//! testing purposes omly
 ostream& operator<<(ostream& o, const PortInfo& rhs) 
 {
-    o << "Server Socket: " << rhs.server_socket << "\n";
+    o << "Server Socket: " << rhs.server << "\n";
     o << "Server Address: " << inet_ntoa(rhs.server_address.sin_addr) << ":" << ntohs(rhs.server_address.sin_port) << "\n";
     o << "Client Sockets: ";
-    for (map<int, ClientInfo>::const_iterator it = rhs.clients.begin(); it != rhs.clients.end(); ++it) {
-        o << it->first << " (" << inet_ntoa(it->second.address.sin_addr) << ":" << ntohs(it->second.address.sin_port) << ") ";
+    for (vector<ClientInfo>::const_iterator it = rhs.clients.begin(); it != rhs.clients.end(); ++it) {
+        o << it->client << " (" << inet_ntoa(it->address.sin_addr) << ":" << ntohs(it->address.sin_port) << ") ";
     }
     o << "\n";
     return o;
