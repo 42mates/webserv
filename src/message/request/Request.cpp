@@ -6,13 +6,14 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/04 17:58:22 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/05 15:57:14 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
 Request::Request()
+	: _method(""), _uri(""), _version("")
 {
 	_header["expect"];             // Required - Used for `100-continue` before sending request body
 	_header["host"];               // Required - Specifies the target host (mandatory in HTTP/1.1)
@@ -80,26 +81,6 @@ void Request::parseHeaderLine(string header_line)
 	_header[key] = header_line;
 }
 
-string Request::decodeChunked(string body)
-{
-	string decoded;
-	size_t pos = 0;
-	size_t chunk_size;
-	string chunk;
-
-	while (pos < body.size())
-	{
-		chunk_size = strtol(body.c_str() + pos, NULL, 16);
-		if (chunk_size == 0)
-			break;
-		pos = body.find("\r\n", pos) + 2;
-		chunk = body.substr(pos, chunk_size);
-		decoded += chunk;
-		pos += chunk_size + 2;
-	}
-	return decoded;
-}
-
 void Request::parseBody(string body)
 {
 	if (_header["content-length"].empty())
@@ -112,7 +93,7 @@ void Request::parseBody(string body)
 		throw runtime_error("debug: 501 Not Implemented (transfer-encoding value not supported)"); 
 	else
 	{
-		if (body.size() != atoi(_header["content-length"].c_str()))
+		if (body.size() != strtoul(_header["content-length"].c_str(), NULL, 10))
 			throw runtime_error("debug: 400 Bad Request (invalid content-length)");
 		_body = body;
 	}
