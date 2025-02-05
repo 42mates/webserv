@@ -1,5 +1,9 @@
-GET /index.html HTTP/1.1
-Host: www.example.com
-Connection: keep-alive
-transfer-encoding: utf-8
+POST / HTTP/1.1
+Host: example.com
+Transfer-Encoding: chunked
 
+6
+Hello 
+6
+World!
+0
