@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:34:33 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/04 17:35:05 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/06 20:50:47 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,10 @@ void Config::parse(string &config_file)
 	}
 	//*ugly but here just for making debugging easier
 	SocketManager sockets(&_servers);
+	map<int, PortInfo>	*p = sockets.getPortsInfo();
+	sockets.printInfo();
+	sockets.closeConnection(p->begin()->first, p->begin()->second.server);
+	cout << "\t\t\t NEW\t\t\t" << endl;
 	sockets.printInfo();
 	// map<int, PortInfo>* ports = sockets.getPortsInfo();
 	// for (map<int, PortInfo>::iterator it = ports->begin(); it != ports->end(); ++it)

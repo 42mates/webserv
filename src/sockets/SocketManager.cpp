@@ -6,19 +6,22 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/04 17:14:50 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/06 18:34:54 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketManager.hpp"
 
+/**
+ * @file SocketManager.cpp
+ * @brief Implementation of the SocketManager class for managing server and client sockets.
+ * 
+ * This file contains the implementation of the SocketManager class, which is responsible for
+ * creating, configuring, and managing server and client sockets. It includes methods for
+ * creating sockets, setting socket options, binding, listening, and adding sockets to the poll
+ * structure. The destructor ensures that all sockets are properly closed.
+ */
 
-/*
-
-mapping socket fd to a given nfds structure
-	
-
-*/
 
 //? Can there be multiple ServerConfig on one given port ?
 /**
@@ -36,8 +39,7 @@ SocketManager::SocketManager(const vector <ServerConfig*>* servers)
 			setToNonBlockingMode(_ports_info[port].server);
 			bindSocket(port);
 			listenSocket(port);
-			addSocketToPoll(_ports_info[port].server, POLLIN);
-			
+			storeSocket(port, _ports_info[port].server, POLLIN, SERVER_SOCKET, NULL);
 		}
 		catch(exception& e) { cout << e.what() << endl; }
 	}

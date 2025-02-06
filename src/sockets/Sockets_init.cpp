@@ -6,11 +6,16 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:35:19 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/04 17:29:25 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/06 15:54:53 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketManager.hpp"
+
+/**
+ * @file Sockets_init.cpp
+ * @brief This file contains functions for initializing and configuring server socket connections.
+ */
 
 
 /**

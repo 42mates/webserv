@@ -6,11 +6,23 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:34:48 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/04 17:51:11 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/06 15:52:06 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketManager.hpp"
+
+
+/**
+ * @file SocketManager.cpp
+ * @brief Implementation of the SocketManager class for managing server and client sockets.
+ * 
+ * This file contains the implementation of the SocketManager class, which is responsible for
+ * creating, configuring, and managing server and client sockets. It includes methods for
+ * creating sockets, setting socket options, binding, listening, and adding sockets to the poll
+ * structure. The destructor ensures that all sockets are properly closed.
+ */
+
 
 /**
  * @brief Retrieves the map of all port information.
@@ -68,5 +80,5 @@ pollfd*	SocketManager::getPollfd(t_sockfd socket)
 		cerr << "poll's information at socket [" << socket << "] not found" << endl;
 		return (NULL);
 	}
-	return &_socket_to_poll[socket];
+	return &_socket_to_poll[socket].pfd;
 }
