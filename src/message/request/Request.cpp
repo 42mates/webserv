@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/05 15:57:14 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/06 16:36:31 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ Request::Request()
 {
 	_header["expect"];             // Required - Used for `100-continue` before sending request body
 	_header["host"];               // Required - Specifies the target host (mandatory in HTTP/1.1)
-	_header["content-Length"];     // Required - Specifies the size of the request body
+	_header["content-length"];     // Required - Specifies the size of the request body
 
 	// OPTIONAL HEADER FIELDS
 	//_header["Accept"];             // Optional - Specifies preferred media types (e.g., text/html, application/json)
@@ -83,9 +83,9 @@ void Request::parseHeaderLine(string header_line)
 
 void Request::parseBody(string body)
 {
-	if (_header["content-length"].empty())
-		throw runtime_error("debug: 400 Bad Request (missing content-length header)");
-	
+	if (body.empty())
+		return;
+
 	if ( _header["transfer-encoding"] == "chunked")
 		_body = decodeChunked(body);
 	else if (!_header["transfer-encoding"].empty()
@@ -123,15 +123,23 @@ void Request::parseRequest(string raw_request)
 	if (pos == string::npos)
 		throw runtime_error("debug: 400 Bad Request (no CRLF at the end of the headers)");
 	raw_request.erase(0, 2);
-	if (!raw_request.empty())
-		parseBody(raw_request);
+	
+	if (_header["content-length"].empty())
+		throw runtime_error("debug: 411 Length Required (missing content-length header)");
+	
+	parseBody(raw_request);
 }
 
 
 void Request::test()
 {
 	string input;
-	ifstream file("test.txt");
+	string filepath;
+	cout << "Enter the path to the file to test, or empty for default: ";
+	getline(cin, filepath);
+	if (filepath.empty())
+		filepath = "tools/message/request/valid/chunked.txt";
+	ifstream file(filepath);
 	for (string tmp; getline(file, tmp);)
 		input += tmp + "\r\n";
 	file.close();
