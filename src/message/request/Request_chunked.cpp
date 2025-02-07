@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Request_decode.cpp                                 :+:      :+:    :+:   */
+/*   Request_chunked.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 15:34:19 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/07 13:09:33 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/10 11:39:35 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,11 @@ size_t getChunkSize(string body)
 	string expression = body.substr(0, end);
 
 	transform(expression.begin(), expression.end(), expression.begin(), ::tolower);
-	if (!all_of(expression.begin(), expression.end(), ::isxdigit))
-		throw ResponseException(Response("400"), "not hex digit in chunk size");
+	for (string::iterator it = expression.begin(); it != expression.end(); ++it)
+	{
+		if (!::isxdigit(*it))
+			throw ResponseException(Response("400"), "not hex digit in chunk size");
+	}
 	
 	size_t chunk_size = strtol(expression.c_str(), NULL, 16);
 	if (chunk_size < 0)
