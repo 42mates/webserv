@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/06 16:36:31 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/07 12:37:08 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,12 +46,12 @@ void Request::parseStartLine(string start_line)
 	string method, uri, version;
 
 	if (!(stream >> method >> uri >> version))
-		throw runtime_error("debug: invalid start line format");
+		throw ResponseException(Response("400"), "invalid start line format");
 
 	_method = method;
 	_uri = uri;
 	if (version.find("HTTP/") != 0)
-		throw runtime_error("debug: invalid HTTP version format");
+		throw ResponseException(Response("400"), "invalid HTTP version format");
 	_version = version;
 }
 
@@ -59,7 +59,7 @@ void Request::parseHeaderLine(string header_line)
 {
 	size_t pos = header_line.find(":");
 	if (pos == string::npos)
-		throw runtime_error("debug: 400 Bad Request (invalid header line format)");
+		throw ResponseException(Response("400"), "invalid header line format");
 	
 	string key = header_line.substr(0, pos);
 	header_line.erase(0, pos + 1);
@@ -71,12 +71,12 @@ void Request::parseHeaderLine(string header_line)
 		header_line.erase(header_line.size() - 1);
 
 	if (header_line.empty())
-		throw runtime_error("debug: 400 Bad Request (empty header value)");
+		throw ResponseException(Response("400"), "empty header value");
 	
 	transform(key.begin(), key.end(), key.begin(), ::tolower);
 
 	if (_header.find(key) == _header.end())
-		throw runtime_error(string("debug: ") + key + ": 400 Bad Request (invalid header key)");
+		throw ResponseException(Response("400"), "invalid header key \"" + key + "\"");
 
 	_header[key] = header_line;
 }
@@ -90,11 +90,11 @@ void Request::parseBody(string body)
 		_body = decodeChunked(body);
 	else if (!_header["transfer-encoding"].empty()
 		&& _header["transfer-encoding"] != "identity")
-		throw runtime_error("debug: 501 Not Implemented (transfer-encoding value not supported)"); 
+		throw ResponseException(Response("501"), "transfer-encoding value not supported)"); 
 	else
 	{
 		if (body.size() != strtoul(_header["content-length"].c_str(), NULL, 10))
-			throw runtime_error("debug: 400 Bad Request (invalid content-length)");
+			throw ResponseException(Response("400"), "invalid content-length");
 		_body = body;
 	}
 }
@@ -107,7 +107,7 @@ void Request::parseRequest(string raw_request)
 	while ((pos = raw_request.find("\r\n")) == 0)
 		raw_request.erase(0, 2);
 	if (raw_request.empty())
-		throw runtime_error("debug: 400 Bad Request (empty request)");
+		throw ResponseException(Response("400"), "empty request");
 
 	parseStartLine(raw_request.substr(0, pos));
 	raw_request.erase(0, pos + 2);
@@ -121,11 +121,11 @@ void Request::parseRequest(string raw_request)
 		raw_request.erase(0, pos + 2);
 	}
 	if (pos == string::npos)
-		throw runtime_error("debug: 400 Bad Request (no CRLF at the end of the headers)");
+		throw ResponseException(Response("400"), "no CRLF at the end of the headers");
 	raw_request.erase(0, 2);
 	
-	if (_header["content-length"].empty())
-		throw runtime_error("debug: 411 Length Required (missing content-length header)");
+	if (_header["content-length"].empty() && _header["transfer-encoding"] != "chunked")
+		throw ResponseException(Response("411"), "missing content-length header");
 	
 	parseBody(raw_request);
 }
@@ -144,17 +144,26 @@ void Request::test()
 		input += tmp + "\r\n";
 	file.close();
 	
-
-	parseRequest(input);
-
-	cout << "Method:  " << _method << endl;
-	cout << "URI:     " << _uri << endl;
-	cout << "Version: " << _version << endl;
-	cout << "Header:  " << endl;
-	for (map<string, string>::iterator it = _header.begin(); it != _header.end(); it++)
+	try
 	{
-		if (!it->second.empty())	
-			cout << "\t" << it->first << ": " << it->second << endl;
+		parseRequest(input);
+		cout << "Method:  " << _method << endl;
+		cout << "URI:     " << _uri << endl;
+		cout << "Version: " << _version << endl;
+		cout << "Header:  " << endl;
+		for (map<string, string>::iterator it = _header.begin(); it != _header.end(); it++)
+		{
+			if (!it->second.empty())	
+				cout << "\t" << it->first << ": " << it->second << endl;
+		}
+		cout << "Body: " << _body << endl;
 	}
-	cout << "Body: " << _body << endl;
+	catch (ResponseException &e)
+	{
+		Response r = e.getResponse();
+		cout << r.getStatus() << " " << r.getReason() << endl;
+		cout << r.getBody() << endl;
+		cout << e.what() << endl;
+	}
+
 }

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/04 17:23:51 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/07 13:10:45 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "libs.h"
 
 #include "AMessage.hpp"
+#include "Response.hpp"
 
 class Request : public AMessage
 {
