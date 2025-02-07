@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/07 12:37:08 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/07 15:39:54 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,24 +19,24 @@ Request::Request()
 	_header["host"];               // Required - Specifies the target host (mandatory in HTTP/1.1)
 	_header["content-length"];     // Required - Specifies the size of the request body
 
-	// OPTIONAL HEADER FIELDS
-	//_header["Accept"];             // Optional - Specifies preferred media types (e.g., text/html, application/json)
-	//_header["Accept-Charset"];     // Optional - Specifies preferred character sets (e.g., UTF-8)
-	//_header["Accept-Encoding"];    // Optional - Specifies supported content encodings (e.g., gzip, deflate)
-	//_header["Accept-Language"];    // Optional - Specifies preferred languages for response (e.g., en-US, fr-FR)
-	//_header["Authorization"];      // Optional - Contains credentials for HTTP authentication (e.g., Basic, Bearer)
-	//_header["Range"];              // Optional - Used for partial content requests (e.g., video streaming)
-	//_header["Referer"];            // Optional - Indicates the previous page (useful for logs/security)
-	//_header["User-Agent"];         // Optional - Identifies the client (browser, bot, etc.), useful for logs
-	//_header["From"];               // Ignored - Rarely used, contains client’s email address
-	//_header["If-Match"];           // Ignored - Used for conditional requests based on ETag
-	//_header["If-Modified-Since"];  // Ignored - Used for cache validation (not required in webserv)
-	//_header["If-None-Match"];      // Ignored - Used to check if resource changed (ETag comparison)
-	//_header["If-Range"];           // Ignored - Used for resuming downloads (Range requests)
-	//_header["If-Unmodified-Since"];// Ignored - Conditional request based on modification date
-	//_header["Max-Forwards"];       // Ignored - Used in TRACE and OPTIONS (not required in webserv)
-	//_header["Proxy-Authorization"];// Ignored - Used for authentication with a proxy server
-	//_header["TE"];                 // Ignored - Specifies transfer encodings (not required for webserv)
+	// UNIMPLEMENTED HEADER FIELDS
+	_header["accept"];             // Optional - Specifies preferred media types (e.g., text/html, application/json)
+	_header["accept-charset"];     // Optional - Specifies preferred character sets (e.g., UTF-8)
+	_header["accept-encoding"];    // Optional - Specifies supported content encodings (e.g., gzip, deflate)
+	_header["accept-language"];    // Optional - Specifies preferred languages for response (e.g., en-US, fr-FR)
+	_header["authorization"];      // Optional - Contains credentials for HTTP authentication (e.g., Basic, Bearer)
+	_header["range"];              // Optional - Used for partial content requests (e.g., video streaming)
+	_header["referer"];            // Optional - Indicates the previous page (useful for logs/security)
+	_header["user-agent"];         // Optional - Identifies the client (browser, bot, etc.), useful for logs
+	_header["from"];               // Ignored - Rarely used, contains client’s email address
+	_header["if-match"];           // Ignored - Used for conditional requests based on ETag
+	_header["if-modified-since"];  // Ignored - Used for cache validation (not required in webserv)
+	_header["if-none-match"];      // Ignored - Used to check if resource changed (ETag comparison)
+	_header["if-range"];           // Ignored - Used for resuming downloads (Range requests)
+	_header["if-unmodified-since"];// Ignored - Conditional request based on modification date
+	_header["max-forwards"];       // Ignored - Used in TRACE and OPTIONS (not required in webserv)
+	_header["proxy-authorization"];// Ignored - Used for authentication with a proxy server
+	_header["te"];                 // Ignored - Specifies transfer encodings (not required for webserv)
 
 }
 
