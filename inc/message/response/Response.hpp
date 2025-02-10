@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/07 13:11:06 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/10 16:10:58 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,10 @@
 
 #include "libs.h"
 
+/**
+ * @class Response
+ * @brief Represents an HTTP response with status, headers, body, and debug information.
+ */
 class Response
 {
 	private:
@@ -46,7 +50,9 @@ class Response
 		void print();
 };
 
-
+/**
+ * @brief Exception class for throwing Response objects.
+ */
 class ResponseException : public exception
 {
 	private:
