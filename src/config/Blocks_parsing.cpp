@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/04 14:38:14 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/11 14:17:26 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void printMap(const map<int, string>& m)
         cout << "map[" << it->first << "] : " << it->second << '\n';
 }
 
-void printVector(const vector<Token>& v)
+void printVector(const vector<ConfigToken>& v)
 {
 	for (size_t i = 0; i < v.size(); i++)
 		cout << v.at(i).token << '\n';
@@ -35,19 +35,19 @@ void printVector(const vector<Token>& v)
  */
 string	qString(string to_quote) { return "\"" + to_quote + "\""; }
 
-void ServerBlock::parseRoot(vector<Token> val)
+void ServerBlock::parseRoot(vector<ConfigToken> val)
 {
 	LocationBlock block(_config->routes["/"], _filepath);
 	block.parseRoot(val);
 }
 
-void ServerBlock::parseIndexFile(vector<Token> val)
+void ServerBlock::parseIndexFile(vector<ConfigToken> val)
 {
 	LocationBlock block(_config->routes["/"], _filepath);
 	block.parseIndexFile(val);
 }
 
-void ServerBlock::parseReturn(vector<Token> val)
+void ServerBlock::parseReturn(vector<ConfigToken> val)
 {
 	LocationBlock block(_config->routes["/"], _filepath);
 	block.parseReturn(val);
@@ -88,7 +88,7 @@ static bool checkIpFormat(const string &ip)
     return (components.size() == 4);
 }
 
-void ServerBlock::parseListen(vector<Token> val)
+void ServerBlock::parseListen(vector<ConfigToken> val)
 {
 	if (val.size() == 0 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
@@ -114,7 +114,7 @@ void ServerBlock::parseListen(vector<Token> val)
 	_config->host = ip;
 }
 
-void ServerBlock::parseServerName(vector<Token> val)
+void ServerBlock::parseServerName(vector<ConfigToken> val)
 {
 	if (val.size() == 0 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"server_name\" directive in ") + _filepath + ":" + itostr(val[0].line));
@@ -123,7 +123,7 @@ void ServerBlock::parseServerName(vector<Token> val)
 		_config->server_names.push_back(val[i].token);
 }
 
-void ServerBlock::parseErrorPage(vector<Token> val)
+void ServerBlock::parseErrorPage(vector<ConfigToken> val)
 {
 	if (val.size() < 2)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"error_page\" directive in ") + _filepath + ":" + itostr(val[0].line));
@@ -144,7 +144,7 @@ void ServerBlock::parseErrorPage(vector<Token> val)
 	}
 }
 
-void ServerBlock::parseClientMaxBodySize(vector<Token> val)
+void ServerBlock::parseClientMaxBodySize(vector<ConfigToken> val)
 {
 	int		bytes_multiplier = 1024;
 	string	err_msg = qString("client_max_body_size") + " directive invalid value in " + _filepath + ":" + itostr(val[0].line);
@@ -184,7 +184,7 @@ ServerBlock::~ServerBlock(void) {}
 
 /*********** LOCATION BLOCK ***********/
 
-void LocationBlock::parseRoot(vector<Token> val)
+void LocationBlock::parseRoot(vector<ConfigToken> val)
 {
 	//todo only one argument ✅
 	//todo starts with / (but nginx doesnt throw an error when it is not)
@@ -195,7 +195,7 @@ void LocationBlock::parseRoot(vector<Token> val)
 	_config->root = val[0].token;
 }
 
-void LocationBlock::parseMethods(vector<Token> val)
+void LocationBlock::parseMethods(vector<ConfigToken> val)
 {
 	if (val.size() == 0 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"methods\" directive ") + _filepath + ":" + itostr(val[0].line));
@@ -210,7 +210,7 @@ void LocationBlock::parseMethods(vector<Token> val)
 	}
 }
 
-void LocationBlock::parseDirectoryListing(vector<Token> val)
+void LocationBlock::parseDirectoryListing(vector<ConfigToken> val)
 {
 	//! is triggered only if no index_file is found
 	string	auto_index("\"auto_index\" directive ");
@@ -224,7 +224,7 @@ void LocationBlock::parseDirectoryListing(vector<Token> val)
 		throw runtime_error(INVALID_VALUE + qString(val[0].token) + " in " + auto_index + _filepath + ":" + itostr(val[0].line));
 }
 
-void LocationBlock::parseIndexFile(vector<Token> val)
+void LocationBlock::parseIndexFile(vector<ConfigToken> val)
 {
 	if (val.size() < 1 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"index_file\" directive ") + _filepath + ":" + itostr(val[0].line));
@@ -233,14 +233,14 @@ void LocationBlock::parseIndexFile(vector<Token> val)
 		_config->index_file.push_back(val[i].token);
 }
 
-void LocationBlock::parseCgiPath(vector<Token> val)
+void LocationBlock::parseCgiPath(vector<ConfigToken> val)
 {
 	if (val.size() != 1 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"cgi_path\" directive ") + _filepath + ":" + itostr(val[0].line));
 	_config->cgi_path = val[0].token;
 }
 
-void LocationBlock::parseUploadDir(vector<Token> val)
+void LocationBlock::parseUploadDir(vector<ConfigToken> val)
 {
 	if (val.size() != 1 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"upload_dir\" directive ") + _filepath + ":" + itostr(val[0].line));
@@ -250,7 +250,7 @@ void LocationBlock::parseUploadDir(vector<Token> val)
 
 //TODO when there is no return code, 302 is assumed
 //? Store error code somewhere?
-void LocationBlock::parseHttpRedirect(vector<Token> val)
+void LocationBlock::parseHttpRedirect(vector<ConfigToken> val)
 {
 	long	return_value;
 	string	return_string = "\"return\" directive in ";
@@ -274,7 +274,7 @@ void LocationBlock::parseHttpRedirect(vector<Token> val)
 
 }
 
-void LocationBlock::parseReturn(vector<Token> val)
+void LocationBlock::parseReturn(vector<ConfigToken> val)
 {
 	long	return_value;
 

@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:34:33 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/06 20:50:47 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/11 14:17:34 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,9 @@ vector<string> Config::getFileVector()
  * @return An iterator pointing to the end of the block.
  * @throws runtime_error If the end of the file is reached before finding the end of the block.
  */
-vector<Token>::iterator Config::findBlockEnd(vector<Token>::iterator begin)
+vector<ConfigToken>::iterator Config::findBlockEnd(vector<ConfigToken>::iterator begin)
 {
-	vector<Token>::iterator end = begin;
+	vector<ConfigToken>::iterator end = begin;
 	int block_count = 0;
 
 	while (end != _tokens.end())
@@ -104,10 +104,10 @@ void Config::parse(string &config_file)
 {
 	_path = config_file;
 	vector<string> file = getFileVector(); 
-	Tokenizer tokenizer(file);
+	ConfigTokenizer tokenizer(file);
 	_tokens = tokenizer.tokenize();
 
-	for (vector<Token>::iterator it = _tokens.begin(); it != _tokens.end(); it++)
+	for (vector<ConfigToken>::iterator it = _tokens.begin(); it != _tokens.end(); it++)
 	{
 		// if not a block known in _std_blocks (like server), throw error
 		if (find(_std_blocks.begin(), _std_blocks.end(), it->token) == _std_blocks.end())
@@ -115,21 +115,17 @@ void Config::parse(string &config_file)
 
 		it++;
 
-		vector<Token>::iterator end = findBlockEnd(it);
+		vector<ConfigToken>::iterator end = findBlockEnd(it);
 		if (end == it)
 			throw runtime_error("empty block in " + _path + ":" + itostr((it - 1)->line));
-		vector<Token> block_tokens(it + 1, end);
+		vector<ConfigToken> block_tokens(it + 1, end);
 
 		ServerConfig *sconfig = new ServerConfig();
 		ServerBlock block(sconfig, _path);
 		block.process(block_tokens);
 
 		if (!isDuplicateServer(sconfig))
-		{ // debug
 			_servers.push_back(sconfig);
-			cout << "Server added" << endl; // debug
-			printConfig(*sconfig); // debug
-		} // debug
 		else
 			delete sconfig;
 

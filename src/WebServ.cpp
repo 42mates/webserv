@@ -6,16 +6,17 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/30 17:12:58 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/11 14:17:19 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/WebServ.hpp"
+#include "WebServ.hpp"
 
 WebServ::WebServ()
 {}
 
-WebServ::~WebServ() {}
+WebServ::~WebServ()
+{}
 
 void WebServ::run(const char* arg, int &ret)
 {
@@ -24,7 +25,17 @@ void WebServ::run(const char* arg, int &ret)
 	try
 	{
 		_conf.parse(_config_file);
-		cout << "Config Parsing OK ✅" << endl;
+
+		// create and launch sockets
+
+		// main loop
+			// watch and accept connections
+			// read from sockets
+			// handle requests
+			// send responses
+
+		// close sockets	
+
 	}
 	catch(const exception& e)
 	{
