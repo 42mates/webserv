@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks_parsing.test.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 09:39:05 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/01/24 16:21:32 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/03 15:19:26 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,8 @@ void initializeFunctionMap() {
     functionMap["RETURN"] = testParseReturn;
 }
 
-vector<Token> createTokenVector(int count, ...);
-vector<Token> empty = createTokenVector(1, "");
+vector<ConfigToken> createTokenVector(int count, ...);
+vector<ConfigToken> empty = createTokenVector(1, "");
 struct ServerConfig	svr;
 struct RouteConfig route;
 string	path("[PATH]");
@@ -59,7 +59,7 @@ LocationBlock locationBlock(route, path);
 
 void	testBlocks_parsing( void )
 {
-    vector<Token>	val;
+    vector<ConfigToken>	val;
     string			buf;
 
     initializeFunctionMap();
@@ -87,13 +87,13 @@ void	testBlocks_parsing( void )
     }
 }
 
-void	printVector(vector<Token>& v)
+void	printVector(vector<ConfigToken>& v)
 {
     for (size_t i = 0; i < v.size(); i++)
         cout << GREY << "v[" << i << "] = " << NC << v[i].token << "\n";
 }
 
-vector<Token> createTokenVector(int count, ...)
+vector<ConfigToken> createTokenVector(int count, ...)
 {
 	static bool run_seed = true;
 	if (run_seed)
@@ -101,11 +101,11 @@ vector<Token> createTokenVector(int count, ...)
 		run_seed = false;
 		srand(time(NULL));
 	}
-    vector<Token> vec;
+    vector<ConfigToken> vec;
     va_list args;
     va_start(args, count);
     for (int i = 0; i < count; ++i) {
-        Token token;
+        ConfigToken token;
         token.token = va_arg(args, const char*);
 		token.line = rand() % 100;
         vec.push_back(token);
@@ -116,11 +116,11 @@ vector<Token> createTokenVector(int count, ...)
 
 void testParseListen()
 {
-    vector<Token> port1 = createTokenVector(1, "8080");
-    vector<Token> out_of_bound = createTokenVector(1, "99999");
-    vector<Token> alpha_char = createTokenVector(1, "80a80");
-	vector<Token> negative_value = createTokenVector(1, "-1");
-	vector<Token> too_many_value = createTokenVector(2, "1", "80");
+    vector<ConfigToken> port1 = createTokenVector(1, "8080");
+    vector<ConfigToken> out_of_bound = createTokenVector(1, "99999");
+    vector<ConfigToken> alpha_char = createTokenVector(1, "80a80");
+	vector<ConfigToken> negative_value = createTokenVector(1, "-1");
+	vector<ConfigToken> too_many_value = createTokenVector(2, "1", "80");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(port1);
@@ -168,9 +168,9 @@ void testParseListen()
 
 void testParseServerName()
 {
-    vector<Token> test_server_name1 = createTokenVector(1, "example.com");
-    vector<Token> test_server_name2 = createTokenVector(1, "localhost");
-    vector<Token> test_server_name3 = createTokenVector(3, "localhost", "anotherHost", "MarinIloveYou");
+    vector<ConfigToken> test_server_name1 = createTokenVector(1, "example.com");
+    vector<ConfigToken> test_server_name2 = createTokenVector(1, "localhost");
+    vector<ConfigToken> test_server_name3 = createTokenVector(3, "localhost", "anotherHost", "MarinIloveYou");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_server_name1);
@@ -204,12 +204,12 @@ void testParseServerName()
 
 void testParseErrorPage()
 {
-    vector<Token> test_error_page = createTokenVector(5, "404", "403", "407", "310", "/404.html");
-    vector<Token> out_of_bound = createTokenVector(2, "700", "/500.html");
-    vector<Token> negative_return = createTokenVector(2, "-500", "/500.html");
-	vector<Token> alpha_char = createTokenVector(2, "404a", "/500.html");
-	vector<Token> wrong_num_args = createTokenVector(1, "404");
-	vector<Token> file_not_at_end = createTokenVector(3, "404", "/404", "405");
+    vector<ConfigToken> test_error_page = createTokenVector(5, "404", "403", "407", "310", "/404.html");
+    vector<ConfigToken> out_of_bound = createTokenVector(2, "700", "/500.html");
+    vector<ConfigToken> negative_return = createTokenVector(2, "-500", "/500.html");
+	vector<ConfigToken> alpha_char = createTokenVector(2, "404a", "/500.html");
+	vector<ConfigToken> wrong_num_args = createTokenVector(1, "404");
+	vector<ConfigToken> file_not_at_end = createTokenVector(3, "404", "/404", "405");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_error_page);
@@ -264,11 +264,11 @@ void testParseErrorPage()
 
 void testParseClientMaxBodySize()
 {
-    vector<Token> test_client_max_body_size1 = createTokenVector(1, "10M");
-    vector<Token> test_client_max_body_size2 = createTokenVector(1, "10m");
-    vector<Token> test_client_max_body_size3 = createTokenVector(1, "1024");
-    vector<Token> not_valid_unit = createTokenVector(1, "1024mk");
-    vector<Token> not_valid_size = createTokenVector(1, "-1024m");
+    vector<ConfigToken> test_client_max_body_size1 = createTokenVector(1, "10M");
+    vector<ConfigToken> test_client_max_body_size2 = createTokenVector(1, "10m");
+    vector<ConfigToken> test_client_max_body_size3 = createTokenVector(1, "1024");
+    vector<ConfigToken> not_valid_unit = createTokenVector(1, "1024mk");
+    vector<ConfigToken> not_valid_size = createTokenVector(1, "-1024m");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_client_max_body_size1);
@@ -318,8 +318,8 @@ void testParseRoot()
 {
     struct RouteConfig svr;
 
-    vector<Token> test_root1 = createTokenVector(1, "/var/www/html");
-    vector<Token> test_root2 = createTokenVector(1, "/usr/local/www");
+    vector<ConfigToken> test_root1 = createTokenVector(1, "/var/www/html");
+    vector<ConfigToken> test_root2 = createTokenVector(1, "/usr/local/www");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_root1);
@@ -348,9 +348,9 @@ void testParseMethods()
 {
     struct RouteConfig svr;
 
-    vector<Token> test_methods1 = createTokenVector(2, "GET", "post");
-    vector<Token> test_methods2 = createTokenVector(1, "delete");
-	vector<Token> unknown_method = createTokenVector(4, "geT", "POST", "HEAD", "delete");
+    vector<ConfigToken> test_methods1 = createTokenVector(2, "GET", "post");
+    vector<ConfigToken> test_methods2 = createTokenVector(1, "delete");
+	vector<ConfigToken> unknown_method = createTokenVector(4, "geT", "POST", "HEAD", "delete");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_methods1);
@@ -386,9 +386,9 @@ void testParseDirectoryListing()
 {
     struct RouteConfig svr;
 
-    vector<Token> test_directory_listing1 = createTokenVector(1, "on");
-    vector<Token> test_directory_listing2 = createTokenVector(1, "off");
-	vector<Token> not_valid_name = createTokenVector(1, "enable");
+    vector<ConfigToken> test_directory_listing1 = createTokenVector(1, "on");
+    vector<ConfigToken> test_directory_listing2 = createTokenVector(1, "off");
+	vector<ConfigToken> not_valid_name = createTokenVector(1, "enable");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_directory_listing1);
@@ -424,8 +424,8 @@ void testParseIndexFile()
 {
     struct RouteConfig svr;
 
-    vector<Token> test_index_file1 = createTokenVector(1, "index.html");
-    vector<Token> test_index_file2 = createTokenVector(1, "home.html");
+    vector<ConfigToken> test_index_file1 = createTokenVector(1, "index.html");
+    vector<ConfigToken> test_index_file2 = createTokenVector(1, "home.html");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_index_file1);
@@ -454,8 +454,8 @@ void testParseCgiPath()
 {
     struct RouteConfig svr;
 
-    vector<Token> testCgiPath1 = createTokenVector(1, "/usr/bin/python3");
-    vector<Token> testCgiPath2 = createTokenVector(1, "/usr/local/bin/php");
+    vector<ConfigToken> testCgiPath1 = createTokenVector(1, "/usr/bin/python3");
+    vector<ConfigToken> testCgiPath2 = createTokenVector(1, "/usr/local/bin/php");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(testCgiPath1);
@@ -484,8 +484,8 @@ void testParseUploadDir()
 {
     struct RouteConfig svr;
 
-    vector<Token> test_upload_dir1 = createTokenVector(1, "/var/www/uploads");
-    vector<Token> test_upload_dir2 = createTokenVector(1, "/usr/local/uploads");
+    vector<ConfigToken> test_upload_dir1 = createTokenVector(1, "/var/www/uploads");
+    vector<ConfigToken> test_upload_dir2 = createTokenVector(1, "/usr/local/uploads");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_upload_dir1);
@@ -514,11 +514,11 @@ void testParseHttpRedirect()
 {
     struct RouteConfig svr;
 
-    vector<Token> test_http_redirect1 = createTokenVector(2, "301", "https://example.com");
-    vector<Token> test_http_redirect2 = createTokenVector(2, "302", "https://example.org");
-	vector<Token> too_many_args = createTokenVector(3, "301", "302", "https://example.com");
-	vector<Token>	out_of_bound_return_value = createTokenVector(2, "299", "https://example.com");
-	vector<Token>	alpha_char_in_return = createTokenVector(2, "30a1", "https://example.com");
+    vector<ConfigToken> test_http_redirect1 = createTokenVector(2, "301", "https://example.com");
+    vector<ConfigToken> test_http_redirect2 = createTokenVector(2, "302", "https://example.org");
+	vector<ConfigToken> too_many_args = createTokenVector(3, "301", "302", "https://example.com");
+	vector<ConfigToken>	out_of_bound_return_value = createTokenVector(2, "299", "https://example.com");
+	vector<ConfigToken>	alpha_char_in_return = createTokenVector(2, "30a1", "https://example.com");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_http_redirect1);
@@ -568,11 +568,11 @@ void testParseReturn()
 {
     struct RouteConfig svr;
 
-    vector<Token> test_return1 = createTokenVector(2, "200", "/index.html");
-    vector<Token> test_return2 = createTokenVector(2, "404", "/404.html");
-	vector<Token> too_many_args = createTokenVector(3, "301", "302", "https://example.com");
-	vector<Token> out_of_bound_return_value = createTokenVector(2, "-1","https://example.com");
-	vector<Token>	alpha_char_in_return = createTokenVector(2, "30a1", "https://example.com");
+    vector<ConfigToken> test_return1 = createTokenVector(2, "200", "/index.html");
+    vector<ConfigToken> test_return2 = createTokenVector(2, "404", "/404.html");
+	vector<ConfigToken> too_many_args = createTokenVector(3, "301", "302", "https://example.com");
+	vector<ConfigToken> out_of_bound_return_value = createTokenVector(2, "-1","https://example.com");
+	vector<ConfigToken>	alpha_char_in_return = createTokenVector(2, "30a1", "https://example.com");
 
     cout << GREY << "test1" << NC << "\n";
     printVector(test_return1);

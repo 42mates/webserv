@@ -6,7 +6,7 @@
 #    By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/18 13:05:21 by mbecker           #+#    #+#              #
-#    Updated: 2025/01/20 15:16:19 by mbecker          ###   ########.fr        #
+#    Updated: 2025/02/03 17:24:29 by mbecker          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ INCLUDES = $(shell find inc -type d -exec echo -I{} \;)
 SRC_DIR = src
 OBJ_DIR = .obj
 
-SRC = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/**/*.cpp)
+SRC = $(shell find $(SRC_DIR) -name "*.cpp")
 OBJ = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC))
 
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks_processing.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:44:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/24 15:34:11 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/03 15:19:26 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@ bool ABlock::isAllowedBlock(string token)
 	return (find(_allowed_blocks.begin(), _allowed_blocks.end(), token) != _allowed_blocks.end());
 }
 
-void ABlock::parseField(vector<Token>::iterator &start)
+void ABlock::parseField(vector<ConfigToken>::iterator &start)
 {
-	vector<Token>::iterator end = start + 1;
-	vector<Token> val;
+	vector<ConfigToken>::iterator end = start + 1;
+	vector<ConfigToken> val;
 	
 	while (end != _tokens.end() && end->type == TKN_VALUE)
 	{
@@ -45,7 +45,7 @@ void ABlock::parseField(vector<Token>::iterator &start)
  * 
  * @param start An iterator pointing to first iterator after the given directive (location).
  */
-void ABlock::storeBlock(vector<Token>::iterator &start)
+void ABlock::storeBlock(vector<ConfigToken>::iterator &start)
 {
 	string location_value = start->token;
 
@@ -55,13 +55,13 @@ void ABlock::storeBlock(vector<Token>::iterator &start)
 	if (start->type != TKN_BLOCK_START)
 		throw runtime_error("missing block start in " + _filepath + ":" + itostr(start->line));
 
-	vector<Token>::iterator end = findBlockEnd(start);
-	vector<Token> block_tokens(start, end + 1);
+	vector<ConfigToken>::iterator end = findBlockEnd(start);
+	vector<ConfigToken> block_tokens(start, end + 1);
 
 	if (block_tokens.size() < 2)
 		throw runtime_error("empty block in " + _filepath + ":" + itostr((start - 1)->line));
 
-	for (list<pair<string, vector<Token> > >::iterator it = _subblocks.begin(); it != _subblocks.end(); ++it)
+	for (list<pair<string, vector<ConfigToken> > >::iterator it = _subblocks.begin(); it != _subblocks.end(); ++it)
 	{
 		if (it->first == location_value)
 			throw runtime_error("duplicate location \"" + location_value + "\" in " + _filepath + ":" + itostr(start->line));
@@ -71,11 +71,11 @@ void ABlock::storeBlock(vector<Token>::iterator &start)
 	start = end;
 }
 
-void ABlock::process(vector<Token> &tokens)
+void ABlock::process(vector<ConfigToken> &tokens)
 {
 	_tokens = tokens;
 
-	for (vector<Token>::iterator it = _tokens.begin(); it != _tokens.end(); it++)
+	for (vector<ConfigToken>::iterator it = _tokens.begin(); it != _tokens.end(); it++)
 	{
 		if (isAllowedField(it->token))
 			parseField(it);
@@ -84,7 +84,7 @@ void ABlock::process(vector<Token> &tokens)
 		else
 			throw runtime_error("unknown directive \"" + it->token + "\" in " + _filepath + ":" + itostr(it->line));
 	}
-	for (list<pair<string, vector<Token> > >::iterator it = _subblocks.begin(); it != _subblocks.end(); ++it)
+	for (list<pair<string, vector<ConfigToken> > >::iterator it = _subblocks.begin(); it != _subblocks.end(); ++it)
 		parseBlock(it->first, it->second); //pure virtual function
 	
 }
@@ -98,7 +98,7 @@ void ABlock::process(vector<Token> &tokens)
  * @param context The context path for the server block.
  * @param tokens A vector of tokens representing the server block configuration.
  */
-void ServerBlock::parseBlock(string context, vector<Token> tokens)
+void ServerBlock::parseBlock(string context, vector<ConfigToken> tokens)
 {
 	//remove '{' and '}' tokens
 	tokens.erase(tokens.begin());
@@ -137,11 +137,11 @@ RouteConfig LocationBlock::duplicateConfig(RouteConfig &config)
  * @brief Parses a location block, validates its context, and processes its tokens.
  * 
  * @param context The context string representing the location path.
- * @param tokens A vector of Token objects representing the tokens within the block.
+ * @param tokens A vector of ConfigToken objects representing the tokens within the block.
  * 
  * @throws runtime_error if the location is outside the current location.
  */
-void LocationBlock::parseBlock(string context, vector<Token> tokens)
+void LocationBlock::parseBlock(string context, vector<ConfigToken> tokens)
 {
 	//remove '{' and '}' tokens
 	tokens.erase(tokens.begin());

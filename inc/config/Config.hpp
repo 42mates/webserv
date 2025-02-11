@@ -15,7 +15,7 @@
 #include "libs.h"
 #include "macros.h"
 
-#include "Tokenizer.hpp"
+#include "ConfigTokenizer.hpp"
 
 
 class ABlock;
@@ -69,12 +69,6 @@ struct ServerConfig {
 		client_max_body_size(1 * 1024 * 1024)
 	{
 		server_names.push_back("localhost");
-
-		//error_pages[400] = "tools/html/error_pages/400.html";
-		//error_pages[401] = "tools/html/error_pages/401.html";
-		//error_pages[403] = "tools/html/error_pages/403.html";
-		//error_pages[404] = "tools/html/error_pages/404.html";
-
 		RouteConfig default_route;
 		routes["/"] = default_route;
 	}
@@ -88,14 +82,14 @@ class Config
 	private:
 		vector<string> _std_blocks;      // Allowed blocks that can be found in the configuration file
 		vector<ServerConfig *> _servers; // List of configured servers
-		vector<Token> _tokens;           // Tokens from the configuration file
+		vector<ConfigToken> _tokens;           // Tokens from the configuration file
 
 		vector<string> getFileVector();
 		bool isDuplicateServer(ServerConfig *sconfig);
 
 	protected:
 		string _path;                    // Path to the configuration file
-		vector<Token>::iterator findBlockEnd(vector<Token>::iterator begin);
+		vector<ConfigToken>::iterator findBlockEnd(vector<ConfigToken>::iterator begin);
 
 	public:
 		Config();

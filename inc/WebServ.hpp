@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:45:48 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/14 16:18:13 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/03 17:20:53 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 #include "libs.h"
 #include "macros.h"
-#include "config/Config.hpp"
+#include "Config.hpp"
+#include "Request.hpp"
 
 class WebServ
 {
