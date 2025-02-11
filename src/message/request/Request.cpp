@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/07 15:39:54 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/11 10:49:26 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ void Request::test()
 	getline(cin, filepath);
 	if (filepath.empty())
 		filepath = "tools/message/request/valid/chunked.txt";
-	ifstream file(filepath);
+	ifstream file(filepath.c_str());
 	for (string tmp; getline(file, tmp);)
 		input += tmp + "\r\n";
 	file.close();

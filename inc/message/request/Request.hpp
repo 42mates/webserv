@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/07 13:10:45 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/10 16:29:12 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 #include "AMessage.hpp"
 #include "Response.hpp"
 
+/*
+ * @brief Represents an HTTP request.
+ */
 class Request : public AMessage
 {
 	private:
@@ -33,5 +36,6 @@ class Request : public AMessage
 		Request();
 
 		void parseRequest(string raw_request);
+		Response handleRequest();
 		void test();
 };
