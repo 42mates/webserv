@@ -6,14 +6,13 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/11 14:40:30 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/11 18:28:59 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-Request::Request()
-	: _method(""), _uri(""), _version("")
+void Request::initHeaderFields()
 {
 	_header["expect"];             // Required - Used for `100-continue` before sending request body
 	_header["host"];               // Required - Specifies the target host (mandatory in HTTP/1.1)
@@ -37,7 +36,27 @@ Request::Request()
 	_header["max-forwards"];       // Ignored - Used in TRACE and OPTIONS (not required in webserv)
 	_header["proxy-authorization"];// Ignored - Used for authentication with a proxy server
 	_header["te"];                 // Ignored - Specifies transfer encodings (not required for webserv)
+}
 
+void Request::initMethodHandling()
+{
+	_method_handling["GET"] = &Request::handleGet;
+	_method_handling["POST"] = &Request::handlePost;
+	_method_handling["DELETE"] = &Request::handleDelete;
+
+	// UNIMPLEMENTED METHODS
+	//_method_handling["HEAD"] = &Request::handleHead;
+	//_method_handling["PUT"] = &Request::handlePut;
+	//_method_handling["CONNECT"] = &Request::handleConnect;
+	//_method_handling["OPTIONS"] = &Request::handleOptions;
+	//_method_handling["TRACE"] = &Request::handleTrace;
+}
+
+Request::Request()
+	: _method(""), _uri(""), _version("")
+{
+	initHeaderFields();
+	initMethodHandling();
 }
 
 void Request::test()
@@ -52,7 +71,7 @@ void Request::test()
 	for (string tmp; getline(file, tmp);)
 		input += tmp + "\r\n";
 	file.close();
-	
+
 	try
 	{
 		parseRequest(input);
@@ -74,5 +93,4 @@ void Request::test()
 		cout << r.getBody() << endl;
 		cout << e.what() << endl;
 	}
-
 }

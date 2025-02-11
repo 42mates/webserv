@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/10 16:10:58 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/11 14:52:28 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ class Response
 		void setErrorBody();
 
 	public:
+		Response();
 		Response(string status);
 		Response(const Response &other);
 		Response &operator=(const Response &other);

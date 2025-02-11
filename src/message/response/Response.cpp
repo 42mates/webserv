@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/07 12:29:24 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/11 14:52:28 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,15 @@ void Response::initStatusLine()
 	_status_line["503"] = "Service Unavailable";
 	_status_line["504"] = "Gateway Time-out";
 	_status_line["505"] = "HTTP Version not supported";
+}
+
+Response::Response() 
+	: _status("DEFAULT") 
+{
+	initStatusLine();
+	if (_status_line.find(_status) == _status_line.end())
+		throw invalid_argument(string("debug: Response constructor with arg ") + _status + ": invalid status code");
+	setErrorBody();
 }
 
 Response::Response(string status) 
