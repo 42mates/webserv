@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/11 17:49:28 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/12 16:20:17 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,17 @@ class Request : public AMessage
 		void initMethodHandling();
 		
 		// PARSING METHODS
-		void parseHeaderLine(string header_line);
 		void parseStartLine(string start_line);
+		void parseHeaderLine(string header_line);
 		void parseBody(string body);
 		
-		// CHUNKED ENCODING (PARSING)
+		// CHUNKED DECODING
 		string decodeChunked(string body);
+
+		// CHECKS
+		void checkStartLine();
+		void checkHeader();
+		void makeChecks();
 		
 		// METHOD HANDLING
 		map<string, Response (Request::*)()> _method_handling; // Map of methods to their handling functions

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/11 14:52:28 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/12 18:03:19 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,34 +54,29 @@ void Response::initStatusLine()
 	_status_line["503"] = "Service Unavailable";
 	_status_line["504"] = "Gateway Time-out";
 	_status_line["505"] = "HTTP Version not supported";
+
+	_status_line["DEFAULT"] = "Default Reason";
 }
 
 Response::Response() 
-	: _status("DEFAULT") 
+	: _status("DEFAULT")
 {
 	initStatusLine();
-	if (_status_line.find(_status) == _status_line.end())
-		throw invalid_argument(string("debug: Response constructor with arg ") + _status + ": invalid status code");
 	setErrorBody();
 }
 
 Response::Response(string status) 
-	: _status(status) 
+	: _status(status)
 {
 	initStatusLine();
 	if (_status_line.find(_status) == _status_line.end())
-		throw invalid_argument(string("debug: Response constructor with arg ") + _status + ": invalid status code");
+		throw invalid_argument(string("debug: Response constructor used with invalid arg \"") + _status + "\"");
 	setErrorBody();
 }
 
 Response::Response(const Response &other) 
-	: _status(other._status), _header(other._header), _body(other._body), _debug(other._debug) 
-{
-	initStatusLine();
-	if (_status_line.find(_status) == _status_line.end())
-		throw invalid_argument(string("debug: Response constructor with arg ") + _status + ": invalid status code");
-	setErrorBody();
-}
+	: _status(other._status), _header(other._header), _body(other._body), _debug(other._debug), _status_line(other._status_line)
+{}
 
 Response &Response::operator=(const Response &other)
 {
@@ -107,6 +102,13 @@ void Response::setErrorBody()
 		+ "<hr><center>webserv/1.0</center>\r\n"
 		+ "</body>\r\n"
 		+ "</html>\r\n";
+}
+
+void Response::setStatus(string status)
+{
+	if (_status_line.find(status) == _status_line.end())
+		throw invalid_argument(string("debug: Response setStatus() used with invalid arg \"") + status + "\"");
+	_status = status;
 }
 
 void Response::setHeader(string header)

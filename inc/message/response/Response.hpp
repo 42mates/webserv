@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/11 14:52:28 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/12 18:01:31 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,18 +37,19 @@ class Response
 		Response &operator=(const Response &other);
 		~Response();
 
+		void setStatus(string status);
 		void setHeader(string header);
 		void setBody(string body);
-		void setDebug(string debug);
+		void setDebug(string debug); // debug
 
 		string getResponse();
 		string getStatus();
 		string getReason();
 		string getHeader();
 		string getBody();
-		string getDebug();
+		string getDebug(); // debug
 
-		void print();
+		void print(); // debug
 };
 
 /**
