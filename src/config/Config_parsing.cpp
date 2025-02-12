@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:34:33 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/03 17:27:12 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/12 19:01:29 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,11 +81,22 @@ vector<ConfigToken>::iterator Config::findBlockEnd(vector<ConfigToken>::iterator
 	return end;
 }
 
+static long vectorsShareValue(vector<string> &v1, vector<string> &v2)
+{
+	int i = 0;
+	for (vector<string>::iterator it = v1.begin(); it != v1.end(); it++, i++)
+	{
+		if (find(v2.begin(), v2.end(), *it) != v2.end())
+			return i;
+	}
+	return -1;
+}
+
 bool Config::isDuplicateServer(ServerConfig *sconfig)
 {
 	for (vector<ServerConfig *>::iterator it = _servers.begin(); it != _servers.end(); it++)
 	{
-		long sname_i = vectorsShareValue<string>(sconfig->server_names, (*it)->server_names);
+		long sname_i = vectorsShareValue(sconfig->server_names, (*it)->server_names);
 
 		if (sname_i >= 0 && (*it)->port == sconfig->port)
 		{
