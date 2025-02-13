@@ -1,14 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Socket_utils.hpp                                   :+:      :+:    :+:   */
+/*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/06 15:48:01 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/06 17:18:34 by sokaraku         ###   ########.fr       */
+/*   Created: 2025/02/11 13:47:24 by sokaraku          #+#    #+#             */
+/*   Updated: 2025/02/13 15:24:36 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#pragma once
 
 # include "libs.h"
 
@@ -19,6 +21,9 @@ typedef int t_sockfd;
 
 /**
  * @brief Enum representing the type of socket.
+ * 
+ * @param SERVER_SOCKET
+ * @param CLIENT_SOCKET 
  */
 enum e_SocketType
 {
@@ -28,13 +33,17 @@ enum e_SocketType
 
 /**
  * @brief Structure to hold information about a socket and its poll status.
+ * @param port The port on which the socket is connected.
+ * @param type Type of socket.
+ * @param pfd pollfd structure containing informations about a polling request.
  */
 struct SocketPollInfo
 {
-    e_SocketType type;
-    pollfd pfd;
+	int				port;
+    e_SocketType	type;
+    pollfd 			pfd;
 };
-
+//? storing he port on which the socket is ?
 
 /**
  * @brief Stores information about a connected client, for a given port.
@@ -45,6 +54,7 @@ struct SocketPollInfo
  * 
  * @param client The file descriptor for the client socket. 
  * @param address Address information for the client.
+ * @param size Size of the address strucutre.
  */
 struct ClientInfo
 {
@@ -52,7 +62,7 @@ struct ClientInfo
 	sockaddr_in	address;
 	socklen_t	size;
 
-	ClientInfo() : client(-1), size(-1);
+	ClientInfo() : client(-1), size(0)
 	{
 		memset(&address, 0, sizeof(address));
 	}
@@ -75,7 +85,7 @@ struct PortInfo
 	sockaddr_in						server_address;
 	vector<ClientInfo>				clients;
 
-	PortInfo() :	server(-1)
+	PortInfo() : server(-1)
 	{
 		memset(&server_address, 0, sizeof(server_address));
 	}

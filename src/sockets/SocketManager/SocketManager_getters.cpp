@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Sockets_getters.cpp                                :+:      :+:    :+:   */
+/*   Socket_getters.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:34:48 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/06 15:52:06 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/13 16:02:02 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,12 +73,6 @@ vector<ClientInfo>*	SocketManager::getClientsInfo(int port)
 	return &(_ports_info.at(port).clients);
 }
 
-pollfd*	SocketManager::getPollfd(t_sockfd socket)
-{
-	if (_socket_to_poll.find(socket) == _socket_to_poll.end())
-	{
-		cerr << "poll's information at socket [" << socket << "] not found" << endl;
-		return (NULL);
-	}
-	return &_socket_to_poll[socket].pfd;
-}
+vector<pollfd>*	SocketManager::getPollFds() { return &_poll_fds; }
+
+map<t_sockfd, SocketPollInfo>*	SocketManager::getSocketToPoll() { return &_socket_to_poll;	}

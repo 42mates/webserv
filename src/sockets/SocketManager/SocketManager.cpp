@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/06 18:34:54 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/13 19:21:53 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,19 +27,19 @@
 /**
  * @brief Generates a server socket and its informations for each ports given as a parameter.
  */
-SocketManager::SocketManager(const vector <ServerConfig*>* servers)
+SocketManager::SocketManager(const vector <ServerConfig*>* servers) : _poll_manager(*this)
 {
 	for (size_t i = 0; i < servers->size(); i++)
 	{
 		try
 		{
 			int port = servers->at(i)->port;
-			createSocket(servers->at(i)->host, port);
-			setReusability(_ports_info[port].server);
-			setToNonBlockingMode(_ports_info[port].server);
-			bindSocket(port);
-			listenSocket(port);
-			storeSocket(port, _ports_info[port].server, POLLIN, SERVER_SOCKET, NULL);
+			_ops.createSocket(servers->at(i)->host, port, _ports_info[port]);
+			_ops.setReusability(_ports_info[port].server);
+			_ops.setToNonBlockingMode(_ports_info[port].server);
+			_ops.bindSocket(_ports_info[port]);
+			_ops.listenSocket(_ports_info[port]);
+			storeSocket(port, _ports_info[port].server, (POLLIN | POLLERR | POLLHUP), SERVER_SOCKET, NULL);
 		}
 		catch(exception& e) { cout << e.what() << endl; }
 	}
@@ -64,7 +64,7 @@ SocketManager::~SocketManager(void)
 	}
 }
 
-				//! testing purposes omly
+				//! testing purposes only
 ostream& operator<<(ostream& o, const PortInfo& rhs) 
 {
     o << "Server Socket: " << rhs.server << "\n";
