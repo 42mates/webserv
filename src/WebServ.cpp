@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/12 14:46:48 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/14 15:01:24 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ void WebServ::run(const char* arg, int &ret)
 		// main loop
 			// watch and accept connections
 			// read from sockets
+			Request request;
+			request.testParsing();
 			// handle requests
 			// send responses
 

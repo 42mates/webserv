@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/13 18:03:22 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/14 13:54:43 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static string getFile(const string &path)
 	ifstream file(path.c_str());
 	if (!file.is_open() || !file.good())
 		throw ResponseException(Response("404"), "getFile(): could not open file " + path);
-	
+
 	string content((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 
 	file.close();

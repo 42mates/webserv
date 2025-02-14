@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/12 18:03:19 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/14 16:43:45 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,14 +46,14 @@ void Response::initStatusLine()
 	_status_line["413"] = "Request Entity Too Large";
 	_status_line["414"] = "Request-URI Too Large";
 	_status_line["415"] = "Unsupported Media Type";
-	_status_line["416"] = "Requested range not satisfiable";
+	_status_line["416"] = "Requested Range Not Satisfiable";
 	_status_line["417"] = "Expectation Failed";
 	_status_line["500"] = "Internal Server Error";
 	_status_line["501"] = "Not Implemented";
 	_status_line["502"] = "Bad Gateway";
 	_status_line["503"] = "Service Unavailable";
 	_status_line["504"] = "Gateway Time-out";
-	_status_line["505"] = "HTTP Version not supported";
+	_status_line["505"] = "HTTP Version Not Supported";
 
 	_status_line["DEFAULT"] = "Default Reason";
 }
@@ -75,7 +75,7 @@ Response::Response(string status)
 }
 
 Response::Response(const Response &other) 
-	: _status(other._status), _header(other._header), _body(other._body), _debug(other._debug), _status_line(other._status_line)
+	: _status(other._status), _header(other._header), _body(other._body), _status_line(other._status_line)
 {}
 
 Response &Response::operator=(const Response &other)
@@ -85,7 +85,6 @@ Response &Response::operator=(const Response &other)
 		_status = other._status;
 		_header = other._header;
 		_body = other._body;
-		_debug = other._debug;
 	}
 	return *this;
 }
@@ -121,11 +120,6 @@ void Response::setBody(string body)
 	_body = body;
 }
 
-void Response::setDebug(string debug)
-{
-	_debug = debug;
-}
-
 string Response::getResponse()
 {
 	return _status + "\n" + _header + "\n" + _body;
@@ -151,15 +145,10 @@ string Response::getBody()
 	return _body;
 }
 
-string Response::getDebug()
-{
-	return _debug;
-}
 
 void Response::print()
 {
 	cout << "Status: " << _status << endl;
 	cout << "Header: " << _header << endl;
 	cout << "Body: " << _body << endl;
-	cout << "Debug: " << _debug << endl;
 }

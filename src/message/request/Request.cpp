@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/13 17:48:59 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/14 15:08:45 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,17 +53,17 @@ void Request::initMethodHandling()
 }
 
 Request::Request()
-	: _method(""), _uri(""), _version("")
+	: _method(""), _uri(""), _version(""), _start(0)
 {
 	initHeaderFields();
 	initMethodHandling();
 }
 
-void Request::test()
+void Request::testParsing()
 {
 	string input;
 	string filepath;
-	cout << "Enter the path to the file to test, or empty for default: ";
+	cout << "Enter the path to the file to test, or empty for default (tools/message/request/valid/chunked.txt): ";
 	getline(cin, filepath);
 	if (filepath.empty())
 		filepath = "tools/message/request/valid/chunked.txt";
@@ -90,7 +90,7 @@ void Request::test()
 	{
 		Response r = e.getResponse();
 		cout << r.getStatus() << " " << r.getReason() << endl;
-		cout << r.getBody() << endl;
+		//cout << r.getBody() << endl;
 		cout << e.what() << endl;
 	}
 }

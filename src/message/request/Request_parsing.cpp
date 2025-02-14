@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/13 17:43:29 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/14 16:51:14 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,17 @@ void Request::parseStartLine(string start_line)
 
 	_method = method;
 	_uri = uri;
-	if (version.find("HTTP/") != 0)
-		throw ResponseException(Response("400"), "invalid HTTP version format");
+	if (!( version != "HTTP/0.9" 
+		|| version != "HTTP/1.0" 
+		|| version != "HTTP/1.1"))
+		throw ResponseException(Response("505"), "unsupported HTTP version format");
 	_version = version;
 }
 
 void Request::parseHeaderLine(string header_line)
 {
 	size_t pos = header_line.find(":");
-	if (pos == string::npos)
+	if (pos == 0 || pos == string::npos)
 		throw ResponseException(Response("400"), "invalid header line format");
 
 	string key = header_line.substr(0, pos);
@@ -48,7 +50,7 @@ void Request::parseHeaderLine(string header_line)
 	transform(key.begin(), key.end(), key.begin(), ::tolower);
 
 	if (_header.find(key) == _header.end())
-		throw ResponseException(Response("400"), "invalid header key \"" + key + "\"");
+		throw ResponseException(Response("400"), "unknown header key \"" + key + "\"");
 
 	_header[key] = header_line;
 }
@@ -62,7 +64,7 @@ void Request::parseBody(string body)
 		_body = decodeChunked(body);
 	else if (!_header["transfer-encoding"].empty()
 		&& _header["transfer-encoding"] != "identity")
-		throw ResponseException(Response("501"), "transfer-encoding value not supported)"); 
+		throw ResponseException(Response("501"), "transfer-encoding value \"" + _header["transfer-encoding"] + "\" not supported"); 
 	else
 	{
 		if (body.size() != strtoul(_header["content-length"].c_str(), NULL, 10))
@@ -71,35 +73,43 @@ void Request::parseBody(string body)
 	}
 }
 
-void Request::parseRequest(string raw_request)
+void Request::parseHeader(string raw_request)
 {
-	size_t pos = 0;
+	size_t end = 0;
 	string line;
 
-	while ((pos = raw_request.find("\r\n")) == 0)
-		raw_request.erase(0, 2);
-	if (raw_request.empty())
+	while ((end = raw_request.substr(_start).find("\r\n")) == 0)
+		_start += end + 2;
+	if (_start == string::npos)
 		throw ResponseException(Response("400"), "empty request");
 
-	parseStartLine(raw_request.substr(0, pos));
-	raw_request.erase(0, pos + 2);
+	parseStartLine(raw_request.substr(_start, end - _start));
+	_start = end + 2;
 
-	while ((pos = raw_request.find("\r\n")) != 0)
+	while ((end = _start + raw_request.substr(_start).find("\r\n")) != _start)
 	{
-		line = raw_request.substr(0, pos);
+		line = raw_request.substr(_start, end - _start);
 		if (line.empty())
 			break;
 		parseHeaderLine(line);
-		raw_request.erase(0, pos + 2);
+		_start = end + 2;
 	}
-	if (pos == string::npos)
+	if (_start == string::npos)
 		throw ResponseException(Response("400"), "no CRLF at the end of the headers");
-	raw_request.erase(0, 2);
+	else
+		_start += 2;
+	_header_parsed = true;
+}
+
+void Request::parseRequest(string raw_request)
+{
+	if (!_header_parsed)
+		parseHeader(raw_request);
 
 	if (_method != "GET" || _method != "HEAD")
 	{
 		if (_header["content-length"].empty() && _header["transfer-encoding"] != "chunked")
 			throw ResponseException(Response("411"), "missing content-length header");
-		parseBody(raw_request);
+		parseBody(raw_request.substr(_start));
 	}
 }
