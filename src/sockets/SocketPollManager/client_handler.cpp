@@ -6,24 +6,28 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/13 20:43:09 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/14 14:21:21 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "SocketPollManager.hpp"
-# include "SocketManager.hpp"
+#include "SocketPollManager.hpp"
+#include "SocketManager.hpp"
 
-static ssize_t readAll(t_sockfd socket, string& raw_request)
+
+/*
+timer starting in loop with a given time to not exceed
+*/
+ssize_t readAll(t_sockfd socket, string& raw_request)
 {
 	const int	BUFFER_SIZE = 1024;
-	char		buffer[BUFFER_SIZE];
+	char		buffer[BUFFER_SIZE] = {0};
 	ssize_t		bytes_received;
 
 	while (true)
 	{
 		bytes_received = recv(socket, buffer, BUFFER_SIZE, MSG_DONTWAIT);
-		if (bytes_received == -1)
-			throw runtime_error("readAll()"); //! COME BACK error. Need to know what happened without usign errno (see flags)
+		if (bytes_received < 0)
+			throw runtime_error("readAll()"); //! COME BACK error. Need to know what happened without using errno (see flags)
 		if (bytes_received == 0)
 			break ;
 		raw_request.append(buffer, bytes_received);
@@ -32,7 +36,7 @@ static ssize_t readAll(t_sockfd socket, string& raw_request)
 	return raw_request.size();
 }
 
-static void	receiveData(SocketPollInfo poll_info, Request& request)
+void	SocketPollManager::clientRecv(SocketPollInfo poll_info)
 {
 	string	raw_request;
 	ssize_t	ret = readAll(poll_info.pfd.fd, raw_request);
@@ -41,24 +45,54 @@ static void	receiveData(SocketPollInfo poll_info, Request& request)
 	if (ret > 0)
 	{
 		cout << "Received data " << raw_request << endl;
-		request.parseRequest(raw_request); 
+		_request.parseRequest(raw_request); 
+		// _response = _request.handleRequest();
 	}
 	else
 		cout << "No data received" << endl;
 }
 
-static void	sendData()
+ssize_t	SocketPollManager::clientSend(SocketPollInfo poll_info)
 {
-	return ;
+	string	response = _response.getResponse();
+	char	*buffer = (char *)response.c_str();
+	ssize_t	len_response = response.size();
+	ssize_t	len_sent = 0;
+
+	while (true)
+	{
+		ssize_t ret = send(poll_info.pfd.fd, buffer + len_sent, len_response - len_sent, MSG_DONTWAIT);
+		if (ret < 0)
+			throw runtime_error("sendData()");
+		if (ret == 0)
+			break ;
+		len_sent += ret;
+	}
+	return len_sent;
 }
+
 
 void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& manager)
 {
+	string test("test"); //! testing purposes
+
 	if (poll_info.pfd.revents & POLLIN)
-		receiveData(poll_info, _request);
+	{
+		try
+		{
+			clientRecv(poll_info);
+		}
+		catch(exception& e) { cout << e.what() << endl; }
+	}
 
 	if (poll_info.pfd.revents & POLLOUT)
-		sendData();
+	{
+		try
+		{
+			clientSend(poll_info);
+		}
+		catch(exception& e) { cout << e.what() << endl; }
+	}
 
 	if (poll_info.pfd.revents & POLLHUP)
 	{

@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 14:39:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/13 19:01:29 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/14 14:49:33 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
  * creating, binding, listening, setting options, and closing sockets.
  */
 
-# include "SocketOperations.hpp"
+#include "SocketOperations.hpp"
 
 /**
  * @brief Creates a socket and initializes the PortInfo structure.
@@ -73,7 +73,7 @@ void SocketOperations::bindSocket(PortInfo& port_info)
  */
 void SocketOperations::listenSocket(PortInfo& port_info)
 {
-    if (listen(port_info.server, 1) < 0)//COME BACK connexion queue
+    if (listen(port_info.server, 10) < 0)//COME BACK connexion queue
         throw std::runtime_error(string("SocketOperations: listenSocket() ") +  SOCKET_LISTENING_ERROR);
 }
 

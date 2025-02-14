@@ -6,13 +6,13 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 13:47:24 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/13 15:24:36 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/14 13:23:01 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-# include "libs.h"
+#include "libs.h"
 
 /**
  * @brief Type definition for a socket file descriptor.
@@ -32,7 +32,7 @@ enum e_SocketType
 };
 
 /**
- * @brief Structure to hold information about a socket and its poll status.
+ * @brief Structure to hold information about a socket, its poll status and port.
  * @param port The port on which the socket is connected.
  * @param type Type of socket.
  * @param pfd pollfd structure containing informations about a polling request.

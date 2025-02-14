@@ -6,13 +6,13 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 13:48:13 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/11 15:58:49 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/14 13:23:39 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-# include "Socket.hpp"
+#include "Socket.hpp"
 
 class SocketOperations
 {
@@ -26,5 +26,5 @@ public:
     void listenSocket(PortInfo& portInfo);
     void setToNonBlockingMode(t_sockfd socket);
     void setReusability(t_sockfd socket);
-    void closeSocket(t_sockfd socket);
+    void closeSocket(t_sockfd socket); //! might need to remove that
 };

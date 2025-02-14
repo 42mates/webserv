@@ -6,12 +6,12 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:31:21 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/13 19:01:45 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/14 15:15:52 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "SocketPollManager.hpp"
-# include "SocketManager.hpp"
+#include "SocketPollManager.hpp"
+#include "SocketManager.hpp"
 
 /**
  * @brief Establishes a connection with a client.
@@ -36,11 +36,20 @@ void	SocketPollManager::establishConnection(t_sockfd server_socket, int port, So
 
 void	SocketPollManager::serverHandler(SocketPollInfo poll_info, SocketManager& manager)
 {
+	cout << POLLIN << " " << poll_info.pfd.revents << endl;
 	if (poll_info.pfd.revents & POLLIN)
-		establishConnection(poll_info.pfd.fd, poll_info.port, manager);
+	{
+		cout << "HI" << endl;
+		try
+		{
+			establishConnection(poll_info.pfd.fd, poll_info.port, manager);
+		}
+		catch(exception& e) { cout << e.what() << endl; }
+	}
 	
 	if (poll_info.pfd.revents & POLLERR) //! testing purpose (writing)
 	{
+		cout << "HO" << endl;
 		cerr
 		<< "SocketPollManager: serverHandler() error on listening socket [" << poll_info.pfd.fd << "] on port " << poll_info.port
 		<< ": " << string(strerror(errno)) << endl;
@@ -49,7 +58,8 @@ void	SocketPollManager::serverHandler(SocketPollInfo poll_info, SocketManager& m
 
 	if (poll_info.pfd.revents & POLLHUP)
 	{
+		cout << "HA";
 		cout << "closing connection on listening socket [" << poll_info.pfd.fd << "] on port " << poll_info.port;
 		manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET);
-	}	
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:34:33 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/13 20:14:37 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/14 13:54:19 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,24 +131,4 @@ void Config::parse(string &config_file)
 
 		it = end;
 	}
-	//*ugly but here just for making debugging easier
-	SocketManager sockets(&_servers);
-	map<int, PortInfo>	*p = sockets.getPortsInfo();
-	sockets.printInfo();
-	sockets.closeConnection(p->begin()->first, p->begin()->second.server, SERVER_SOCKET);
-	cout << "\t\t\t NEW\t\t\t" << endl;
-	sockets.printInfo();
-	// map<int, PortInfo>* ports = sockets.getPortsInfo();
-	// for (map<int, PortInfo>::iterator it = ports->begin(); it != ports->end(); ++it)
-	// {
-    // 	cout << "Port: " << it->first << "\n";
-    // 	cout << "Server Socket: " << it->second.server << "\n";
-    // 	cout << "Server Address: " << inet_ntoa(it->second.server_address.sin_addr) << ":" << ntohs(it->second.server_address.sin_port) << "\n";
-    // 	cout << "Client Sockets: ";
-    // 	for (vector<ClientInfo>::iterator client_it = it->second.clients.begin(); client_it != it->second.clients.end(); ++client_it)
-    // 	    cout << client_it->client << " (" << inet_ntoa(client_it->address.sin_addr) << ":" << ntohs(client_it->address.sin_port) << ") ";
-    // 	cout << "\n";
-	// }
-	//printConfig(_servers);
-	
 }

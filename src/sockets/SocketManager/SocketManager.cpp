@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/13 19:21:53 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/14 13:36:10 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,9 @@ SocketManager::~SocketManager(void)
 			close(port_it->second.server);
 	}
 }
+
+
+void SocketManager::runPollManager() { _poll_manager.runPoll(*this); }
 
 				//! testing purposes only
 ostream& operator<<(ostream& o, const PortInfo& rhs) 

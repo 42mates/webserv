@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebServ.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:45:48 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/03 17:20:53 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/14 13:53:36 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,13 @@
 #include "macros.h"
 #include "Config.hpp"
 #include "Request.hpp"
+#include "SocketManager.hpp"
 
 class WebServ
 {
 	private:
-		Config _conf;
+		Config 			_conf;
+		SocketManager	*_sockets;
 
 	public:
 		WebServ();

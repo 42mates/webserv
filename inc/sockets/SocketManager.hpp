@@ -6,15 +6,15 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/13 20:13:41 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/14 13:35:14 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # pragma once
 
-# include "Config.hpp"
-# include "SocketOperations.hpp"
-# include "SocketPollManager.hpp"
+#include "Config.hpp"
+#include "SocketOperations.hpp"
+#include "SocketPollManager.hpp"
 
 //! Should multiple servers listen on the same port ?
 //! CAREFUL : Since _poll_manager need access to data stored in SocketManager, said data need
@@ -51,6 +51,8 @@ class SocketManager
 		void			closeConnection(int port, t_sockfd socket, e_SocketType type);
 		//? Client's socket in non blocking ? (i.e. should it wait for an answer?)
 
+							/*RUNNING POLL*/
+		void			runPollManager( void );
 							/*TESTING*/
 
 		void			printInfo( void ) const;
