@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/11 18:28:59 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/13 17:48:59 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,11 @@ void Request::initHeaderFields()
 void Request::initMethodHandling()
 {
 	_method_handling["GET"] = &Request::handleGet;
+	_method_handling["HEAD"] = &Request::handleHead;
 	_method_handling["POST"] = &Request::handlePost;
 	_method_handling["DELETE"] = &Request::handleDelete;
 
 	// UNIMPLEMENTED METHODS
-	//_method_handling["HEAD"] = &Request::handleHead;
 	//_method_handling["PUT"] = &Request::handlePut;
 	//_method_handling["CONNECT"] = &Request::handleConnect;
 	//_method_handling["OPTIONS"] = &Request::handleOptions;

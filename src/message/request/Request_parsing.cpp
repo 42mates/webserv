@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/11 14:47:43 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/13 17:43:29 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,9 +95,11 @@ void Request::parseRequest(string raw_request)
 	if (pos == string::npos)
 		throw ResponseException(Response("400"), "no CRLF at the end of the headers");
 	raw_request.erase(0, 2);
-	
-	if (_header["content-length"].empty() && _header["transfer-encoding"] != "chunked")
-		throw ResponseException(Response("411"), "missing content-length header");
-	
-	parseBody(raw_request);
+
+	if (_method != "GET" || _method != "HEAD")
+	{
+		if (_header["content-length"].empty() && _header["transfer-encoding"] != "chunked")
+			throw ResponseException(Response("411"), "missing content-length header");
+		parseBody(raw_request);
+	}
 }
