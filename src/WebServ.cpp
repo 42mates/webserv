@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/18 14:44:19 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 15:13:34 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,14 +50,16 @@ void WebServ::run(const char* arg, int &ret)
 	try
 	{
 		_conf.parse(_config_file);
-
+		SocketManager	sockets(_conf.getServers());
+		_sockets = &sockets;
+		_sockets->runPollManager();
 		// create and launch sockets
 
 		// main loop
 			// watch and accept connections
 			// read from sockets
-			Request request;
-			request.testParsing();
+			// Request request;
+			// request.testParsing();
 			// handle requests
 			// send responses
 

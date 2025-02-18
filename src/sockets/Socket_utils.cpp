@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:35:36 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/13 20:13:51 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 13:29:09 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ void	SocketManager::storeSocket(int port, t_sockfd socket, short options, e_Sock
 	tmp.type = type;
 	tmp.port = port;
 
+	cout << port << " " << socket << " " << options << " ";
 	_poll_fds.push_back(tmp.pfd); //*pollfd is copied, so no dangling pointer issue
 	_socket_to_poll[socket] = tmp;
 

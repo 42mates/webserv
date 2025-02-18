@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/14 14:21:21 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 14:03:14 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,11 @@ ssize_t readAll(t_sockfd socket, string& raw_request)
 	while (true)
 	{
 		bytes_received = recv(socket, buffer, BUFFER_SIZE, MSG_DONTWAIT);
-		if (bytes_received < 0)
+		cout << "bytes received is " << bytes_received << endl;
+		if (bytes_received < 0 && raw_request.empty() == true)
 			throw runtime_error("readAll()"); //! COME BACK error. Need to know what happened without using errno (see flags)
+		else if (bytes_received < 0)
+			break ;
 		if (bytes_received == 0)
 			break ;
 		raw_request.append(buffer, bytes_received);
@@ -80,6 +83,7 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 	{
 		try
 		{
+			cout << "POLLIN clientHandler()" << endl;
 			clientRecv(poll_info);
 		}
 		catch(exception& e) { cout << e.what() << endl; }
@@ -89,6 +93,7 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 	{
 		try
 		{
+			cout << "POLLOUT clientHandler()" << endl;
 			clientSend(poll_info);
 		}
 		catch(exception& e) { cout << e.what() << endl; }

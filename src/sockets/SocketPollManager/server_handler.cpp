@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:31:21 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/14 15:15:52 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 13:27:20 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ void	SocketPollManager::serverHandler(SocketPollInfo poll_info, SocketManager& m
 	cout << POLLIN << " " << poll_info.pfd.revents << endl;
 	if (poll_info.pfd.revents & POLLIN)
 	{
-		cout << "HI" << endl;
 		try
 		{
 			establishConnection(poll_info.pfd.fd, poll_info.port, manager);

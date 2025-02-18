@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:37:29 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/18 14:45:12 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 15:04:03 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,13 +75,12 @@ RouteConfig getBestRoute(const ServerConfig& server, const string &uri)
 	RouteConfig* best = NULL;
 	size_t best_len = 0;
 
-	routes = server.routes;
-	getBestRouteHelper(uri, routes, best, best_len);
+	getBestRouteHelper(uri, const_cast<map<string, RouteConfig>&>(server.routes), best, best_len);
 	if (best)
-		return best;
-	if (server->routes.count("/"))
-		return &server->routes.at("/");
+		return *best;
+	if (server.routes.count("/"))
+		return server.routes.at("/");
 	else
-		return &server->routes.begin()->second;
+		return server.routes.begin()->second;
 	throw runtime_error("No route found and no default route defined");
 }
