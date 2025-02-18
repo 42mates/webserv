@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/14 13:36:10 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 18:38:48 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,12 @@ SocketManager::SocketManager(const vector <ServerConfig*>* servers) : _poll_mana
 		{
 			int port = servers->at(i)->port;
 			_ops.createSocket(servers->at(i)->host, port, _ports_info[port]);
-			_ops.setReusability(_ports_info[port].server);
-			_ops.setToNonBlockingMode(_ports_info[port].server);
+			_ops.setReusability(_ports_info[port].server_fd);
+			_ops.setToNonBlockingMode(_ports_info[port].server_fd);
 			_ops.bindSocket(_ports_info[port]);
 			_ops.listenSocket(_ports_info[port]);
-			storeSocket(port, _ports_info[port].server, (POLLIN | POLLERR | POLLHUP), SERVER_SOCKET, NULL);
+			storeSocket(port, _ports_info[port].server_fd, (POLLIN | POLLERR | POLLHUP), SERVER_SOCKET, NULL);
+			_ports_info[port].server = servers->at(i);  //! should server be stored in _port_info?
 		}
 		catch(exception& e) { cout << e.what() << endl; }
 	}
@@ -56,25 +57,27 @@ SocketManager::~SocketManager(void)
 		vector<ClientInfo>&	a_client = port_it->second.clients; 
 		for (size_t i = 0; i  < a_client.size(); i++)
 		{
-			if (a_client[i].client != -1)
-				close(a_client[i].client);
+			if (a_client[i].client_fd != -1)
+				close(a_client[i].client_fd);
 		}
-		if (port_it->second.server != -1)
-			close(port_it->second.server);
+		if (port_it->second.server_fd != -1)
+			close(port_it->second.server_fd);
 	}
 }
 
-
+/**
+ * @brief Run the PollManager class.
+ */
 void SocketManager::runPollManager() { _poll_manager.runPoll(*this); }
 
 				//! testing purposes only
 ostream& operator<<(ostream& o, const PortInfo& rhs) 
 {
-    o << "Server Socket: " << rhs.server << "\n";
+    o << "Server Socket: " << rhs.server_fd << "\n";
     o << "Server Address: " << inet_ntoa(rhs.server_address.sin_addr) << ":" << ntohs(rhs.server_address.sin_port) << "\n";
     o << "Client Sockets: ";
     for (vector<ClientInfo>::const_iterator it = rhs.clients.begin(); it != rhs.clients.end(); ++it) {
-        o << it->client << " (" << inet_ntoa(it->address.sin_addr) << ":" << ntohs(it->address.sin_port) << ") ";
+        o << it->client_fd << " (" << inet_ntoa(it->address.sin_addr) << ":" << ntohs(it->address.sin_port) << ") ";
     }
     o << "\n";
     return o;

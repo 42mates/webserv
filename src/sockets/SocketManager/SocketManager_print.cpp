@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 17:31:02 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/06 20:00:50 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 15:41:11 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void SocketManager::printInfo() const
             {
                 for (vector<ClientInfo>::const_iterator client_it = it->second.clients.begin(); client_it != it->second.clients.end(); client_it++)
                 {
-                    cout << client_it->client << " (" << inet_ntoa(client_it->address.sin_addr) << ":" << ntohs(client_it->address.sin_port) << ") ";
+                    cout << client_it->client_fd << " (" << inet_ntoa(client_it->address.sin_addr) << ":" << ntohs(client_it->address.sin_port) << ") ";
                 }
             }
             cout << endl;

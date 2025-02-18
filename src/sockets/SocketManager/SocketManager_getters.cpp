@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Socket_getters.cpp                                 :+:      :+:    :+:   */
+/*   SocketManager_getters.cpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:34:48 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/13 16:02:02 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 18:30:53 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,24 @@ vector<ClientInfo>*	SocketManager::getClientsInfo(int port)
 	return &(_ports_info.at(port).clients);
 }
 
+/**
+ * @brief Retrieves the vector of poll file descriptors.
+ * 
+ * Returns a pointer to the vector that contains the poll file descriptors
+ * managed by the `SocketManager`. Each entry in the vector corresponds to a
+ * file descriptor being monitored for events.
+ * 
+ * @return A pointer to the vector of poll file descriptors.
+ */
 vector<pollfd>*	SocketManager::getPollFds() { return &_poll_fds; }
 
+/**
+ * @brief Retrieves the map of socket poll information.
+ * 
+ * Returns a pointer to the map that contains information about the sockets
+ * being polled by the `SocketManager`. Each entry in the map corresponds to a
+ * socket file descriptor and its associated `SocketPollInfo` structure.
+ * 
+ * @return A pointer to the map of socket poll information.
+ */
 map<t_sockfd, SocketPollInfo>*	SocketManager::getSocketToPoll() { return &_socket_to_poll;	}

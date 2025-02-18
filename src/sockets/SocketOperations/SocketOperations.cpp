@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 14:39:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/14 14:49:33 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 15:41:40 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void SocketOperations::createSocket(const std::string& ip, int port, PortInfo& p
     if (socket_fd == -1)
         throw std::runtime_error(string("SocketOperations: createSocket() ") +  SOCKET_CREATION_ERROR);
 
-    port_info.server = socket_fd;
+    port_info.server_fd = socket_fd;
     port_info.server_address.sin_family = AF_INET;
     port_info.server_address.sin_port = htons(port);
     if (inet_pton(AF_INET, ip.c_str(), &port_info.server_address.sin_addr) <= 0)
@@ -57,7 +57,7 @@ void SocketOperations::createSocket(const std::string& ip, int port, PortInfo& p
  */
 void SocketOperations::bindSocket(PortInfo& port_info)
 {
-    if (bind(port_info.server, (struct sockaddr*)(&port_info.server_address), sizeof(port_info.server_address)) < 0)
+    if (bind(port_info.server_fd, (struct sockaddr*)(&port_info.server_address), sizeof(port_info.server_address)) < 0)
         throw std::runtime_error(string("SocketOperations: bindSocket() ") + SOCKET_BINDING_ERROR);
 }
 
@@ -73,7 +73,7 @@ void SocketOperations::bindSocket(PortInfo& port_info)
  */
 void SocketOperations::listenSocket(PortInfo& port_info)
 {
-    if (listen(port_info.server, 10) < 0)//COME BACK connexion queue
+    if (listen(port_info.server_fd, 10) < 0)//COME BACK connexion queue
         throw std::runtime_error(string("SocketOperations: listenSocket() ") +  SOCKET_LISTENING_ERROR);
 }
 

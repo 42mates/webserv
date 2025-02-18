@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 13:47:24 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/14 13:23:01 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 18:28:13 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,11 @@ struct SocketPollInfo
  */
 struct ClientInfo
 {
-	t_sockfd	client;
+	t_sockfd	client_fd;
 	sockaddr_in	address;
 	socklen_t	size;
 
-	ClientInfo() : client(-1), size(0)
+	ClientInfo() : client_fd(-1), size(0)
 	{
 		memset(&address, 0, sizeof(address));
 	}
@@ -75,17 +75,19 @@ struct ClientInfo
  * connected clients for a specific port. It is used to manage the server
  * sockets and client connections in the SocketManager class.
  * 
- * @param server The socket file descriptor for the server.
+ * @param server_fd The socket file descriptor for the server.
  * @param server_address The address information for the server.
  * @param clients A vector of ClientInfo structures.
+ * @param server A pointer to a ServerConfig structure associated with the port.
  */
 struct PortInfo
 {
-	t_sockfd						server;
+	t_sockfd						server_fd;
 	sockaddr_in						server_address;
 	vector<ClientInfo>				clients;
+	ServerConfig					*server;
 
-	PortInfo() : server(-1)
+	PortInfo() : server_fd(-1)
 	{
 		memset(&server_address, 0, sizeof(server_address));
 	}

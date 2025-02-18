@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/14 13:35:14 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 18:37:53 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,19 @@
 //! to be initialized first of all. Should be ok since c++ initiliaze data in the order they appear
 //! in the class, but it still needs testing
 
+
+/**
+ * @brief Manages socket operations and polling for multiple servers.
+ * 
+ * The SocketManager class is responsible for managing socket operations and
+ * polling for multiple servers. It interacts with the SocketOperations and
+ * SocketPollManager classes to handle various socket events, such as incoming
+ * connections, data readiness for reading or writing, hang-ups, and errors.
+ * 
+ * The class maintains information about the ports, poll file descriptors, and
+ * socket poll information. It provides methods to store and remove sockets,
+ * close connections, and run the poll manager.
+ */
 class SocketManager 
 {
 	private:
@@ -45,6 +58,7 @@ class SocketManager
 		map<t_sockfd, SocketPollInfo>*	getSocketToPoll( void );
 
 							/*UTILS*/
+
 		void			storeSocket(int port, t_sockfd socket, short options, e_SocketType type, ClientInfo *client);
 		void			removeClientSocket(int port, t_sockfd socket);
 		void			removeServerSocket(int port);

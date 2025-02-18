@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 13:48:13 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/14 13:23:39 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 18:26:12 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,13 @@
 
 #include "Socket.hpp"
 
+/**
+ * @brief Provides various socket operations.
+ * 
+ * The SocketOperations class provides a set of methods to perform various
+ * operations on sockets, such as creating, binding, listening, setting
+ * non-blocking mode, setting reusability, and closing sockets.
+ */
 class SocketOperations
 {
 public:
