@@ -97,7 +97,7 @@ class Config
 
 		virtual void parse(string &config_file);
 
-		const vector<ServerConfig *>*	getServers();
-		ServerConfig* getServer(const string &host, int port, const string &server_name);
-		RouteConfig* getRoute(ServerConfig *server, const string &uri);
+		ServerConfig* getBestServer(const string &host, int port, const string &server_name);
 };
+	
+RouteConfig getBestRoute(const ServerConfig& server, const string &uri);

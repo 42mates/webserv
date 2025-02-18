@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:30:39 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/28 14:44:55 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/13 18:01:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libs.h"
 
-std::string itostr(int num) 
+string itostr(int num) 
 {
-	std::ostringstream oss;
+	ostringstream oss;
 	oss << num;
 	return oss.str();
 }

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/10 16:10:58 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/14 13:38:40 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,30 +24,29 @@ class Response
 		string _status;
 		string _header;
 		string _body;
-		string _debug;
 
-		map<string, string> _status_line; // key is status code, value is reason-phrase
+		map<string, string> _status_line; // status code to reason phrase
 		void initStatusLine();
-		void setErrorBody();
-
-	public:
+		
+		public:
+		Response();
 		Response(string status);
 		Response(const Response &other);
 		Response &operator=(const Response &other);
 		~Response();
-
+		
+		void setStatus(string status);
 		void setHeader(string header);
 		void setBody(string body);
-		void setDebug(string debug);
+		void setErrorBody();
 
 		string getResponse();
 		string getStatus();
 		string getReason();
 		string getHeader();
 		string getBody();
-		string getDebug();
 
-		void print();
+		void print(); // debug
 };
 
 /**

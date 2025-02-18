@@ -6,17 +6,13 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:37:29 by mbecker           #+#    #+#             */
-/*   Updated: 2025/01/31 10:02:56 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 14:45:12 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
 
-
-const vector<ServerConfig *>*	Config::getServers() { return &_servers; }
-
-
-ServerConfig* Config::getServer(const string &host, int port, const string &server_name)
+ServerConfig* Config::getBestServer(const string &host, int port, const string &server_name)
 {
 	for (size_t i = 0; i < _servers.size(); i++)
 	{
@@ -39,7 +35,7 @@ ServerConfig* Config::getServer(const string &host, int port, const string &serv
  * @param best Pointer to the best matching RouteConfig (updated during recursion).
  * @param best_len Length of the best match (updated during recursion).
  */
-static void getRouteHelper(const string& uri, map<string, RouteConfig>& current, RouteConfig*& best, size_t& best_len)
+static void getBestRouteHelper(const string& uri, map<string, RouteConfig>& current, RouteConfig*& best, size_t& best_len)
 {
 	if (current.empty())
 		return ;
@@ -54,7 +50,7 @@ static void getRouteHelper(const string& uri, map<string, RouteConfig>& current,
             	best = &it->second;
          		best_len = location_path.size();
             }
-            getRouteHelper(uri, it->second.subroutes, best, best_len);
+            getBestRouteHelper(uri, it->second.subroutes, best, best_len);
     	}
     }
 }
@@ -69,17 +65,18 @@ static void getRouteHelper(const string& uri, map<string, RouteConfig>& current,
  * that server's routes. If no specific match is found, it returns the default
  * route ("/") if available.
  * 
- * @param server_name The name of the server.
+ * @param server The server config structure.
  * @param uri The request URI.
  * @return RouteConfig The best matching route configuration.
  * @throws runtime_error If no matching route or default route is found.
  */
-RouteConfig* Config::getRoute(ServerConfig *server, const string &uri)
+RouteConfig getBestRoute(const ServerConfig& server, const string &uri)
 {
 	RouteConfig* best = NULL;
 	size_t best_len = 0;
 
-	getRouteHelper(uri, server->routes, best, best_len);
+	routes = server.routes;
+	getBestRouteHelper(uri, routes, best, best_len);
 	if (best)
 		return best;
 	if (server->routes.count("/"))
@@ -88,6 +85,3 @@ RouteConfig* Config::getRoute(ServerConfig *server, const string &uri)
 		return &server->routes.begin()->second;
 	throw runtime_error("No route found and no default route defined");
 }
-
-
-

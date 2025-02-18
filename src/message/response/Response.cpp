@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/07 12:29:24 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/14 16:43:45 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,33 +46,37 @@ void Response::initStatusLine()
 	_status_line["413"] = "Request Entity Too Large";
 	_status_line["414"] = "Request-URI Too Large";
 	_status_line["415"] = "Unsupported Media Type";
-	_status_line["416"] = "Requested range not satisfiable";
+	_status_line["416"] = "Requested Range Not Satisfiable";
 	_status_line["417"] = "Expectation Failed";
 	_status_line["500"] = "Internal Server Error";
 	_status_line["501"] = "Not Implemented";
 	_status_line["502"] = "Bad Gateway";
 	_status_line["503"] = "Service Unavailable";
 	_status_line["504"] = "Gateway Time-out";
-	_status_line["505"] = "HTTP Version not supported";
+	_status_line["505"] = "HTTP Version Not Supported";
+
+	_status_line["DEFAULT"] = "Default Reason";
+}
+
+Response::Response() 
+	: _status("DEFAULT")
+{
+	initStatusLine();
+	setErrorBody();
 }
 
 Response::Response(string status) 
-	: _status(status) 
+	: _status(status)
 {
 	initStatusLine();
 	if (_status_line.find(_status) == _status_line.end())
-		throw invalid_argument(string("debug: Response constructor with arg ") + _status + ": invalid status code");
+		throw invalid_argument(string("debug: Response constructor used with invalid arg \"") + _status + "\"");
 	setErrorBody();
 }
 
 Response::Response(const Response &other) 
-	: _status(other._status), _header(other._header), _body(other._body), _debug(other._debug) 
-{
-	initStatusLine();
-	if (_status_line.find(_status) == _status_line.end())
-		throw invalid_argument(string("debug: Response constructor with arg ") + _status + ": invalid status code");
-	setErrorBody();
-}
+	: _status(other._status), _header(other._header), _body(other._body), _status_line(other._status_line)
+{}
 
 Response &Response::operator=(const Response &other)
 {
@@ -81,7 +85,6 @@ Response &Response::operator=(const Response &other)
 		_status = other._status;
 		_header = other._header;
 		_body = other._body;
-		_debug = other._debug;
 	}
 	return *this;
 }
@@ -100,6 +103,13 @@ void Response::setErrorBody()
 		+ "</html>\r\n";
 }
 
+void Response::setStatus(string status)
+{
+	if (_status_line.find(status) == _status_line.end())
+		throw invalid_argument(string("debug: Response setStatus() used with invalid arg \"") + status + "\"");
+	_status = status;
+}
+
 void Response::setHeader(string header)
 {
 	_header = header;
@@ -108,11 +118,6 @@ void Response::setHeader(string header)
 void Response::setBody(string body)
 {
 	_body = body;
-}
-
-void Response::setDebug(string debug)
-{
-	_debug = debug;
 }
 
 string Response::getResponse()
@@ -140,15 +145,10 @@ string Response::getBody()
 	return _body;
 }
 
-string Response::getDebug()
-{
-	return _debug;
-}
 
 void Response::print()
 {
 	cout << "Status: " << _status << endl;
 	cout << "Header: " << _header << endl;
 	cout << "Body: " << _body << endl;
-	cout << "Debug: " << _debug << endl;
 }

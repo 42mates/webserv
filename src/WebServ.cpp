@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/14 13:53:40 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/18 14:44:19 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,31 @@ WebServ::WebServ()
 WebServ::~WebServ()
 {}
 
+/**
+ * @brief Manages an incoming HTTP request and generates an appropriate response.
+ *
+ * @param raw_request The raw HTTP request string to be processed.
+ * @param server_config The server configuration object used to handle the request.
+ * @returns A reference to the generated Response object.
+ */
+Response WebServ::manageRequest(string raw_request, ServerConfig &server_config)
+{
+	Request request;
+	Response response;
+
+	try
+	{
+		request.parseRequest(raw_request);
+		response = request.handleRequest(server_config);
+	}
+	catch(const ResponseException& e)
+	{
+		cerr << "debug: manageRequest(): " << e.what() << endl;
+		response = e.getResponse();
+	}
+	return response;
+}
+
 void WebServ::run(const char* arg, int &ret)
 {
 	string _config_file = (arg) ? arg : DEFAULT_CONFIG_FILE;
@@ -26,18 +51,17 @@ void WebServ::run(const char* arg, int &ret)
 	{
 		_conf.parse(_config_file);
 
-		SocketManager	sockets(_conf.getServers());
-		_sockets = &sockets;
-		sockets.runPollManager();
 		// create and launch sockets
 
 		// main loop
 			// watch and accept connections
 			// read from sockets
+			Request request;
+			request.testParsing();
 			// handle requests
 			// send responses
 
-		// close sockets	
+		// close sockets
 
 	}
 	catch(const exception& e)
