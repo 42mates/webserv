@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/18 18:38:48 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/20 17:21:19 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ SocketManager::SocketManager(const vector <ServerConfig*>* servers) : _poll_mana
 			_ops.bindSocket(_ports_info[port]);
 			_ops.listenSocket(_ports_info[port]);
 			storeSocket(port, _ports_info[port].server_fd, (POLLIN | POLLERR | POLLHUP), SERVER_SOCKET, NULL);
-			_ports_info[port].server = servers->at(i);  //! should server be stored in _port_info?
+			_ports_info[port].server = servers->at(i);
 		}
 		catch(exception& e) { cout << e.what() << endl; }
 	}

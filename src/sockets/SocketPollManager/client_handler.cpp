@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/18 18:18:05 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/20 17:14:18 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ timer starting in loop with a given time to not exceed
  * @return The total number of bytes read.
  * @throws std::runtime_error If an error occurs while reading from the socket.
  */
-ssize_t readAll(t_sockfd socket, string& raw_request)
+static ssize_t readAll(t_sockfd socket, string& raw_request)
 {
 	const int	BUFFER_SIZE = 1024;
 	char		buffer[BUFFER_SIZE] = {0};
@@ -92,11 +92,11 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 {
 	string	raw_request;
 	ssize_t	ret = readAll(poll_info.pfd.fd, raw_request);
-
+(void)server;
 	//! TESTING PURPOSES
 	if (ret > 0)
 	{
-		cout << "Received data " << raw_request << endl;
+		cout << "Received data \n" << raw_request << endl;
 		_request.parseRequest(raw_request); 
 		_response = _request.handleRequest(server);
 	}
@@ -113,13 +113,14 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
  * @return The total number of bytes sent.
  * @throws std::runtime_error If an error occurs while sending data to the socket.
  */
-ssize_t	SocketPollManager::clientSend(SocketPollInfo poll_info)
+ssize_t	SocketPollManager::clientSend(SocketPollInfo poll_info, SocketManager& manager)
 {
 	string	response = _response.getResponse();
 	char	*buffer = (char *)response.c_str();
 	ssize_t	len_response = response.size();
 	ssize_t	len_sent = 0;
 
+	cout << "clientSend()" << endl; //!testing purposes
 	while (true)
 	{
 		ssize_t ret = send(poll_info.pfd.fd, buffer + len_sent, len_response - len_sent, MSG_DONTWAIT);
@@ -129,6 +130,8 @@ ssize_t	SocketPollManager::clientSend(SocketPollInfo poll_info)
 			break ;
 		len_sent += ret;
 	}
+	if (_request.getConnectionKeepAlive() == "close")
+		manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET);
 	return len_sent;
 }
 

@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:40:43 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/18 18:24:57 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/20 16:43:35 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ public:
 		void	establishConnection(t_sockfd server_socket, int port, SocketManager& manager);
 
 		void	clientHandler(SocketPollInfo poll_info, SocketManager& manager);
-		ssize_t	clientSend(SocketPollInfo poll_info);
+		ssize_t	clientSend(SocketPollInfo poll_info, SocketManager& manager);
 		void	clientRecv(SocketPollInfo poll_info, ServerConfig& server);
 	
 	//! testing purposes

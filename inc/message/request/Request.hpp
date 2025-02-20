@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/14 14:44:18 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/20 16:34:52 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ class Request : public AMessage
 
 		void		parseRequest(string raw_request);
 		Response	handleRequest(ServerConfig &server_config);
+
+		string		getConnectionKeepAlive() { return (_header["connection"]); }
 		
 		void		testParsing(); // For debugging purposes
 };

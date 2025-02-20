@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:45:48 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/18 14:42:37 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/19 15:22:28 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,6 @@ class WebServ
 {
 	private:
 		Config _conf;
-		SocketManager	*_sockets;
-
 		Response manageRequest(string raw_request, ServerConfig &server_config);
 
 	public:

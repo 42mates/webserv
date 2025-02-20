@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/11 14:16:57 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/19 14:56:18 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MACROS_H
 
 using namespace std;
+extern volatile int run_server; //used for the main loop (WebServ.cpp)
 
 /************ CONFIG ************/
 

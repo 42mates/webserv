@@ -6,19 +6,29 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:52:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/14 15:50:24 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/20 15:34:48 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketPollManager.hpp"
 #include "SocketManager.hpp"
 
+/**
+ * @brief Constructs a SocketPollManager object.
+ * 
+ * Initializes the SocketPollManager with the provided SocketManager instance.
+ * Copies the port information, poll file descriptors, and socket-to-poll mapping
+ * from the SocketManager.
+ * 
+ * @param manager Reference to the SocketManager instance.
+ */
 SocketPollManager::SocketPollManager(SocketManager& manager) : _response("300")
 {
 	_ports_info = manager.getPortsInfo();
 	_poll_fds = manager.getPollFds();
 	_socket_to_poll = manager.getSocketToPoll();
 }
+
 
 SocketPollManager::~SocketPollManager() {}
 
@@ -42,7 +52,15 @@ std::ostream& operator<<(std::ostream& os, const SocketPollManager& spm)
 }
 
 
-
+/**
+ * @brief Runs the poll loop to monitor socket events.
+ * 
+ * This function runs a loop that calls the poll system call to monitor socket events.
+ * It handles server and client events based on the poll results.
+ * 
+ * @param manager Reference to the SocketManager instance.
+ * @throws std::runtime_error If an error occurs during the poll system call.
+ */
 void	SocketPollManager::runPoll(SocketManager& manager)
 {
 	int				ret;
@@ -54,7 +72,6 @@ void	SocketPollManager::runPoll(SocketManager& manager)
 	cout << *this << endl;
 	while (true)
 	{
-		// cout << "Waiting for incoming connections..." << endl; //!testing purpose
 		ret = poll(&_poll_fds->at(0), _poll_fds->size(), 60 * 1000); // one min
 		
 		if (ret < 0)
@@ -69,7 +86,7 @@ void	SocketPollManager::runPoll(SocketManager& manager)
 			curr_fd = _poll_fds->at(i).fd;
 			curr_type = _socket_to_poll->at(curr_fd).type;
 			curr_revents = _poll_fds->at(i).revents;
-
+				//! will be cleaner in final version
 			tmp.pfd = _poll_fds->at(i);
 			tmp.port = _socket_to_poll->at(curr_fd).port;
 			tmp.type = curr_type;

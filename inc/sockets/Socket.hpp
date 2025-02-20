@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 13:47:24 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/18 18:28:13 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/20 15:30:51 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ struct SocketPollInfo
     e_SocketType	type;
     pollfd 			pfd;
 };
-//? storing he port on which the socket is ?
 
 /**
  * @brief Stores information about a connected client, for a given port.
