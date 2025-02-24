@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/14 16:51:14 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/24 13:12:34 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,15 +101,39 @@ void Request::parseHeader(string raw_request)
 	_header_parsed = true;
 }
 
+bool Request::isCompleteHeader(string raw_request)
+{
+	size_t end = 0;
+	string line;
+
+	while ((end = raw_request.find("\r\n")) == 0)
+		raw_request.erase(0, end + 2);
+	if (raw_request.empty())
+		return false;
+
+	if (raw_request.find("\r\n\r\n") == string::npos)
+		return false;
+	return true;
+}
+
 void Request::parseRequest(string raw_request)
 {
-	if (!_header_parsed)
+	_raw_request += raw_request;
+	if (isCompleteHeader(raw_request) && !_header_parsed)
 		parseHeader(raw_request);
+
+	if (_header_parsed && _header["expect"] == "100-continue")
+	{
+		//throw ResponseException(Response("100"));
+		_header["expect"] = "";
+	}
 
 	if (_method != "GET" || _method != "HEAD")
 	{
 		if (_header["content-length"].empty() && _header["transfer-encoding"] != "chunked")
 			throw ResponseException(Response("411"), "missing content-length header");
-		parseBody(raw_request.substr(_start));
+
+		if (_is_complete_request)
+			parseBody(raw_request.substr(_start));
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/14 14:44:18 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/24 13:03:40 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,14 @@ class Request : public AMessage
 		void	initMethodHandling();
 		
 		// PARSING
-		size_t	_start;
+		string	_raw_request;
+		bool	_is_complete_request;
 		bool	_header_parsed;
+		size_t	_start;
 		void	parseStartLine(string start_line);
 		void	parseHeaderLine(string header_line);
 		void	parseHeader(string header_line);
+		bool	isCompleteHeader(string raw_request);
 		void	parseBody(string body);
 		
 		// CHUNKED DECODING
@@ -62,5 +65,6 @@ class Request : public AMessage
 		void		parseRequest(string raw_request);
 		Response	handleRequest(ServerConfig &server_config);
 		
+		void		setIsCompleteRequest(bool is_end_of_request);
 		void		testParsing(); // For debugging purposes
 };
