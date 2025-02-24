@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/20 17:14:18 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/24 14:53:12 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,16 +80,37 @@ static ssize_t readAll(t_sockfd socket, string& raw_request)
 	return raw_request.size();
 }
 
-/**
- * @brief Receives data from the client.
- * 
- * This function reads data from the client socket and processes the received request.
- * 
- * @param poll_info The poll information containing the file descriptor and events.
- * @param server Reference to the ServerConfig instance.
- */
+
+static ssize_t	readOne(t_sockfd socket_fd, string& request, size_t client_max_body_size, ssize_t& total_bytes_read)
+{
+	const int	BUFFER_SIZE = 1024;
+	char		buffer[BUFFER_SIZE] = {0};
+	ssize_t		bytes_to_read = (client_max_body_size > BUFFER_SIZE ? BUFFER_SIZE : client_max_body_size);
+	ssize_t		bytes_received = 0;
+
+	if (total_bytes_read + bytes_to_read > client_max_body_size)
+		bytes_to_read = client_max_body_size - total_bytes_read;
+
+	bytes_received = recv(socket_fd, buffer, bytes_to_read, MSG_DONTWAIT);
+	request.clear();
+	request = buffer;
+
+	if (bytes_received != -1)
+		total_bytes_read += bytes_received;
+	return bytes_received;
+}
+
+// /**
+//  * @brief Receives data from the client.
+//  * 
+//  * This function reads data from the client socket and processes the received request.
+//  * 
+//  * @param poll_info The poll information containing the file descriptor and events.
+//  * @param server Reference to the ServerConfig instance.
+//  */
 void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& server)
 {
+	//timer here
 	string	raw_request;
 	ssize_t	ret = readAll(poll_info.pfd.fd, raw_request);
 (void)server;
@@ -97,13 +118,55 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 	if (ret > 0)
 	{
 		cout << "Received data \n" << raw_request << endl;
-		_request.parseRequest(raw_request); 
+		_request.parseRequest(raw_request); //except for 100 continue, return error. for 100 : keep request
 		_response = _request.handleRequest(server);
 	}
 	else
 		cout << "No data received" << endl;
+
+	// try
+	// {
+	// 	throw ResponseException(Response("404"));
+	// 	throw OneOtherExcteiopn;
+	// }
+	// catch(OneOtherException& e)
+	// {
+	// 	std::cerr << e.what() << '\n';
+	// }
+	// catch(Response100& e)
+	// 	keep_class; //keep doing clientRecv if code is 100, send to response class.
+	
+}
+//todo add getsockopt to check for errors like ewouldblock
+void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& server)
+{
+	ssize_t	total_bytes_read = 0;
+	string	request;
+	ssize_t	client_max_body_size = server.client_max_body_size;
+	ssize_t	ret;
+
+	while (total_bytes_read <= client_max_body_size)
+	{
+		ret = readOne(poll_info.pfd.fd, request, client_max_body_size, total_bytes_read);
+		if (ret < 0 && total_bytes_read == 0)
+			throw runtime_error("clientRecv() " + string(strerror(errno))); //! REMOVE AND REPLACE BY GETSOCKOPT()
+		if (ret == 0)
+			break ;
+		else
+		{
+			try 
+			{
+				_request.parseRequest(request);
+			}
+		}
+	}
 }
 
+
+//todo code for 100
+//todo do one clientrecv for one parse request
+//todo client_max_body_size OK
+//todo set the value of the boolean (all is read or not)
 /**
  * @brief Sends data to the client.
  * 

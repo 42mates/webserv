@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/20 14:11:51 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/24 13:27:24 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ Response WebServ::manageRequest(string raw_request, ServerConfig &server_config)
 
 
 
-
+//100 continue 
 //todo implement a getsockopt for error retrieving and error message handling
 void WebServ::run(const char* arg, int &ret)
 {
