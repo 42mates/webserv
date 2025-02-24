@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/14 15:08:45 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/24 13:06:17 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,12 @@ Request::Request()
 	initHeaderFields();
 	initMethodHandling();
 }
+
+void Request::setIsCompleteRequest(bool is_end_of_request)
+{
+	_is_complete_request = is_end_of_request;
+}
+
 
 void Request::testParsing()
 {
