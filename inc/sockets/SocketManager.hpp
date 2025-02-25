@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/18 18:37:53 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/25 17:31:05 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,10 @@ class SocketManager
 
 							/*UTILS*/
 
-		void			storeSocket(int port, t_sockfd socket, short options, e_SocketType type, ClientInfo *client);
-		void			removeClientSocket(int port, t_sockfd socket);
+		void			storeSocket(int port, t_sockfd socket_fd, short options, e_SocketType type, ClientInfo *client);
+		void			removeClientSocket(int port, t_sockfd socket_fd);
 		void			removeServerSocket(int port);
-		void			closeConnection(int port, t_sockfd socket, e_SocketType type);
+		void			closeConnection(int port, t_sockfd socket_fd, e_SocketType type);
 		//? Client's socket in non blocking ? (i.e. should it wait for an answer?)
 
 							/*RUNNING POLL*/

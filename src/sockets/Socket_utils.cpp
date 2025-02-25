@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:35:36 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/18 18:37:35 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/25 17:31:58 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,10 @@
  * @param socket The file descriptor of the socket to be closed.
  * @param type The type of the socket (SERVER_SOCKET or CLIENT_SOCKET).
  */
-void	SocketManager::closeConnection(int port, t_sockfd socket, e_SocketType type)
+void	SocketManager::closeConnection(int port, t_sockfd socket_fd, e_SocketType type)
 {
-	close(socket);
-	(type == SERVER_SOCKET) ? removeServerSocket(port) : removeClientSocket(port, socket);
+	close(socket_fd);
+	(type == SERVER_SOCKET) ? removeServerSocket(port) : removeClientSocket(port, socket_fd);
 }
 
 
@@ -45,24 +45,25 @@ static bool operator==(const pollfd& s, t_sockfd socket) { return s.fd == socket
  * @param port The port number associated with the socket.
  * @param socket The file descriptor of the socket to be removed.
  */
-void	SocketManager::removeClientSocket(int port, t_sockfd socket)
+void	SocketManager::removeClientSocket(int port, t_sockfd socket_fd)
 {
 	vector<ClientInfo>&	a_clients = _ports_info[port].clients;
 
-	vector<ClientInfo>::iterator to_del_client = find(a_clients.begin(), a_clients.end(), socket);
+	vector<ClientInfo>::iterator to_del_client = find(a_clients.begin(), a_clients.end(), socket_fd);
 	if (to_del_client != a_clients.end()) //!testing purposes
 	{
-		cout << GREY << "socket [" << socket << "] removed from clients vector" << NC << endl;
+		cout << GREY << "socket [" << socket_fd << "] removed from clients vector" << NC << endl;
 		a_clients.erase(to_del_client);
 	}
 
-	vector<pollfd>::iterator to_del_poll = find(_poll_fds.begin(), _poll_fds.end(), socket);
+	vector<pollfd>::iterator to_del_poll = find(_poll_fds.begin(), _poll_fds.end(), socket_fd);
 	if (to_del_poll != _poll_fds.end()) //!testing purposes
 	{
-		cout << GREY << "socket [" << socket << "] removed from pollfd vector" << NC << endl;
+		cout << GREY << "socket [" << socket_fd << "] removed from pollfd vector" << NC << endl;
 		_poll_fds.erase(to_del_poll);
 	}
-	_socket_to_poll.erase(socket);
+	_socket_to_poll.erase(socket_fd);
+	_poll_manager.removeSocket(socket_fd);
 }
 
 /**
@@ -107,18 +108,18 @@ void	SocketManager::removeServerSocket(int port)
  * @param type The type of the socket (SERVER_SOCKET or CLIENT_SOCKET).
  * @param client Pointer to the ClientInfo structure, if the socket is a client socket.
  */
-void	SocketManager::storeSocket(int port, t_sockfd socket, short options, e_SocketType type, ClientInfo *client)
+void	SocketManager::storeSocket(int port, t_sockfd socket_fd, short options, e_SocketType type, ClientInfo *client)
 {
 	SocketPollInfo	tmp;
 
-	tmp.pfd.fd = socket;
+	tmp.pfd.fd = socket_fd;
 	tmp.pfd.events = options;
 	tmp.pfd.revents = 0;
 	tmp.type = type;
 	tmp.port = port;
 
 	_poll_fds.push_back(tmp.pfd); //*pollfd is copied, so no dangling pointer issue
-	_socket_to_poll[socket] = tmp;
+	_socket_to_poll[socket_fd] = tmp;
 
 	if (client != NULL)
 		_ports_info[port].clients.push_back(*client);
