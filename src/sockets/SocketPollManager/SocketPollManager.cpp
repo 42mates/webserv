@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:52:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/25 18:18:41 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/26 15:26:22 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,15 +90,14 @@ void	SocketPollManager::removeSocket(t_sockfd socket_fd)
 void	SocketPollManager::runPoll(SocketManager& manager)
 {
 	int				ret;
-	SocketPollInfo	tmp;
 
+	cout << "Running webserv, press ctrl + C or ctrl + \\ to end" << endl;
 	while (true)
 	{
-		cout << *this << endl;
-
+		// cout << *this << endl; //!testing purposes
 		ret = poll(&_poll_fds->at(0), _poll_fds->size(), 60 * 1000); // one min
 		if (ret < 0)
-			throw runtime_error(string("SocketPollManager: runPoll(): ") + strerror(errno));
+			throw runtime_error(string("SocketPollManager::runPoll(): ") + strerror(errno));
 		if (ret == 0)
 			continue ;
 
@@ -106,8 +105,8 @@ void	SocketPollManager::runPoll(SocketManager& manager)
 		{
 			if (_poll_fds->at(i).revents == 0)
 				continue ;
-			tmp = getSocketInfo(_poll_fds->at(i));
-			(tmp.type == SERVER_SOCKET ? serverHandler(tmp, manager) : clientHandler(tmp, manager, _poll_fds->at(i).events));
+			SocketPollInfo socket_info = getSocketInfo(_poll_fds->at(i));
+			(socket_info.type == SERVER_SOCKET ? serverHandler(socket_info, manager) : clientHandler(socket_info, manager, _poll_fds->at(i).events));
 			ret--;
 		}
 	}

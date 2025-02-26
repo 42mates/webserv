@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:20:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/18 18:22:59 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/26 15:11:19 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,9 @@ void	serverPollHup(SocketPollInfo poll_info, SocketManager& manager, SocketPollM
 {
 	(void)poll_manager;
 
-	cout << "closing connection on listening socket [" << poll_info.pfd.fd << "] on port " << poll_info.port;
+	cout
+	<< MAGENTA << "closing connection on listening socket [" << NC << poll_info.pfd.fd
+	<< MAGENTA << "] on port " << NC << poll_info.port;
 	manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET);
 }
 
@@ -60,9 +62,10 @@ void	serverPollHup(SocketPollInfo poll_info, SocketManager& manager, SocketPollM
 void	serverPollErr(SocketPollInfo poll_info, SocketManager& manager, SocketPollManager& poll_manager)
 {
 	(void)poll_manager;
-
+//! issue with errno here too like in clientPollErr?
 	cerr
-	<< "SocketPollManager: serverHandler() error on listening socket [" << poll_info.pfd.fd << "] on port " << poll_info.port
+	<< BRED << "SocketPollManager::serverHandler() error on listening socket [" << NC << poll_info.pfd.fd
+	<< BRED << "] on port " << NC << poll_info.port
 	<< ": " << string(strerror(errno)) << endl;
 	manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET);
 }

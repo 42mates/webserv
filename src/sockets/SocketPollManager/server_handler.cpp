@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:31:21 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/25 16:52:02 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/26 15:32:17 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,18 @@ void	SocketPollManager::serverHandler(SocketPollInfo poll_info, SocketManager& m
 	for (size_t i = 0; i < (sizeof(server_events) / sizeof(server_events[0])); i++)
 	{
 		if (poll_info.pfd.revents & server_events[i].event)
-			server_events[i].handler(poll_info, manager, *this);
+		{
+			try
+			{
+				server_events[i].handler(poll_info, manager, *this);
+			}
+			catch (exception& e)
+			{
+				cerr << e.what() << endl;
+				manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET);
+				break ;
+			}
+		}
 	}
 }
 
@@ -57,6 +68,6 @@ void	SocketPollManager::establishConnection(t_sockfd server_socket, int port, So
 
 	new_client.client_fd = accept(server_socket, (sockaddr *) &new_client.address, &new_client.size);
 	if (new_client.client_fd == -1)
-		throw runtime_error(string("SocketPollManager: establishConnection() ") + strerror(errno));
+		throw runtime_error(string("SocketPollManager::establishConnection() ") + strerror(errno));
 	manager.storeSocket(port, new_client.client_fd, (POLLIN | POLLERR | POLLHUP), CLIENT_SOCKET, &new_client);
 }

@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 14:39:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/24 12:55:48 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/26 15:22:32 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,9 +97,6 @@ void SocketOperations::setToNonBlockingMode(t_sockfd socket)
 
     if (fcntl(socket, F_SETFL, flags | O_NONBLOCK) == -1)
 		throw std::runtime_error(string("SocketOperations: setToNonBlockingMode() ") + strerror(errno));
-
-	//! testing purposes
-	cout << "Socket: " << socket << " set to non blocking mode\n";
 }
 
 
