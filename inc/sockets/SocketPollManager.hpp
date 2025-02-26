@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:40:43 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/25 17:39:16 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/25 18:18:34 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class SocketManager;
 /*//TODO
 implement request and response class inside the function, not inside the class
 One class for one request and same for response
-
+//TODO 
 */
 class SocketPollManager
 {
@@ -51,7 +51,7 @@ public:
 		void	serverHandler(SocketPollInfo poll_info, SocketManager& manager);
 		void	establishConnection(t_sockfd server_socket, int port, SocketManager& manager);
 
-		void	clientHandler(SocketPollInfo poll_info, SocketManager& manager, short& fd_revents);
+		void	clientHandler(SocketPollInfo poll_info, SocketManager& manager, short& fd_events);
 		ssize_t	clientSend(SocketPollInfo& poll_info, SocketManager& manager);
 		void	clientRecv(SocketPollInfo poll_info, ServerConfig& server);
 

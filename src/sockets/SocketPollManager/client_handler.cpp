@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/25 18:14:39 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/26 15:00:26 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
  * @param manager Reference to the SocketManager instance.
  * @throws std::runtime_error If an error occurs while accepting the connection.
  */
-void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& manager, short& fd_revents)
+void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& manager, short& fd_events)
 {
 	eventHandler	client_events[] = {
 		{ POLLIN, clientPollIn },
@@ -43,9 +43,9 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 			{
 				client_events[i].handler(poll_info, manager, *this);
 				if (client_events[i].event == POLLIN)
-					fd_revents |= POLLOUT;
+					fd_events |= POLLOUT;
 				if (client_events[i].event == POLLOUT)
-					fd_revents &= ~POLLOUT;
+					fd_events &= ~POLLOUT;
 			}
 			catch (exception& e)
 			{
@@ -117,9 +117,7 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 		ret = readOne(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read);
 		if (ret < 0 && total_bytes_read == 0)
 			throw runtime_error("clientRecv() " + string(strerror(errno))); //! REMOVE AND REPLACE BY GETSOCKOPT()
-		else if (ret < 0)
-			break ;
-		if (ret == 0)
+		else if (ret <= 0)
 			break ;
 		try
 		{
@@ -148,7 +146,6 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 	{
 		
 		Response response = request.handleRequest(server);
-		cout << "clientRecv() end " << response.getResponse() << endl;
 		_socket_to_response[poll_info.pfd.fd] = response;
 	}
 	catch (exception& e)

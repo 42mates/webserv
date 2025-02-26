@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:35:36 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/25 17:31:58 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/26 13:05:43 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,17 +51,10 @@ void	SocketManager::removeClientSocket(int port, t_sockfd socket_fd)
 
 	vector<ClientInfo>::iterator to_del_client = find(a_clients.begin(), a_clients.end(), socket_fd);
 	if (to_del_client != a_clients.end()) //!testing purposes
-	{
-		cout << GREY << "socket [" << socket_fd << "] removed from clients vector" << NC << endl;
 		a_clients.erase(to_del_client);
-	}
-
 	vector<pollfd>::iterator to_del_poll = find(_poll_fds.begin(), _poll_fds.end(), socket_fd);
 	if (to_del_poll != _poll_fds.end()) //!testing purposes
-	{
-		cout << GREY << "socket [" << socket_fd << "] removed from pollfd vector" << NC << endl;
 		_poll_fds.erase(to_del_poll);
-	}
 	_socket_to_poll.erase(socket_fd);
 	_poll_manager.removeSocket(socket_fd);
 }
@@ -86,10 +79,7 @@ void	SocketManager::removeServerSocket(int port)
 
 	vector<pollfd>::iterator	to_del = find(_poll_fds.begin(), _poll_fds.end(), it_port_info->second.server_fd);
 	if (to_del != _poll_fds.end())
-	{
-		cout << GREY << "socket [" << it_port_info->second.server << "] removed from pollfd vector" << NC << endl;
 		_poll_fds.erase(to_del);
-	}
 
 	_ports_info.erase(port);
 	_socket_to_poll.erase(port);

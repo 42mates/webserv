@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:50:23 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/25 14:39:42 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/26 13:32:55 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,9 @@ void	clientPollHup(SocketPollInfo poll_info, SocketManager& manager, SocketPollM
 {
 	(void)poll_manager;
 
-	cout << "closing connection on client socket [" << poll_info.pfd.fd << "] on port " << poll_info.port;
+	cout
+	<< MAGENTA << "closing connection on client socket [" << NC << poll_info.pfd.fd
+	<< MAGENTA << "] on port " << NC << poll_info.port << endl;
 	manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET);
 }
 
@@ -78,8 +80,11 @@ void	clientPollErr(SocketPollInfo poll_info, SocketManager& manager, SocketPollM
 {
 	(void)poll_manager;
 
+	if (string(strerror(errno)) == "Success")
+		return ;
 	cerr
-	<< "SocketPollManager: clientHandler() error on client socket [" << poll_info.pfd.fd << "] on port " << poll_info.port
+	<< BRED << "SocketPollManager: clientHandler() error on client socket [" << NC << poll_info.pfd.fd
+	<< BRED << "] on port " << NC << poll_info.port
 	<< ": " << string(strerror(errno)) << endl;
 	manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET);
 }

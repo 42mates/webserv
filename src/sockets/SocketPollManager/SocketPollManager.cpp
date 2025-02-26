@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:52:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/25 18:01:05 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/25 18:18:41 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ void	SocketPollManager::runPoll(SocketManager& manager)
 			if (_poll_fds->at(i).revents == 0)
 				continue ;
 			tmp = getSocketInfo(_poll_fds->at(i));
-			(tmp.type == SERVER_SOCKET ? serverHandler(tmp, manager) : clientHandler(tmp, manager, _poll_fds->at(i).revents));
+			(tmp.type == SERVER_SOCKET ? serverHandler(tmp, manager) : clientHandler(tmp, manager, _poll_fds->at(i).events));
 			ret--;
 		}
 	}
