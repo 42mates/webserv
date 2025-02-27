@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/26 15:42:57 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/27 16:31:57 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,6 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 	}
 }
 
-/*
-timer starting in loop with a given time to not exceed
-*/
 
 /**
  * @brief Reads a portion of data from the socket.
@@ -92,8 +89,8 @@ static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_ma
 	return bytes_received;
 }
 
-//todo add getsockopt to check for errors like ewouldblock
 //todo timer
+//todo add getsockopt to check for errors like ewouldblock
 
 /**
  * @brief Receives data from the client.
@@ -119,18 +116,17 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 		else if (ret <= 0)
 			break ;
 		total_bytes_read == client_max_body_size ? request.setIsCompleteRequest(true) : (void)0;
-		request.parseRequest(raw_request);
-		// catch (ResponseException& e)
-		// {
-		// 	if (e.getResponse().getStatus() == "100")
-		// 	{
-		// 		//use send immediately here
-		// 		Response response = request.handleRequest(server); //Response declared locally to the if so issue but tkt
-		// 		//also, use a try catch again here?
-		// 		continue ; //check with the M for what to send
-		// 	}
-		// 	break ;
-		// }
+		// request.parseRequest(raw_request);
+		try { request.parseRequest(raw_request); }
+		catch (ResponseException& e)
+		{
+			if (e.getResponse().getStatus() == "100")
+			{
+				Response response = request.handleRequest(server); //Response declared locally so issue if needs to be called multiple times
+				//also, use a try catch again here?
+				continue ;
+			}
+		}
 	}
 	Response response = request.handleRequest(server);
 	_socket_to_response[poll_info.pfd.fd] = response;
@@ -153,7 +149,6 @@ ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& 
 	ssize_t		len_response = string_response.size();
 	ssize_t		len_sent = 0;
 
-	// cout << "clientSend()" << endl; //!testing purposes
 	while (len_sent != len_response)
 	{
 		ssize_t ret = send(poll_info.pfd.fd, buffer + len_sent, len_response - len_sent, MSG_DONTWAIT);
@@ -163,12 +158,6 @@ ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& 
 		if (ret == 0)
 			break ;
 	}
-	(void)manager;
-	// if (_request.getConnectionKeepAlive() == "close")
-		// manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET);
-	// poll_info.pfd.events
+	manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET); //*for now, connection close each time. Need to use connection-keep-alive
 	return len_sent;
 }
-
-
-

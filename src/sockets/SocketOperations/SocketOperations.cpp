@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 14:39:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/26 15:22:32 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/26 17:08:45 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void SocketOperations::createSocket(const std::string& ip, int port, PortInfo& p
 void SocketOperations::bindSocket(PortInfo& port_info)
 {
     if (bind(port_info.server_fd, (struct sockaddr*)(&port_info.server_address), sizeof(port_info.server_address)) < 0)
-        throw std::runtime_error(string("SocketOperations: bindSocket() ") + SOCKET_BINDING_ERROR);
+        throw std::runtime_error(string("SocketOperations::bindSocket() ") + SOCKET_BINDING_ERROR);
 }
 
 
@@ -74,7 +74,7 @@ void SocketOperations::bindSocket(PortInfo& port_info)
 void SocketOperations::listenSocket(PortInfo& port_info)
 {
     if (listen(port_info.server_fd, 10) < 0)//COME BACK connexion queue
-        throw std::runtime_error(string("SocketOperations: listenSocket() ") +  SOCKET_LISTENING_ERROR);
+        throw std::runtime_error(string("SocketOperations::listenSocket() ") +  SOCKET_LISTENING_ERROR);
 }
 
 
@@ -93,10 +93,10 @@ void SocketOperations::setToNonBlockingMode(t_sockfd socket)
     int flags = fcntl(socket, F_GETFL, 0);
 
     if (flags == -1)
-		throw std::runtime_error(string("SocketOperations: setToNonBlockingMode() ") + strerror(errno));
+		throw std::runtime_error(string("SocketOperations::setToNonBlockingMode() ") + strerror(errno));
 
     if (fcntl(socket, F_SETFL, flags | O_NONBLOCK) == -1)
-		throw std::runtime_error(string("SocketOperations: setToNonBlockingMode() ") + strerror(errno));
+		throw std::runtime_error(string("SocketOperations::setToNonBlockingMode() ") + strerror(errno));
 }
 
 
