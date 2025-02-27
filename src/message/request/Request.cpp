@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/24 13:06:17 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/27 15:30:48 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ void Request::initHeaderFields()
 {
 	_header["expect"];             // Required - Used for `100-continue` before sending request body
 	_header["host"];               // Required - Specifies the target host (mandatory in HTTP/1.1)
-	_header["content-length"];     // Required - Specifies the size of the request body
 
 	// UNIMPLEMENTED HEADER FIELDS
 	_header["accept"];             // Optional - Specifies preferred media types (e.g., text/html, application/json)
@@ -62,41 +61,4 @@ Request::Request()
 void Request::setIsCompleteRequest(bool is_end_of_request)
 {
 	_is_complete_request = is_end_of_request;
-}
-
-
-void Request::testParsing()
-{
-	string input;
-	string filepath;
-	cout << "Enter the path to the file to test, or empty for default (tools/message/request/valid/chunked.txt): ";
-	getline(cin, filepath);
-	if (filepath.empty())
-		filepath = "tools/message/request/valid/chunked.txt";
-	ifstream file(filepath.c_str());
-	for (string tmp; getline(file, tmp);)
-		input += tmp + "\r\n";
-	file.close();
-
-	try
-	{
-		parseRequest(input);
-		cout << "Method:  " << _method << endl;
-		cout << "URI:     " << _uri << endl;
-		cout << "Version: " << _version << endl;
-		cout << "Header:  " << endl;
-		for (map<string, string>::iterator it = _header.begin(); it != _header.end(); it++)
-		{
-			if (!it->second.empty())	
-				cout << "\t" << it->first << ": " << it->second << endl;
-		}
-		cout << "Body: " << _body << endl;
-	}
-	catch (ResponseException &e)
-	{
-		Response r = e.getResponse();
-		cout << r.getStatus() << " " << r.getReason() << endl;
-		//cout << r.getBody() << endl;
-		cout << e.what() << endl;
-	}
 }

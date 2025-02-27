@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebServ.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/24 13:27:24 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/27 16:39:45 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ Response WebServ::manageRequest(string raw_request, ServerConfig &server_config)
 		cerr << "debug: manageRequest(): " << e.what() << endl;
 		response = e.getResponse();
 	}
+	cout << response.getStatus() << " " << response.getReason() << endl;
 	return response;
 }
 
@@ -64,6 +65,18 @@ void WebServ::run(const char* arg, int &ret)
 	{
 		_conf.parse(_config_file);
 		sockets = new SocketManager(_conf.getServers());
+		// create and launch sockets
+
+		// main loop
+			// watch and accept connections
+			// read from sockets
+			//Request request;
+			//request.testParsing();
+			// handle requests
+			// send responses
+
+		// close sockets
+
 	}
 	catch(const exception& e)
 	{
@@ -88,29 +101,5 @@ void WebServ::run(const char* arg, int &ret)
 		}
 	}
 	delete sockets;
-	// try
-	// {
-	// 	_conf.parse(_config_file);
-	// 	SocketManager	sockets(_conf.getServers());
-	// 	_sockets = &sockets;
-	// 	_sockets->runPollManager();
-	// 	// create and launch sockets
-
-	// 	// main loop
-	// 		// watch and accept connections
-	// 		// read from sockets
-	// 		// Request request;
-	// 		// request.testParsing();
-	// 		// handle requests
-	// 		// send responses
-
-	// 	// close sockets
-
-	// }
-	// catch(const exception& e)
-	// {
-	// 	cerr << "webserv: " << e.what() << endl;
-	// 	ret = 1;
-	// }
-
+	
 }

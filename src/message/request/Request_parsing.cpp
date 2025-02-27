@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/24 13:12:34 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/27 16:14:10 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,9 @@ void Request::parseRequest(string raw_request)
 
 	if (_method != "GET" || _method != "HEAD")
 	{
-		if (_header["content-length"].empty() && _header["transfer-encoding"] != "chunked")
+		if (_header["content-length"].empty() && 
+			_header["transfer-encoding"] != "chunked"
+			&& !_header["transfer-encoding"].empty())
 			throw ResponseException(Response("411"), "missing content-length header");
 
 		if (_is_complete_request)

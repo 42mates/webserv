@@ -99,8 +99,10 @@ class Config
 
 		virtual void parse(string &config_file);
 
+		// GETTERS
+		vector<ServerConfig *>* getServers();
+
 		ServerConfig* getBestServer(const string &host, int port, const string &server_name);
-		vector<ServerConfig *>*	getServers() { return &_servers; }; //! added for constructor of SocketManager (confirm with le M)
 };
 	
 RouteConfig getBestRoute(const ServerConfig& server, const string &uri);

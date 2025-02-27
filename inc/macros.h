@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   macros.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/19 14:56:18 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/27 16:40:13 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ using namespace std;
 extern volatile int run_server; //used for the main loop (WebServ.cpp)
 
 /************ CONFIG ************/
+
+# define WEBSERV_PUBLIC_NAME "webserv"
 
 # define DEFAULT_CONFIG_FILE "tools/config/webserv.conf"
 # define DEFAULT_HOST "0.0.0.0"

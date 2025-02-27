@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/24 14:57:32 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/27 16:40:18 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,5 +68,7 @@ class Request : public AMessage
 		string		getConnectionKeepAlive() { return (_header["connection"]); }
 		
 		void		setIsCompleteRequest(bool is_end_of_request);
-		void		testParsing(); // For debugging purposes
+		
+		// TESTING
+		void		testParsing();
 };
