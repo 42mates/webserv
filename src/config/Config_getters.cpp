@@ -6,11 +6,16 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:37:29 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/11 17:50:09 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/27 16:18:52 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
+
+vector<ServerConfig*> Config::getServers()
+{
+	return _servers;
+}
 
 ServerConfig* Config::getBestServer(const string &host, int port, const string &server_name)
 {

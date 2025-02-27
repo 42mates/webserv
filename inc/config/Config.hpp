@@ -97,6 +97,9 @@ class Config
 
 		virtual void parse(string &config_file);
 
+		// GETTERS
+		vector<ServerConfig *> getServers();
+
 		ServerConfig* getBestServer(const string &host, int port, const string &server_name);
 };
 	
