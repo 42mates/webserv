@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/07 12:29:24 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/27 14:58:56 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,32 +46,49 @@ void Response::initStatusLine()
 	_status_line["413"] = "Request Entity Too Large";
 	_status_line["414"] = "Request-URI Too Large";
 	_status_line["415"] = "Unsupported Media Type";
-	_status_line["416"] = "Requested range not satisfiable";
+	_status_line["416"] = "Requested Range Not Satisfiable";
 	_status_line["417"] = "Expectation Failed";
 	_status_line["500"] = "Internal Server Error";
 	_status_line["501"] = "Not Implemented";
 	_status_line["502"] = "Bad Gateway";
 	_status_line["503"] = "Service Unavailable";
 	_status_line["504"] = "Gateway Time-out";
-	_status_line["505"] = "HTTP Version not supported";
+	_status_line["505"] = "HTTP Version Not Supported";
+
+	_status_line["DEFAULT"] = "Default Reason";
+}
+
+void Response::initHeaderFields()
+{
+	// MANDATORY 
+	_header["server"] = WEBSERV_PUBLIC_NAME;
+	//_header["date"];           //to update before sending
+	//_header["content-length"]; //to update before sending
+	
+	// MANDATORY FOR BODY RESPONSES
+	_header["content-type"];
+}
+
+Response::Response() 
+	: _status("DEFAULT")
+{
+	initStatusLine();
+	setErrorBody();
 }
 
 Response::Response(string status) 
-	: _status(status) 
+	: _status(status)
 {
 	initStatusLine();
 	if (_status_line.find(_status) == _status_line.end())
-		throw invalid_argument(string("debug: Response constructor with arg ") + _status + ": invalid status code");
+		throw invalid_argument(string("debug: Response constructor used with invalid arg \"") + _status + "\"");
 	setErrorBody();
 }
 
 Response::Response(const Response &other) 
-	: _status(other._status), _header(other._header), _body(other._body), _debug(other._debug) 
+	: _status(other._status), _body(other._body), _status_line(other._status_line)
 {
-	initStatusLine();
-	if (_status_line.find(_status) == _status_line.end())
-		throw invalid_argument(string("debug: Response constructor with arg ") + _status + ": invalid status code");
-	setErrorBody();
+	_header = other._header;
 }
 
 Response &Response::operator=(const Response &other)
@@ -81,7 +98,6 @@ Response &Response::operator=(const Response &other)
 		_status = other._status;
 		_header = other._header;
 		_body = other._body;
-		_debug = other._debug;
 	}
 	return *this;
 }
@@ -89,66 +105,31 @@ Response &Response::operator=(const Response &other)
 Response::~Response()
 {}
 
-void Response::setErrorBody()
+string Response::headerToString()
 {
-	_body = string("<html>\r\n") 
-		+ "<head><title>" + _status + " " + _status_line[_status] + "</title></head>\r\n"
-		+ "<body>\r\n"
-		+ "<center><h1>" + _status + " " + _status_line[_status] + "</h1></center>\r\n"
-		+ "<hr><center>webserv/1.0</center>\r\n"
-		+ "</body>\r\n"
-		+ "</html>\r\n";
+	string header;
+	for (map<string, string>::iterator it = _header.begin(); it != _header.end(); it++)
+	{
+		if (!it->second.empty())
+			header += it->first + ": " + it->second + "\n";
+	}
+	return header;
 }
 
-void Response::setHeader(string header)
+string Response::addCRLF(string str)
 {
-	_header = header;
-}
-
-void Response::setBody(string body)
-{
-	_body = body;
-}
-
-void Response::setDebug(string debug)
-{
-	_debug = debug;
-}
-
-string Response::getResponse()
-{
-	return _status + "\n" + _header + "\n" + _body;
-}
-
-string Response::getStatus()
-{
-	return _status;
-}
-
-string Response::getReason()
-{
-	return _status_line[_status];
-}
-
-string Response::getHeader()
-{
-	return _header;
-}
-
-string Response::getBody()
-{
-	return _body;
-}
-
-string Response::getDebug()
-{
-	return _debug;
+	size_t pos = 0;
+	while ((pos = str.find("\n", pos)) != string::npos) 
+	{
+		str.replace(pos, 1, "\r\n");
+		pos += 2;
+	}
+	return str;
 }
 
 void Response::print()
 {
 	cout << "Status: " << _status << endl;
-	cout << "Header: " << _header << endl;
+	cout << "Header: " << headerToString() << endl;
 	cout << "Body: " << _body << endl;
-	cout << "Debug: " << _debug << endl;
 }

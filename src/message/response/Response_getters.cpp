@@ -1,31 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   WebServ.hpp                                        :+:      :+:    :+:   */
+/*   Response_getters.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/08 14:45:48 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/11 15:23:05 by mbecker          ###   ########.fr       */
+/*   Created: 2025/02/27 14:29:34 by mbecker           #+#    #+#             */
+/*   Updated: 2025/02/27 14:37:16 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#include "Response.hpp"
 
-#include "libs.h"
-#include "macros.h"
-#include "Config.hpp"
-#include "Request.hpp"
-
-class WebServ
+string Response::getResponse()
 {
-	private:
-		Config _conf;
-		Response manageRequest(string raw_request, ServerConfig &server_config);
+	return addCRLF(_status + "\n" + headerToString() + "\n" + _body);
+}
 
-	public:
-		WebServ();
-		~WebServ();
+string Response::getStatus()
+{
+	return _status;
+}
 
-		void run(const char* conf_file, int &ret);
-};
+string Response::getReason()
+{
+	return _status_line[_status];
+}
+
+string Response::getHeader()
+{
+	return headerToString();
+}
+
+string Response::getHeader(string key)
+{
+	return _header[key];
+}
+
+string Response::getBody()
+{
+	return _body;
+}
