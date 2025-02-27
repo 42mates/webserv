@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/24 13:03:40 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/27 15:54:09 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,5 +66,7 @@ class Request : public AMessage
 		Response	handleRequest(ServerConfig &server_config);
 		
 		void		setIsCompleteRequest(bool is_end_of_request);
-		void		testParsing(); // For debugging purposes
+		
+		// TESTING
+		void		testParsing();
 };

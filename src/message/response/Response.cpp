@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/14 16:43:45 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/27 14:58:56 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,17 @@ void Response::initStatusLine()
 	_status_line["DEFAULT"] = "Default Reason";
 }
 
+void Response::initHeaderFields()
+{
+	// MANDATORY 
+	_header["server"] = WEBSERV_PUBLIC_NAME;
+	//_header["date"];           //to update before sending
+	//_header["content-length"]; //to update before sending
+	
+	// MANDATORY FOR BODY RESPONSES
+	_header["content-type"];
+}
+
 Response::Response() 
 	: _status("DEFAULT")
 {
@@ -75,8 +86,10 @@ Response::Response(string status)
 }
 
 Response::Response(const Response &other) 
-	: _status(other._status), _header(other._header), _body(other._body), _status_line(other._status_line)
-{}
+	: _status(other._status), _body(other._body), _status_line(other._status_line)
+{
+	_header = other._header;
+}
 
 Response &Response::operator=(const Response &other)
 {
@@ -92,63 +105,31 @@ Response &Response::operator=(const Response &other)
 Response::~Response()
 {}
 
-void Response::setErrorBody()
+string Response::headerToString()
 {
-	_body = string("<html>\r\n") 
-		+ "<head><title>" + _status + " " + _status_line[_status] + "</title></head>\r\n"
-		+ "<body>\r\n"
-		+ "<center><h1>" + _status + " " + _status_line[_status] + "</h1></center>\r\n"
-		+ "<hr><center>webserv/1.0</center>\r\n"
-		+ "</body>\r\n"
-		+ "</html>\r\n";
+	string header;
+	for (map<string, string>::iterator it = _header.begin(); it != _header.end(); it++)
+	{
+		if (!it->second.empty())
+			header += it->first + ": " + it->second + "\n";
+	}
+	return header;
 }
 
-void Response::setStatus(string status)
+string Response::addCRLF(string str)
 {
-	if (_status_line.find(status) == _status_line.end())
-		throw invalid_argument(string("debug: Response setStatus() used with invalid arg \"") + status + "\"");
-	_status = status;
+	size_t pos = 0;
+	while ((pos = str.find("\n", pos)) != string::npos) 
+	{
+		str.replace(pos, 1, "\r\n");
+		pos += 2;
+	}
+	return str;
 }
-
-void Response::setHeader(string header)
-{
-	_header = header;
-}
-
-void Response::setBody(string body)
-{
-	_body = body;
-}
-
-string Response::getResponse()
-{
-	return _status + "\n" + _header + "\n" + _body;
-}
-
-string Response::getStatus()
-{
-	return _status;
-}
-
-string Response::getReason()
-{
-	return _status_line[_status];
-}
-
-string Response::getHeader()
-{
-	return _header;
-}
-
-string Response::getBody()
-{
-	return _body;
-}
-
 
 void Response::print()
 {
 	cout << "Status: " << _status << endl;
-	cout << "Header: " << _header << endl;
+	cout << "Header: " << headerToString() << endl;
 	cout << "Body: " << _body << endl;
 }
