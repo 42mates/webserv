@@ -30,7 +30,7 @@ struct RouteConfig {
 	string path;             	// Path of the route (e.g., "/upload")	
 	vector<string> methods;  	// Accepted HTTP methods (e.g., {"GET", "POST"})	
 	bool directory_listing;  	// Enable or disable directory listing	
-	vector<string> index_file;  // Default file for a directory (e.g., "index.html")	//todo pass index_file as vector
+	vector<string> index_file;  // Default file for a directory (e.g., "index.html")
 	string cgi_path;         	// Path to the CGI program (e.g., "/usr/bin/php-cgi")	
 	string upload_dir;       	// Upload directory for sent files	
 	string http_redirect;    	// HTTP redirection (e.g., "301 https://example.com")
@@ -43,6 +43,8 @@ struct RouteConfig {
 		directory_listing(false),
 		cgi_path(""),
 		upload_dir("tools/uploads"),
+
+		
 		http_redirect("")
 	{
 		methods.push_back("GET");
@@ -98,7 +100,7 @@ class Config
 		virtual void parse(string &config_file);
 
 		// GETTERS
-		vector<ServerConfig *> getServers();
+		vector<ServerConfig *>* getServers();
 
 		ServerConfig* getBestServer(const string &host, int port, const string &server_name);
 };

@@ -6,15 +6,15 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:37:29 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/27 16:18:52 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/27 16:42:15 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
 
-vector<ServerConfig*> Config::getServers()
+vector<ServerConfig*>* Config::getServers()
 {
-	return _servers;
+	return &_servers;
 }
 
 ServerConfig* Config::getBestServer(const string &host, int port, const string &server_name)
@@ -79,15 +79,13 @@ RouteConfig getBestRoute(const ServerConfig& server, const string &uri)
 {
 	RouteConfig* best = NULL;
 	size_t best_len = 0;
-	map<string, RouteConfig> routes;
 
-	routes = server.routes;
-	getBestRouteHelper(uri, routes, best, best_len);
+	getBestRouteHelper(uri, const_cast<map<string, RouteConfig>&>(server.routes), best, best_len);
 	if (best)
 		return *best;
-	if (routes.count("/"))
-		return routes.at("/");
+	if (server.routes.count("/"))
+		return server.routes.at("/");
 	else
-		return routes.begin()->second;
+		return server.routes.begin()->second;
 	throw runtime_error("No route found and no default route defined");
 }

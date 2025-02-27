@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config_parsing.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:34:33 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/12 19:01:29 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/18 14:43:37 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,8 @@ bool Config::isDuplicateServer(ServerConfig *sconfig)
 	}
 	return false;
 }
-
+#include "SocketManager.hpp"
+ostream& operator<<(ostream& o, const PortInfo& rhs);
 void Config::parse(string &config_file)
 {
 	_path = config_file;
@@ -141,7 +142,4 @@ void Config::parse(string &config_file)
 
 		it = end;
 	}
-
-	//printConfig(_servers);
-	
 }

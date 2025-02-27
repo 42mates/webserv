@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/27 15:54:09 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/27 16:40:18 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@ class Request : public AMessage
 
 		void		parseRequest(string raw_request);
 		Response	handleRequest(ServerConfig &server_config);
+
+		string		getConnectionKeepAlive() { return (_header["connection"]); }
 		
 		void		setIsCompleteRequest(bool is_end_of_request);
 		

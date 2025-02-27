@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks_parsing.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/03 15:19:26 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/11 14:17:26 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@ void printVector(const vector<ConfigToken>& v)
 
 
 /*********** SERVER BLOCK ***********/
-
-//TODO listen directive accepts an IP and/or a port.
 
 /**
  * @brief Puts a string between double quotes and returns it.
@@ -113,6 +111,7 @@ void ServerBlock::parseListen(vector<ConfigToken> val)
 	if (tmp_port > 65535)
 		throw runtime_error(INVALID_PORT + qString(val[0].token) + string(" of the \"listen\" directive in ") + _filepath + ":" + itostr(val[0].line));
 	_config->port = tmp_port;
+	_config->host = ip;
 }
 
 void ServerBlock::parseServerName(vector<ConfigToken> val)
@@ -171,7 +170,7 @@ void ServerBlock::parseClientMaxBodySize(vector<ConfigToken> val)
 	istringstream	iss(val[0].token);
 	iss >> bytes;
 	if (iss.fail())
-		throw runtime_error("string stream conversion error in parseClientMaxBodySize");
+		throw runtime_error("string stream conversion error in parseClientMaxBodySize()");
 	bytes *= bytes_multiplier;
 	if (bytes == 0)
 		_config->client_max_body_size = string::npos; //* disables the limit

@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:43:34 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/10 16:06:58 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/11 14:17:09 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/WebServ.hpp"
+#include "libs.h"
+#include "SocketManager.hpp"
 
 int main(int argc, char **argv)
 {

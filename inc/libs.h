@@ -36,7 +36,7 @@
 # include <cstdlib>       // General utilities (exit, etc.)
 # include <cstdio>        // Standard I/O (for CGI)
 # include <cerrno>        // Error handling
-
+# include <signal.h>	  // Signals
 # include "macros.h"      // Macros for the project
 
 # include "utils.hpp"     // Utilities functions (like itostr)

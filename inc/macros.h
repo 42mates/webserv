@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/27 14:53:45 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/27 16:40:13 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MACROS_H
 
 using namespace std;
+extern volatile int run_server; //used for the main loop (WebServ.cpp)
 
 /************ CONFIG ************/
 
@@ -45,9 +46,11 @@ enum ConfigTokenType
 /************ ERRORS ************/
 
 //--> SocketManager.cpp
-# define SOCKET_CREATION_ERROR "unable to create socket's fd\n"
-# define SOCKET_BINDING_ERROR "unable to bind socket\n"
-# define SOCKET_LISTENING_ERROR "unable to set one socket to a listening state\n"
+# define PORT_ALREADY_IN_USE "port already in use"
+
+# define SOCKET_CREATION_ERROR "unable to create socket's fd"
+# define SOCKET_BINDING_ERROR "unable to bind socket"
+# define SOCKET_LISTENING_ERROR "unable to set one socket to a listening state"
 
 //--> Blocks_parsing.cpp
 # define INVALID_NUMBER_OF_ARGUMENTS_IN "invalid number of arguments in "
