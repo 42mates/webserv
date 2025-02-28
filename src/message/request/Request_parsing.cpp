@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/27 16:14:10 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 13:15:32 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ void Request::parseRequest(string raw_request)
 
 	if (_header_parsed && _header["expect"] == "100-continue")
 	{
-		//throw ResponseException(Response("100"));
+		throw ContinueException();
 		_header["expect"] = "";
 	}
 

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/27 16:39:45 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 13:22:45 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,33 +23,22 @@ WebServ::WebServ()
 WebServ::~WebServ()
 {}
 
-/**
- * @brief Manages an incoming HTTP request and generates an appropriate response.
- *
- * @param raw_request The raw HTTP request string to be processed.
- * @param server_config The server configuration object used to handle the request.
- * @returns A reference to the generated Response object.
- */
-Response WebServ::manageRequest(string raw_request, ServerConfig &server_config)
-{
-	Request request;
-	Response response;
 
+void WebServ::handleAction()
+{
+	//handleAction
 	try
 	{
-		request.parseRequest(raw_request);
-		response = request.handleRequest(server_config);
+		//gestion des requests
 	}
-	catch(const ResponseException& e)
+	catch (ResponseException& e)
 	{
-		cerr << "debug: manageRequest(): " << e.what() << endl;
-		response = e.getResponse();
+		cerr << "debug: " << e.what() << endl; //debug message 
+		
+		Response response = e.getResponse();
 	}
-	cout << response.getStatus() << " " << response.getReason() << endl;
-	return response;
+	//envoi des reponses
 }
-
-
 
 
 //100 continue 
@@ -64,42 +53,23 @@ void WebServ::run(const char* arg, int &ret)
 	try
 	{
 		_conf.parse(_config_file);
+
 		sockets = new SocketManager(_conf.getServers());
-		// create and launch sockets
 
-		// main loop
-			// watch and accept connections
-			// read from sockets
-			//Request request;
-			//request.testParsing();
-			// handle requests
-			// send responses
+		while (run_server)
+			sockets->runPollManager();
+	
+		//checkPoll
 
-		// close sockets
+		handleAction();
 
 	}
 	catch(const exception& e)
 	{
 		cerr << "webserv: " << e.what() << endl;
 		ret = 1;
-		if (sockets != NULL)
-			delete sockets;
-		return ;
 	}
-	while (run_server)
-	{
-		try
-		{
-			sockets->runPollManager();
-		}
-		catch(const exception& e)
-		{
-			cerr << "webserv: " << e.what() << endl;
-			ret = 1;
-			delete sockets;
-			return ;
-		}
-	}
-	delete sockets;
+	if (sockets != NULL)
+		delete sockets;
 	
 }

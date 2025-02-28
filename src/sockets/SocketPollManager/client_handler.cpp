@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/27 16:31:57 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/28 13:16:07 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,7 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 	ssize_t		client_max_body_size = server.client_max_body_size;
 	ssize_t		ret;
 	Request		request;
+	Response	response;
 
 	while (total_bytes_read <= client_max_body_size)
 	{
@@ -116,19 +117,23 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 		else if (ret <= 0)
 			break ;
 		total_bytes_read == client_max_body_size ? request.setIsCompleteRequest(true) : (void)0;
-		// request.parseRequest(raw_request);
-		try { request.parseRequest(raw_request); }
-		catch (ResponseException& e)
+		try 
 		{
-			if (e.getResponse().getStatus() == "100")
-			{
-				Response response = request.handleRequest(server); //Response declared locally so issue if needs to be called multiple times
-				//also, use a try catch again here?
-				continue ;
-			}
+			request.parseRequest(raw_request);
 		}
+		catch (ContinueException)
+		{
+			//store ResponseException class into the map
+			//call clientSend here to inform that the request can continue
+			//continue loop
+		}
+
 	}
-	Response response = request.handleRequest(server);
+	if (response.getStatus() == "DEFAULT")
+		response = request.handleRequest(server);
+
+	cout << response.getStatus() << " " << response.getReason() << endl; //debug type de reponse
+
 	_socket_to_response[poll_info.pfd.fd] = response;
 }
 

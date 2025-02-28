@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/27 16:40:24 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 13:14:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,23 @@ class ResponseException : public exception
 		ResponseException(const Response &response) : _response(response) {}
 		ResponseException(const Response &response, string debug) : _response(response), _debug(debug) {} // debug
 		~ResponseException() throw() {}
+
+		const char *what() const throw() { return _debug.c_str(); } // debug
+		Response getResponse() const { return _response; }
+};
+
+/**
+ * @brief Exception class for throwing A 100 Continue Response.
+ */
+class ContinueException : public exception
+{
+	private:
+		Response _response;
+		string _debug; // debug
+	public:
+		ContinueException() : _response(Response("100")) {}
+		ContinueException(string debug) : _response(Response("100")), _debug(debug) {} // debug
+		~ContinueException() throw() {}
 
 		const char *what() const throw() { return _debug.c_str(); } // debug
 		Response getResponse() const { return _response; }
