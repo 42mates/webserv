@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/25 17:31:05 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/28 14:09:20 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ class SocketManager
 		vector<ClientInfo>*				getClientsInfo(int port);
 		vector<pollfd>*					getPollFds( void );
 		map<t_sockfd, SocketPollInfo>*	getSocketToPoll( void );
+		SocketPollManager&				getSocketPollManager( void );
 
 							/*UTILS*/
 

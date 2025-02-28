@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:34:48 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/18 18:30:53 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/28 14:10:02 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,3 +94,5 @@ vector<pollfd>*	SocketManager::getPollFds() { return &_poll_fds; }
  * @return A pointer to the map of socket poll information.
  */
 map<t_sockfd, SocketPollInfo>*	SocketManager::getSocketToPoll() { return &_socket_to_poll;	}
+
+SocketPollManager&	SocketManager::getSocketPollManager() { return _poll_manager; }

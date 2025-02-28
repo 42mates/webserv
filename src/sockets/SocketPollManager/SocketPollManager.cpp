@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketPollManager.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:52:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/28 12:52:45 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 15:24:44 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,16 @@ SocketPollInfo	SocketPollManager::getSocketInfo(pollfd pfd)
 	info.type = _socket_to_poll->at(pfd.fd).type;
 
 	return info;
+}
+
+map<t_sockfd, Request>*	SocketPollManager::getSocketToRequest() 
+{
+	return &_socket_to_request;
+}
+
+map<t_sockfd, Response>*	SocketPollManager::getSocketToResponse() 
+{
+	return &_socket_to_response;
 }
 
 void	SocketPollManager::removeSocket(t_sockfd socket_fd)

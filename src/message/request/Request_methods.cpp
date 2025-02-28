@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request_methods.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/14 13:54:43 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 16:04:44 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,16 @@ static string getFile(const string &path)
 	ifstream file(path.c_str());
 	if (!file.is_open() || !file.good())
 		throw ResponseException(Response("404"), "getFile(): could not open file " + path);
-
-	string content((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+	
+	string content;
+	try
+	{
+		content.assign((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+	}
+	catch(const std::exception& e)
+	{
+		throw ResponseException(Response("404"), "getFile(): " + string(e.what()));
+	}
 
 	file.close();
 
@@ -31,7 +39,6 @@ static string getFile(const string &path)
 Response Request::handleGet()
 {
 	Response response;
-
 	try
 	{
 		string file = getFile(_uri);
@@ -40,10 +47,9 @@ Response Request::handleGet()
 	}
 	catch(const ResponseException& e)
 	{
-		cerr << "debug: " << "handleGet(): " << e.what() << endl;
+		cerr << "debug: " << e.what() << endl;
 		response = e.getResponse();
 	}
-
 	return response;
 }
 

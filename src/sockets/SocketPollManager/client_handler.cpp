@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/28 13:16:07 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 15:35:09 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,6 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 	ssize_t		client_max_body_size = server.client_max_body_size;
 	ssize_t		ret;
 	Request		request;
-	Response	response;
 
 	while (total_bytes_read <= client_max_body_size)
 	{
@@ -129,12 +128,7 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 		}
 
 	}
-	if (response.getStatus() == "DEFAULT")
-		response = request.handleRequest(server);
-
-	cout << response.getStatus() << " " << response.getReason() << endl; //debug type de reponse
-
-	_socket_to_response[poll_info.pfd.fd] = response;
+	_socket_to_request[poll_info.pfd.fd] = request;
 }
 
 /**
@@ -146,10 +140,10 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
  * @return The total number of bytes sent.
  * @throws std::runtime_error If an error occurs while sending data to the socket.
  */
-ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& manager)
+ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& manager, ServerConfig& server)
 {
-	Response	*class_response = &_socket_to_response[poll_info.pfd.fd]; 
-	string		string_response = class_response->getResponse();
+	Response	class_response = _socket_to_request[poll_info.pfd.fd].handleRequest(server);
+	string		string_response = class_response.getResponse();
 	char		*buffer = (char *)string_response.c_str();
 	ssize_t		len_response = string_response.size();
 	ssize_t		len_sent = 0;

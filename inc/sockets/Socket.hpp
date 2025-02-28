@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 13:47:24 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/20 15:30:51 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/28 15:31:15 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ struct PortInfo
 	vector<ClientInfo>				clients;
 	ServerConfig					*server;
 
-	PortInfo() : server_fd(-1)
+	PortInfo() : server_fd(-1), server(NULL)
 	{
 		memset(&server_address, 0, sizeof(server_address));
 	}

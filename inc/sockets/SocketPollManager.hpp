@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:40:43 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/25 18:18:34 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/28 15:28:36 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ private:
 		map<int, PortInfo>				*_ports_info;
 		vector<pollfd>					*_poll_fds;
 		map<t_sockfd, SocketPollInfo>	*_socket_to_poll;
+		map<t_sockfd, Request>			_socket_to_request;
 		map<t_sockfd, Response>			_socket_to_response;
 
 public:
@@ -52,11 +53,13 @@ public:
 		void	establishConnection(t_sockfd server_socket, int port, SocketManager& manager);
 
 		void	clientHandler(SocketPollInfo poll_info, SocketManager& manager, short& fd_events);
-		ssize_t	clientSend(SocketPollInfo& poll_info, SocketManager& manager);
+		ssize_t	clientSend(SocketPollInfo& poll_info, SocketManager& manager, ServerConfig& server);
 		void	clientRecv(SocketPollInfo poll_info, ServerConfig& server);
 
-		SocketPollInfo	getSocketInfo(pollfd pfd);
-	
+		SocketPollInfo				getSocketInfo(pollfd pfd);
+		map<t_sockfd, Request>*		getSocketToRequest( void );
+		map<t_sockfd, Response>*	getSocketToResponse( void );
+
 		void	removeSocket(t_sockfd socket_fd);
 	//! testing purposes
 
