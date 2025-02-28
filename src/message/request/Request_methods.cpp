@@ -3,21 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   Request_methods.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 16:04:44 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/02/28 17:11:34 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
+string Request::getFilePath(const string &path)
+{
+	vector<string> paths;
+
+	paths.push_back(path);
+	for (size_t i = 0; i < _route_conf.index_file.size(); ++i)
+		paths.push_back(path + "/" + _route_conf.index_file[i]);
+	
+	for (size_t i = 0; i < paths.size(); ++i)
+	{
+		struct stat buffer;
+		if (stat(paths[i].c_str(), &buffer) == 0)
+		{
+			if (S_ISREG(buffer.st_mode) && access(paths[i].c_str(), R_OK) == 0)
+				return paths[i];
+		}
+	}
+	throw ResponseException(Response("404"), "getFilePath(): could not find file " + path);	
+}
+
 /**
  * @brief Reads the entire content of a file into a string.
  */
-static string getFile(const string &path)
+string Request::getFile(const string &path)
 {
-	ifstream file(path.c_str());
+	ifstream file(getFilePath(path).c_str());
 	if (!file.is_open() || !file.good())
 		throw ResponseException(Response("404"), "getFile(): could not open file " + path);
 	
@@ -41,7 +61,7 @@ Response Request::handleGet()
 	Response response;
 	try
 	{
-		string file = getFile(_uri);
+		string file = getFile(_route_conf.root);
 		response.setBody(file);
 		response.setStatus("200");
 	}
@@ -50,6 +70,7 @@ Response Request::handleGet()
 		cerr << "debug: " << e.what() << endl;
 		response = e.getResponse();
 	}
+	cout << GREEN << "RESPONSE ACCEPTED 😎" << NC << endl;
 	return response;
 }
 

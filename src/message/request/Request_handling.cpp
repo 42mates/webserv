@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 14:42:22 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 17:08:58 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,11 +60,14 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	// find the best matching route
 	_server_conf = server_conf;
 	_route_conf = getBestRoute(_server_conf, _uri);
+	//printConfig(_server_conf);
+	//printConfig(_route_conf);
 
 	try
 	{
 		checkStartLine();
 		checkHeader();
+		// check if method is authorized
 	}
 	catch(const ResponseException& e)
 	{

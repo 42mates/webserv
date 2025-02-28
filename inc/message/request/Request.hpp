@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/27 16:40:18 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 16:55:58 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ class Request : public AMessage
 		map<string, Response (Request::*)()> _method_handling; // Map of methods to their handling functions
 		ServerConfig	_server_conf;
 		RouteConfig		_route_conf;
+		string		getFilePath(const string &path);
+		string		getFile(const string &path);
 		Response	handleGet();
 		Response	handleHead();
 		Response	handlePost();

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 14:29:34 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 13:12:03 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 16:53:18 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 string Response::getResponse()
 {
-	return addCRLF(_status + "\n" + headerToString() + "\n\n" + _body);
+	return addCRLF("HTTP/1.1 " + _status + "\n" + headerToString() + "\n" + _body);
 }
 
 string Response::getStatus()
