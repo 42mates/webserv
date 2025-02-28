@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 14:29:34 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/27 14:49:25 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 15:31:26 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,9 @@ void Response::setErrorBody()
 		+ "<hr><center>webserv/1.0</center>\n"
 		+ "</body>\n"
 		+ "</html>\n";
+}
+
+void Response::setDate()
+{
+	_header["date"] = getDate();
 }

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/12 19:26:13 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 14:42:22 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,11 @@ void Request::checkHeader()
 {
 	if (_header["host"].empty())
 		throw ResponseException(Response("400"), "missing required header field \"Host\"");
-	if (_header["content-length"].empty())
-		throw ResponseException(Response("400"), "missing required header field \"Content-Length\"");
 	if (!_header["expect"].empty() && _header["expect"] != "100-continue")
 		throw ResponseException(Response("417"), "expect value not supported");
+
+	//if (_header["content-length"].empty())
+	//	throw ResponseException(Response("400"), "missing required header field \"Content-Length\"");
 }
 
 

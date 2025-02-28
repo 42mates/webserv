@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:30:39 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/27 15:50:29 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 15:28:49 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,18 @@ string getTestRequest()
 	file.close();
 
 	return input;
+}
+
+/**
+ * @brief Get the current date and time in GMT as a HTTP-date formatted string.
+ * 
+ * @return The current date and time in GMT, formatted as `Day, DD Mon YYYY HH:MM:SS GMT`.
+ */
+string getDate()
+{
+	time_t now = time(0);
+	tm *gmtm = gmtime(&now);
+	char buf[80];
+	strftime(buf, sizeof(buf), "%a, %d %b %Y %H:%M:%S GMT", gmtm);
+	return string(buf);
 }

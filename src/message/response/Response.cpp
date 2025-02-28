@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/27 14:58:56 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/02/28 15:38:20 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,9 +60,9 @@ void Response::initStatusLine()
 
 void Response::initHeaderFields()
 {
-	// MANDATORY 
+	// MANDATORY
 	_header["server"] = WEBSERV_PUBLIC_NAME;
-	//_header["date"];           //to update before sending
+	_header["date"] = getDate(); //to update before sending
 	//_header["content-length"]; //to update before sending
 	
 	// MANDATORY FOR BODY RESPONSES
