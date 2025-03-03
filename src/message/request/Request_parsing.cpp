@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 15:12:41 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/03 14:38:20 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void Request::parseHeaderLine(string header_line)
 {
 	size_t pos = header_line.find(":");
 	if (pos == 0 || pos == string::npos)
-		throw ResponseException(Response("400"), "invalid header line format");
+		throw ResponseException(Response("400"), "invalid header line format: \"" + header_line + "\"");
 
 	string key = header_line.substr(0, pos);
 	header_line.erase(0, pos + 1);
@@ -117,16 +117,30 @@ bool Request::isCompleteHeader(string raw_request)
 	return true;
 }
 
-void Request::parseRequest(string raw_request)
+void Request::parseRequest(string request_chunk)
 {
-	_raw_request += raw_request;
+	_raw_request += request_chunk;
+	
+	if (!_is_complete_request) 
+		cout << "parseRequest called with incomplete request" << endl;
 
-	cout << "------RAW REQUEST------" << endl;
-	cout << _raw_request << endl;
+	cout << "\n------RAW REQUEST------" << endl; {
+		size_t i = 0;
+		for (; i < _raw_request.size(); ++i) 
+		{
+			if (_raw_request[i] == '\r')
+				cout << RED << "\\r" << NC;
+			else if (_raw_request[i] == '\n')
+				cout << RED << "\\n" << NC << endl;
+			else
+				cout << _raw_request[i];
+		}
+		if (--i == _raw_request.size() - 1 && _raw_request[i] != '\n')
+			cout << BRED << "%\n" << NC;}
 	cout << "-----------------------" << endl;
 
-	if (isCompleteHeader(raw_request) && !_header_parsed){}
-		parseHeader(raw_request);
+	if (isCompleteHeader(_raw_request) && !_header_parsed)
+		parseHeader(request_chunk);
 
 	if (_header_parsed && _header["expect"] == "100-continue")
 	{
@@ -142,6 +156,6 @@ void Request::parseRequest(string raw_request)
 		//	throw ResponseException(Response("411"), "missing content-length header");
 
 		if (_is_complete_request)
-			parseBody(raw_request.substr(_start));
+			parseBody(_raw_request.substr(_start));
 	}
 }
