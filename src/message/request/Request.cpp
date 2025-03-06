@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/06 10:55:14 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/06 12:10:39 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,6 +195,22 @@ Request::Request() :
 	initHeaderFields();
 	initMethodHandling();
 }
+
+
+/************ GETTERS ************/
+
+string Request::getHeaderValue(string value)
+{
+	return (_header[value]);
+}
+
+string Request::getConnectionKeepAlive()
+{
+	return (_header["connection"]);
+}
+
+
+/************ SETTERS ************/
 
 void Request::setIsCompleteRequest(bool is_end_of_request)
 {

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 16:55:58 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/06 12:11:03 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ class Request : public AMessage
 		string	_method;
 		string	_uri;
 		string	_version;
+		string	_path;
 		
 		// INITIALIZATION METHODS
 		void	initHeaderFields();
@@ -49,13 +50,13 @@ class Request : public AMessage
 		// CHECKS
 		void	checkStartLine();
 		void	checkHeader();
+		string	getFilePath(const string &path);
 		
 		// METHOD HANDLING
 		map<string, Response (Request::*)()> _method_handling; // Map of methods to their handling functions
 		ServerConfig	_server_conf;
 		RouteConfig		_route_conf;
-		string		getFilePath(const string &path);
-		string		getFile(const string &path);
+		string		getFileContent();
 		Response	handleGet();
 		Response	handleHead();
 		Response	handlePost();
@@ -67,8 +68,11 @@ class Request : public AMessage
 		void		parseRequest(string raw_request);
 		Response	handleRequest(ServerConfig &server_config);
 
-		string		getConnectionKeepAlive() { return (_header["connection"]); }
-		
+		// GETTERS
+		string		getHeaderValue(string value);
+		string		getConnectionKeepAlive();
+
+		// SETTERS
 		void		setIsCompleteRequest(bool is_end_of_request);
 		
 		// TESTING

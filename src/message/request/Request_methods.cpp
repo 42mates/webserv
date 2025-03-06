@@ -6,40 +6,20 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 17:11:34 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/06 16:19:04 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-string Request::getFilePath(const string &path)
-{
-	vector<string> paths;
-
-	paths.push_back(path);
-	for (size_t i = 0; i < _route_conf.index_file.size(); ++i)
-		paths.push_back(path + "/" + _route_conf.index_file[i]);
-	
-	for (size_t i = 0; i < paths.size(); ++i)
-	{
-		struct stat buffer;
-		if (stat(paths[i].c_str(), &buffer) == 0)
-		{
-			if (S_ISREG(buffer.st_mode) && access(paths[i].c_str(), R_OK) == 0)
-				return paths[i];
-		}
-	}
-	throw ResponseException(Response("404"), "getFilePath(): could not find file " + path);	
-}
-
 /**
  * @brief Reads the entire content of a file into a string.
  */
-string Request::getFile(const string &path)
+string Request::getFileContent()
 {
-	ifstream file(getFilePath(path).c_str());
+	ifstream file(_path.c_str());
 	if (!file.is_open() || !file.good())
-		throw ResponseException(Response("404"), "getFile(): could not open file " + path);
+		throw ResponseException(Response("404"), "getFileContent(): could not open file " + _path);
 	
 	string content;
 	try
@@ -48,7 +28,7 @@ string Request::getFile(const string &path)
 	}
 	catch(const std::exception& e)
 	{
-		throw ResponseException(Response("404"), "getFile(): " + string(e.what()));
+		throw ResponseException(Response("404"), "getFileContent(): " + string(e.what()));
 	}
 
 	file.close();
@@ -61,16 +41,19 @@ Response Request::handleGet()
 	Response response;
 	try
 	{
-		string file = getFile(_route_conf.root);
+		string file = getFileContent();
 		response.setBody(file);
 		response.setStatus("200");
+		//response.setHeader(???);
 	}
 	catch(const ResponseException& e)
 	{
 		cerr << "debug: " << e.what() << endl;
 		response = e.getResponse();
+		cout << RED << "REQUEST DENIED 😱" << NC << endl;
+		return response;
 	}
-	cout << GREEN << "RESPONSE ACCEPTED 😎" << NC << endl;
+	cout << GREEN << "REQUEST ACCEPTED 😎" << NC << endl;
 	return response;
 }
 
@@ -80,17 +63,19 @@ Response Request::handleHead()
 
 	try
 	{
-		string file = getFile(_uri);
+		string file = getFileContent();
 		response.setBody("");
-		//response.setHeader(???);
 		response.setStatus("200");
+		//response.setHeader(???);
 	}
 	catch(const ResponseException& e)
 	{
 		cerr << "debug: " << "handleGet(): " << e.what() << endl;
 		response = e.getResponse();
+		cout << RED << "REQUEST DENIED 😱" << NC << endl;
+		return response;
 	}
-
+	cout << GREEN << "REQUEST ACCEPTED 😎" << NC << endl;
 	return response;
 }
 

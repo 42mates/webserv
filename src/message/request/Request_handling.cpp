@@ -6,26 +6,11 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 17:08:58 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/06 12:01:04 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
-
-static bool isResourceAvailable(const std::string &uri)
-{
-	struct stat buffer;
-	
-	if (stat(uri.c_str(), &buffer) != 0)
-		return false;
-
-	// Check if the resource is a regular file or a directory and if it is readable
-	if ((S_ISREG(buffer.st_mode) || S_ISDIR(buffer.st_mode))
-		&& access(uri.c_str(), R_OK) == 0)
-		return true;
-
-	return false;
-}
 
 void Request::checkStartLine()
 {
@@ -35,10 +20,6 @@ void Request::checkStartLine()
 	// check if method is allowed
 	if (_method_handling.find(_method) == _method_handling.end())
 		throw ResponseException(Response("405"), "unknown method");
-
-	// check if resource is available and accessible
-	if (!isResourceAvailable(_uri))
-		throw ResponseException(Response("404"), "uri not found or not accessible");
 }
 
 void Request::checkHeader()
@@ -52,6 +33,25 @@ void Request::checkHeader()
 	//	throw ResponseException(Response("400"), "missing required header field \"Content-Length\"");
 }
 
+string Request::getFilePath(const string &path)
+{
+	vector<string> paths;
+
+	paths.push_back(path);
+	for (size_t i = 0; i < _route_conf.index_file.size(); ++i)
+		paths.push_back(path + "/" + _route_conf.index_file[i]);
+	
+	for (size_t i = 0; i < paths.size(); ++i)
+	{
+		struct stat buffer;
+		if (stat(paths[i].c_str(), &buffer) == 0)
+		{
+			if (S_ISREG(buffer.st_mode) && access(paths[i].c_str(), R_OK) == 0)
+				return paths[i];
+		}
+	}
+	throw ResponseException(Response("404"), "getFilePath(): could not find file " + path);	
+}
 
 Response Request::handleRequest(ServerConfig &server_conf)
 {
@@ -67,6 +67,7 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	{
 		checkStartLine();
 		checkHeader();
+		_path = getFilePath(_route_conf.root + _uri);
 		// check if method is authorized
 	}
 	catch(const ResponseException& e)
