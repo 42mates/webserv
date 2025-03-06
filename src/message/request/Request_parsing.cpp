@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/03 14:38:20 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/06 10:57:44 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,9 +120,6 @@ bool Request::isCompleteHeader(string raw_request)
 void Request::parseRequest(string request_chunk)
 {
 	_raw_request += request_chunk;
-	
-	if (!_is_complete_request) 
-		cout << "parseRequest called with incomplete request" << endl;
 
 	cout << "\n------RAW REQUEST------" << endl; {
 		size_t i = 0;

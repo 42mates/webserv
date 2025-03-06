@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 17:58:58 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/06 10:55:14 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,8 +184,13 @@ void Request::initMethodHandling()
 	//_method_handling["TRACE"] = &Request::handleTrace;
 }
 
-Request::Request()
-	: _method(""), _uri(""), _version(""), _start(0)
+Request::Request() :	
+	_method(""),
+	_uri(""),
+	_version(""),
+	_is_complete_request(false),
+	_header_parsed(false),
+	_start(0)
 {
 	initHeaderFields();
 	initMethodHandling();
