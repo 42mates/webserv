@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 14:29:34 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 15:31:26 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/06 17:32:43 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,26 @@ void Response::setErrorBody()
 		+ "<hr><center>webserv/1.0</center>\n"
 		+ "</body>\n"
 		+ "</html>\n";
+}
+
+void Response::setErrorBody(ServerConfig &server_conf)
+{
+	map<string, string>::iterator it; 
+	for (it = server_conf.error_pages.begin(); it != server_conf.error_pages.end(); ++it)
+	{
+		if (it->first == _status)
+		{
+			ifstream file(it->second.c_str());
+			if (file.is_open() && file.good())
+			{
+				_body.assign((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+				file.close();
+				return;
+			}
+		}
+	}
+	if (!server_conf.error_pages.empty())
+		cerr << "debug: Response setErrorBody() could not set custom error body for status " << _status << endl;
 }
 
 void Response::setDate()

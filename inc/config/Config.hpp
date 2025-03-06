@@ -60,7 +60,7 @@ struct ServerConfig {
 	string host;                     // Server IP address (default: 0.0.0.0)	
 	int port;                        // Server listening port (default: 80)	
 	vector<string> server_names;     // Domain names associated with the server	
-	map<int, string> error_pages;    // Error pages (key: HTTP code, value: file path)	
+	map<string, string> error_pages; // Error pages (key: HTTP code, value: file path)	
 	size_t client_max_body_size;     // Max body size (default: 1 MB)	
 
 	map<string, RouteConfig> routes; // List of configured routes

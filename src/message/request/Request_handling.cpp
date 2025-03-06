@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/06 12:01:04 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/06 17:36:27 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,9 @@ Response Request::handleRequest(ServerConfig &server_conf)
 
 	// handle the request
 	response = (this->*_method_handling[_method])();
+
+	if(_server_conf.error_pages.find(response.getStatus()) != _server_conf.error_pages.end())
+		response.setErrorBody(_server_conf);
 
 	return response;
 }
