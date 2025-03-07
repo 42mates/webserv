@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 15:38:20 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/07 14:22:40 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ void Response::initHeaderFields()
 	// MANDATORY
 	_header["server"] = WEBSERV_PUBLIC_NAME;
 	_header["date"] = getDate(); //to update before sending
-	//_header["content-length"]; //to update before sending
+	_header["allow"];
+	////_header["content-length"]; //to update before sending
 	
 	// MANDATORY FOR BODY RESPONSES
 	_header["content-type"];
@@ -73,6 +74,7 @@ Response::Response()
 	: _status("DEFAULT")
 {
 	initStatusLine();
+	initHeaderFields();
 	setErrorBody();
 }
 
@@ -82,11 +84,12 @@ Response::Response(string status)
 	initStatusLine();
 	if (_status_line.find(_status) == _status_line.end())
 		throw invalid_argument(string("debug: Response constructor used with invalid arg \"") + _status + "\"");
+	initHeaderFields();
 	setErrorBody();
 }
 
 Response::Response(const Response &other) 
-	: _status(other._status), _body(other._body), _status_line(other._status_line)
+: _status(other._status), _body(other._body), _status_line(other._status_line)
 {
 	_header = other._header;
 }

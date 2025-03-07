@@ -103,6 +103,8 @@ class Config
 		vector<ServerConfig *>* getServers();
 
 		ServerConfig* getBestServer(const string &host, int port, const string &server_name);
+		
+		static string getAllowedMethods(vector<string> &methods);
 };
 	
 RouteConfig getBestRoute(const ServerConfig& server, const string &uri);

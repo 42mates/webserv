@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/06 17:36:27 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/07 14:13:54 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,11 @@ void Request::checkStartLine()
 	
 	// check if method is allowed
 	if (_method_handling.find(_method) == _method_handling.end())
-		throw ResponseException(Response("405"), "unknown method");
+	{
+		Response response("405");
+		response.setHeaderValue("allow", Config::getAllowedMethods(_route_conf.methods));
+		throw ResponseException(response, "unknown method");
+	}
 }
 
 void Request::checkHeader()
@@ -53,6 +57,16 @@ string Request::getFilePath(const string &path)
 	throw ResponseException(Response("404"), "getFilePath(): could not find file " + path);	
 }
 
+void Request::checkMethod()
+{
+	if (std::find(_route_conf.methods.begin(), _route_conf.methods.end(), _method) == _route_conf.methods.end())
+	{
+		Response response("405");
+		response.setHeaderValue("allow", Config::getAllowedMethods(_route_conf.methods));
+		throw ResponseException(response, "unknown method");
+	}
+}
+
 Response Request::handleRequest(ServerConfig &server_conf)
 {
 	Response response;
@@ -60,27 +74,29 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	// find the best matching route
 	_server_conf = server_conf;
 	_route_conf = getBestRoute(_server_conf, _uri);
-	//printConfig(_server_conf);
-	//printConfig(_route_conf);
 
 	try
 	{
 		checkStartLine();
 		checkHeader();
 		_path = getFilePath(_route_conf.root + _uri);
-		// check if method is authorized
+		checkMethod();
+
+		response = (this->*_method_handling[_method])(); // call the method handling function
 	}
 	catch(const ResponseException& e)
 	{
 		cerr << "debug: " << "handleRequest(): " << e.what() << endl;
-		return e.getResponse();
+		response = e.getResponse();
+	}
+	catch(const exception& e)
+	{
+		cerr << "debug: " << "handleRequest(): " << e.what() << endl;
+		response = Response("500");
 	}
 
-	// handle the request
-	response = (this->*_method_handling[_method])();
-
 	if(_server_conf.error_pages.find(response.getStatus()) != _server_conf.error_pages.end())
-		response.setErrorBody(_server_conf);
+		response.setErrorBody(_server_conf, _route_conf.root);
 
 	return response;
 }
