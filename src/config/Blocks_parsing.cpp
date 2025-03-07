@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/06 17:35:42 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/07 17:07:20 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,18 +39,22 @@ void ServerBlock::parseRoot(vector<ConfigToken> val)
 {
 	LocationBlock block(_config->routes["/"], _filepath);
 	block.parseRoot(val);
+	_config->root = val[0].token;
 }
 
 void ServerBlock::parseIndexFile(vector<ConfigToken> val)
 {
 	LocationBlock block(_config->routes["/"], _filepath);
 	block.parseIndexFile(val);
+	for (size_t i = 0; i < val.size(); i++)
+		_config->index_file.push_back(val[i].token);
 }
 
 void ServerBlock::parseReturn(vector<ConfigToken> val)
 {
 	LocationBlock block(_config->routes["/"], _filepath);
 	block.parseReturn(val);
+	_config->http_redirect = val[0].token;
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:44:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/03 15:19:26 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/07 17:02:47 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,9 @@ void ServerBlock::parseBlock(string context, vector<ConfigToken> tokens)
 	//init default route, and update path for route
 	RouteConfig route;
 	route.path = context;
+	route.root = _config->root;
+	route.index_file = _config->index_file;
+	route.http_redirect = _config->http_redirect;
 	
 	LocationBlock block(route, _filepath);
 	block.process(tokens);
