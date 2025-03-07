@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/06 12:10:39 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/07 15:08:15 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,16 +172,16 @@ void Request::initHeaderFields()
 
 void Request::initMethodHandling()
 {
-	_method_handling["GET"] = &Request::handleGet;
-	_method_handling["HEAD"] = &Request::handleHead;
-	_method_handling["POST"] = &Request::handlePost;
-	_method_handling["DELETE"] = &Request::handleDelete;
+	_method_handling["GET"] = &Request::handleGET;
+	_method_handling["HEAD"] = &Request::handleHEAD;
+	_method_handling["POST"] = &Request::handlePOST;
+	_method_handling["DELETE"] = &Request::handleDELETE;
 
 	// UNIMPLEMENTED METHODS
-	//_method_handling["PUT"] = &Request::handlePut;
-	//_method_handling["CONNECT"] = &Request::handleConnect;
-	//_method_handling["OPTIONS"] = &Request::handleOptions;
-	//_method_handling["TRACE"] = &Request::handleTrace;
+	//_method_handling["PUT"] = &Request::handlePUT;
+	//_method_handling["CONNECT"] = &Request::handleCONNECT;
+	//_method_handling["OPTIONS"] = &Request::handleOPTIONS;
+	//_method_handling["TRACE"] = &Request::handleTRACE;
 }
 
 Request::Request() :	

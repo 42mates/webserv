@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/06 16:19:04 by mbecker          ###   ########.fr       */
+/*   Created: 2025/03/07 15:10:23 by mbecker           #+#    #+#             */
+/*   Updated: 2025/03/07 15:10:29 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,61 +34,4 @@ string Request::getFileContent()
 	file.close();
 
 	return content;
-}
-
-Response Request::handleGet()
-{
-	Response response;
-	try
-	{
-		string file = getFileContent();
-		response.setBody(file);
-		response.setStatus("200");
-		//response.setHeader(???);
-	}
-	catch(const ResponseException& e)
-	{
-		cerr << "debug: " << e.what() << endl;
-		response = e.getResponse();
-		cout << RED << "REQUEST DENIED 😱" << NC << endl;
-		return response;
-	}
-	cout << GREEN << "REQUEST ACCEPTED 😎" << NC << endl;
-	return response;
-}
-
-Response Request::handleHead()
-{
-	Response response;
-
-	try
-	{
-		string file = getFileContent();
-		response.setBody("");
-		response.setStatus("200");
-		//response.setHeader(???);
-	}
-	catch(const ResponseException& e)
-	{
-		cerr << "debug: " << "handleGet(): " << e.what() << endl;
-		response = e.getResponse();
-		cout << RED << "REQUEST DENIED 😱" << NC << endl;
-		return response;
-	}
-	cout << GREEN << "REQUEST ACCEPTED 😎" << NC << endl;
-	return response;
-}
-
-Response Request::handlePost()
-{
-	Response response;
-
-	return response;
-}
-
-Response Request::handleDelete()
-{
-	Response response;
-
-	return response;
 }

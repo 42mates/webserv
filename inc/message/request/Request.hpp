@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 13:48:13 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/07 15:07:35 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,10 @@ class Request : public AMessage
 		ServerConfig	_server_conf;
 		RouteConfig		_route_conf;
 		string		getFileContent();
-		Response	handleGet();
-		Response	handleHead();
-		Response	handlePost();
-		Response	handleDelete();
+		Response	handleGET();
+		Response	handleHEAD();
+		Response	handlePOST();
+		Response	handleDELETE();
 
 	public:
 		Request();
