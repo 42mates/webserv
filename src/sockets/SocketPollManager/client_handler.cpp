@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/28 15:35:09 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/10 16:05:07 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,8 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 			}
 			catch (exception& e)
 			{
-				cerr << "SocketPollManager::clientHandler() : " << e.what() << endl;
+				cerr << "(replace me) debug: clientHandler(): " << e.what() << endl;
+				//! add 5XX response instead of closing the connection, for server persistence
 				manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET);
 				break ;
 			}
@@ -73,7 +74,7 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, ssize_t& total_bytes_read)
 {
 	const int	BUFFER_SIZE = 1024;
-	char		buffer[BUFFER_SIZE] = {0};
+	char		buffer[BUFFER_SIZE + 1] = {0};
 	ssize_t		bytes_to_read = (client_max_body_size > BUFFER_SIZE ? BUFFER_SIZE : client_max_body_size);
 	ssize_t		bytes_received = 0;
 
@@ -81,6 +82,8 @@ static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_ma
 		bytes_to_read = client_max_body_size - total_bytes_read;
 
 	bytes_received = recv(socket_fd, buffer, bytes_to_read, MSG_DONTWAIT);
+	if (bytes_received > 0 && bytes_received < BUFFER_SIZE)
+		buffer[bytes_received] = '\0';
 	raw_request.clear();
 	raw_request = buffer;
 
@@ -115,7 +118,6 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 			throw runtime_error("clientRecv() " + string(strerror(errno))); //! REMOVE AND REPLACE BY GETSOCKOPT()
 		else if (ret <= 0)
 			break ;
-		total_bytes_read == client_max_body_size ? request.setIsCompleteRequest(true) : (void)0;
 		try 
 		{
 			request.parseRequest(raw_request);

@@ -43,8 +43,6 @@ struct RouteConfig {
 		directory_listing(false),
 		cgi_path(""),
 		upload_dir("tools/uploads"),
-
-		
 		http_redirect("")
 	{
 		methods.push_back("GET");
@@ -60,17 +58,24 @@ struct ServerConfig {
 	string host;                     // Server IP address (default: 0.0.0.0)	
 	int port;                        // Server listening port (default: 80)	
 	vector<string> server_names;     // Domain names associated with the server	
-	map<int, string> error_pages;    // Error pages (key: HTTP code, value: file path)	
-	size_t client_max_body_size;     // Max body size (default: 1 MB)	
+	map<string, string> error_pages; // Error pages (key: HTTP code, value: file path)	
+	size_t client_max_body_size;     // Max body size (default: 1 MB)
+	string root;             		// Root directory associated with the route
+	vector<string> index_file;      // Default file for a directory (e.g., "index.html")
+	string http_redirect;    		// HTTP redirection (e.g., "301 https://example.com")
+
 
 	map<string, RouteConfig> routes; // List of configured routes
 
 	ServerConfig() : 
 		host("0.0.0.0"),
 		port(80),
-		client_max_body_size(1 * 1024 * 1024)
+		client_max_body_size(1 * 1024 * 1024),
+		root("tools/html"),
+		http_redirect("")
 	{
 		server_names.push_back("localhost");
+		index_file.push_back("index.html");
 		RouteConfig default_route;
 		routes["/"] = default_route;
 	}
@@ -103,6 +108,8 @@ class Config
 		vector<ServerConfig *>* getServers();
 
 		ServerConfig* getBestServer(const string &host, int port, const string &server_name);
+		
+		static string getAllowedMethods(vector<string> &methods);
 };
 	
 RouteConfig getBestRoute(const ServerConfig& server, const string &uri);

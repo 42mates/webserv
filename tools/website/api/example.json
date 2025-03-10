@@ -1,0 +1,8 @@
+{
+  "message": "This is an example JSON response",
+  "status": "success",
+  "data": {
+    "id": 1,
+    "name": "Example"
+  }
+}

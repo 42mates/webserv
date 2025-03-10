@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 15:12:41 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 16:06:18 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void Request::parseHeaderLine(string header_line)
 {
 	size_t pos = header_line.find(":");
 	if (pos == 0 || pos == string::npos)
-		throw ResponseException(Response("400"), "invalid header line format");
+		throw ResponseException(Response("400"), "invalid header line format: \"" + header_line + "\"");
 
 	string key = header_line.substr(0, pos);
 	header_line.erase(0, pos + 1);
@@ -53,25 +53,6 @@ void Request::parseHeaderLine(string header_line)
 		throw ResponseException(Response("400"), "unknown header key \"" + key + "\"");
 
 	_header[key] = header_line;
-}
-
-void Request::parseBody(string body)
-{
-	if (body.empty())
-		return;
-
-	if ( _header["transfer-encoding"] == "chunked")
-		_body += decodeChunked(body);
-	else if (!_header["transfer-encoding"].empty()
-		&& _header["transfer-encoding"] != "identity")
-		throw ResponseException(Response("501"), "transfer-encoding value \"" + _header["transfer-encoding"] + "\" not supported"); 
-	else
-	{
-		if (!_header["content-length"].empty()
-			&& body.size() != strtoul(_header["content-length"].c_str(), NULL, 10))
-			throw ResponseException(Response("400"), "invalid content-length");
-		_body += body;
-	}
 }
 
 void Request::parseHeader(string raw_request)
@@ -102,31 +83,34 @@ void Request::parseHeader(string raw_request)
 	_header_parsed = true;
 }
 
-bool Request::isCompleteHeader(string raw_request)
+void Request::parseBody(string body)
 {
-	size_t end = 0;
-	string line;
+	if (body.empty())
+		return;
 
-	while ((end = raw_request.find("\r\n")) == 0)
-		raw_request.erase(0, end + 2);
-	if (raw_request.empty())
-		return false;
-
-	if (raw_request.find("\r\n\r\n") == string::npos)
-		return false;
-	return true;
+	if ( _header["transfer-encoding"] == "chunked")
+		_body += decodeChunked(body);
+	else if (!_header["transfer-encoding"].empty()
+		&& _header["transfer-encoding"] != "identity")
+		throw ResponseException(Response("501"), "transfer-encoding value \"" + _header["transfer-encoding"] + "\" not supported"); 
+	else
+	{
+		if (!_header["content-length"].empty()
+			&& body.size() != strtoul(_header["content-length"].c_str(), NULL, 10))
+			throw ResponseException(Response("400"), "invalid content-length (expected: " + _header["content-length"] + ", got: " + itostr(body.size()) + ")");
+		_body += body;
+	}
 }
 
-void Request::parseRequest(string raw_request)
+void Request::parseRequest(string request_chunk)
 {
-	_raw_request += raw_request;
+	_raw_request += request_chunk;
 
-	cout << "------RAW REQUEST------" << endl;
-	cout << _raw_request << endl;
-	cout << "-----------------------" << endl;
-
-	if (isCompleteHeader(raw_request) && !_header_parsed){}
-		parseHeader(raw_request);
+	setIsCompleteRequest();
+	//this->printRaw(); //! debug to see recv() results
+	
+	if (!_header_parsed && isCompleteHeader(_raw_request))
+		parseHeader(request_chunk);
 
 	if (_header_parsed && _header["expect"] == "100-continue")
 	{
@@ -136,12 +120,12 @@ void Request::parseRequest(string raw_request)
 
 	if (_method != "GET" || _method != "HEAD")
 	{
-		//if (_header["content-length"].empty() 
-		//	&& !_header["transfer-encoding"].empty()
-		//	&& _header["transfer-encoding"] != "chunked")
-		//	throw ResponseException(Response("411"), "missing content-length header");
+		if (_header["content-length"].empty() 
+			&& !_header["transfer-encoding"].empty()
+			&& _header["transfer-encoding"] != "chunked")
+			throw ResponseException(Response("411"), "missing content-length header");
 
 		if (_is_complete_request)
-			parseBody(raw_request.substr(_start));
+			parseBody(_raw_request.substr(_start));
 	}
 }

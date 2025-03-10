@@ -3,15 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exemple Tailwind</title>
-  <!-- Lien CDN Tailwind CSS -->
+  <title>Webserv Home</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="icon" href="/favicon.png">
+  <link rel="stylesheet" type="text/css" href="/style.css">
 </head>
 <body>
-  <div class="container mx-auto">
-    <h1 class="text-center mt-20 text-4xl font-bold">Welcome 2 weebserv</h1>
-    <p class="text-center text-lg mt-4">Some text from Tailwind</p>
-    <button class="bg-blue-500 text-white py-2 px-4 rounded block mx-auto mt-6" onclick="window.location.href='https://www.youtube.com/watch?v=dQw4w9WgXcQ'">Click me</button>
-  </div>
+	<div class="container mx-auto text-center mt-20">
+		<h1 class="text-4xl font-bold mb-10">Welcome to Webserv!</h1>
+		<a href="/favicon.png" download class="inline-block bg-gray-500 text-white py-2 px-4 rounded mb-5">Download Favicon</a>
+		<p class="mb-5">Explore the different functionalities of Webserv:</p>
+		<div class="space-y-4">
+			<a href="upload" class="inline-block bg-blue-500 text-white py-2 px-4 rounded">Upload Test</a>
+			<hr class="mx-auto" style="max-width: 300px;">
+			<a href="api" class="inline-block bg-green-500 text-white py-2 px-4 rounded">API Documentation</a>
+			<hr class="mx-auto" style="max-width: 300px;">
+			<a href="redirect" class="inline-block bg-red-500 text-white py-2 px-4 rounded">HTTP Redirection Test</a>
+			<hr class="mx-auto" style="max-width: 300px;">
+			<a href="cgi" class="inline-block bg-yellow-500 text-white py-2 px-4 rounded">CGI Script Test</a>
+			<hr class="mx-auto" style="max-width: 300px;">
+			<a href="static" class="inline-block bg-purple-500 text-white py-2 px-4 rounded">Static Content Test</a>
+		</div>
+	</div>
 </body>
 </html>

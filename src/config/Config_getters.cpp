@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:37:29 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/27 16:42:15 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/07 13:58:05 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,4 +88,16 @@ RouteConfig getBestRoute(const ServerConfig& server, const string &uri)
 	else
 		return server.routes.begin()->second;
 	throw runtime_error("No route found and no default route defined");
+}
+
+string Config::getAllowedMethods(vector<string> &methods)
+{
+	string allowed_methods = "";
+	for (size_t i = 0; i < methods.size(); i++)
+	{
+		if (i > 0)
+			allowed_methods += ", ";
+		allowed_methods += methods[i];
+	}
+	return allowed_methods;
 }

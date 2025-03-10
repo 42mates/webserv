@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 15:30:26 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/07 13:53:53 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "libs.h"
 
 #include "AMessage.hpp"
+#include "Config.hpp"
 
 /**
  * @class Response
@@ -32,7 +33,7 @@ class Response : public AMessage
 
 		void initHeaderFields();
 
-		public:
+	public:
 		Response();
 		Response(string status);
 		Response(const Response &other);
@@ -47,6 +48,7 @@ class Response : public AMessage
 		void	setHeaderValue(string key, string value);
 		void	setBody(string body);
 		void	setErrorBody();
+		void	setErrorBody(ServerConfig &server_conf, string &root);
 		void	setDate();
 
 		// GETTERS

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks_parsing.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/11 14:17:26 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/07 17:07:20 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,18 +39,22 @@ void ServerBlock::parseRoot(vector<ConfigToken> val)
 {
 	LocationBlock block(_config->routes["/"], _filepath);
 	block.parseRoot(val);
+	_config->root = val[0].token;
 }
 
 void ServerBlock::parseIndexFile(vector<ConfigToken> val)
 {
 	LocationBlock block(_config->routes["/"], _filepath);
 	block.parseIndexFile(val);
+	for (size_t i = 0; i < val.size(); i++)
+		_config->index_file.push_back(val[i].token);
 }
 
 void ServerBlock::parseReturn(vector<ConfigToken> val)
 {
 	LocationBlock block(_config->routes["/"], _filepath);
 	block.parseReturn(val);
+	_config->http_redirect = val[0].token;
 }
 
 
@@ -123,6 +127,13 @@ void ServerBlock::parseServerName(vector<ConfigToken> val)
 		_config->server_names.push_back(val[i].token);
 }
 
+static bool isValidHTTPError(long code)
+{
+	return code ==	(code >= 300 && code <= 307) ||
+					(code >= 400 && code <= 417) ||
+					(code >= 500 && code <= 505);
+}
+
 void ServerBlock::parseErrorPage(vector<ConfigToken> val)
 {
 	if (val.size() < 2)
@@ -136,10 +147,9 @@ void ServerBlock::parseErrorPage(vector<ConfigToken> val)
 		{
 			if (val[i].token.find_first_not_of("0123456789") != string::npos)
 				throw runtime_error(INVALID_VALUE + qString(val[i].token)	 + string(" in ") + _filepath + ":" + itostr(val[i].line));
-			long tmp = atol(val[i].token.c_str());
-			if (tmp < 300 || tmp > 599)
+			if (!isValidHTTPError(atol(val[i].token.c_str())))
 				throw runtime_error(string("value ") + qString(val[i].token) + string(" must be between 300 and 599 in ") + _filepath + ":" + itostr(val[i].line));
-			_config->error_pages[tmp] = val.back().token;
+			_config->error_pages[val[i].token] = val.back().token;
 		}
 	}
 }
