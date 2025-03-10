@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 14:59:35 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 17:08:54 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,6 +192,10 @@ Request::Request() :
 	_header_parsed(false),
 	_start(0)
 {
+	srand(time(0)); // debug
+	_id = rand(); // debug
+	_parsingcalls = 0; // debug
+
 	initHeaderFields();
 	initMethodHandling();
 }

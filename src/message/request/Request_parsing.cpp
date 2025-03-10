@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 16:06:18 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 17:09:08 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,10 +104,13 @@ void Request::parseBody(string body)
 
 void Request::parseRequest(string request_chunk)
 {
+	cerr << (_parsingcalls++ == 0 ? "\n" : "");
+	cerr << BLUE << "parsing call [" << _parsingcalls << "]" << NC << endl;
+	
 	_raw_request += request_chunk;
 
 	setIsCompleteRequest();
-	//this->printRaw(); //! debug to see recv() results
+	this->printRaw(); //! debug to see recv() results
 	
 	if (!_header_parsed && isCompleteHeader(_raw_request))
 		parseHeader(request_chunk);
