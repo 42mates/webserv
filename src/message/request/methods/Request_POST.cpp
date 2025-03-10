@@ -6,17 +6,27 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 15:48:30 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 12:09:16 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-typedef struct POSTData 
-{
-	string				type;     // Content-Type
-	map<string, string>	settings; // Content-Type settings (boundary, charset, etc.)
-} POSTData;
+// namespace used like static for functions.
+namespace {
+	typedef struct POSTBody
+	{
+		map<string, string>	headers;
+		string				content;
+	} POSTBody;
+	
+	typedef struct POSTData 
+	{
+		string				type;     // Content-Type
+		map<string, string>	settings; // Content-Type settings (boundary, charset, etc.)
+		vector<POSTBody>	bodies;
+	} POSTData;
+}
 
 static void parseContentType(string ct_header_val, POSTData &data)
 {
@@ -39,15 +49,46 @@ static void parseContentType(string ct_header_val, POSTData &data)
 	}
 }
 
+void parseBodies(string body, POSTData &data)
+{
+	string boundary = "--" + data.settings["boundary"];
+	size_t pos = 0;
+	size_t next_pos = 0;
+	size_t boundary_len = boundary.size();
+	size_t content_len = body.size();
+	
+	cerr << pos << " " << content_len << endl;
+	while (pos < content_len)
+	{
+		next_pos = body.find(boundary, pos);
+		if (next_pos == string::npos)
+			next_pos = content_len;
+		POSTBody post_body;
+		post_body.content = body.substr(pos, next_pos - pos);
+		data.bodies.push_back(post_body);
+		pos = next_pos + boundary_len;
+	}
+}
+
 Response Request::handlePOST()
 {
 	Response response;
-
 	POSTData data;
+
 	parseContentType(_header["content-type"], data);
 
-	cout << "Content Type:     " << data.type << endl;
-	cout << "Content Boundary: " << data.settings["boundary"] << endl;
+	parseBodies(_body, data);
 
+	for (size_t i = 0; i < data.bodies.size(); i++)
+	{
+		POSTBody body = data.bodies[i];
+		cout << string("\033[0;3") + char((i % 6) + 32)  + "m";
+		cout << "Body " << i << ":\n";
+		cout << body.content << endl;
+		cout << NC;
+	}
+	
+	response = Response("200");
 	return response;
 }
+

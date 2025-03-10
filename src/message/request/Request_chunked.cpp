@@ -6,13 +6,13 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 15:34:19 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/10 11:39:35 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 14:50:30 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-size_t getChunkSize(string body)
+static size_t getChunkSize(string body)
 {
 	size_t end = body.find("\r\n");
 	if (end == string::npos || end == 0)
@@ -40,6 +40,9 @@ string Request::decodeChunked(string body)
 	size_t pos = 0;
 	size_t chunk_size;
 	string chunk;
+
+	// remove any data after the last chunk
+	_body.erase(_body.find("\r\n0\r\n\r\n") + 7);
 
 	while (pos < body.size())
 	{

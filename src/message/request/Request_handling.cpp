@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 17:46:34 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 16:09:51 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 void Request::checkStartLine()
 {
 	if (_method.empty() || _uri.empty() || _version.empty())
-		throw ResponseException(Response("400"), "missing required start line field");
-	
+		throw ResponseException(Response("400"), "request start line has empty field (parsing functions were not called)");
+
 	// check if method is allowed
 	if (_method_handling.find(_method) == _method_handling.end())
 	{
@@ -70,13 +70,16 @@ void Request::checkMethod()
 Response Request::handleRequest(ServerConfig &server_conf)
 {
 	Response response;
-
+	
 	// find the best matching route
 	_server_conf = server_conf;
 	_route_conf = getBestRoute(_server_conf, _uri);
 
+	this->print();
+
 	try
 	{
+		if (_start)
 		checkStartLine();
 		checkHeader();
 		_path = getFilePath(_route_conf.root + _uri);

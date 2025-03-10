@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/06 10:57:44 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 16:06:18 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,25 +55,6 @@ void Request::parseHeaderLine(string header_line)
 	_header[key] = header_line;
 }
 
-void Request::parseBody(string body)
-{
-	if (body.empty())
-		return;
-
-	if ( _header["transfer-encoding"] == "chunked")
-		_body += decodeChunked(body);
-	else if (!_header["transfer-encoding"].empty()
-		&& _header["transfer-encoding"] != "identity")
-		throw ResponseException(Response("501"), "transfer-encoding value \"" + _header["transfer-encoding"] + "\" not supported"); 
-	else
-	{
-		if (!_header["content-length"].empty()
-			&& body.size() != strtoul(_header["content-length"].c_str(), NULL, 10))
-			throw ResponseException(Response("400"), "invalid content-length");
-		_body += body;
-	}
-}
-
 void Request::parseHeader(string raw_request)
 {
 	size_t end = 0;
@@ -102,41 +83,33 @@ void Request::parseHeader(string raw_request)
 	_header_parsed = true;
 }
 
-bool Request::isCompleteHeader(string raw_request)
+void Request::parseBody(string body)
 {
-	size_t end = 0;
-	string line;
+	if (body.empty())
+		return;
 
-	while ((end = raw_request.find("\r\n")) == 0)
-		raw_request.erase(0, end + 2);
-	if (raw_request.empty())
-		return false;
-
-	if (raw_request.find("\r\n\r\n") == string::npos)
-		return false;
-	return true;
+	if ( _header["transfer-encoding"] == "chunked")
+		_body += decodeChunked(body);
+	else if (!_header["transfer-encoding"].empty()
+		&& _header["transfer-encoding"] != "identity")
+		throw ResponseException(Response("501"), "transfer-encoding value \"" + _header["transfer-encoding"] + "\" not supported"); 
+	else
+	{
+		if (!_header["content-length"].empty()
+			&& body.size() != strtoul(_header["content-length"].c_str(), NULL, 10))
+			throw ResponseException(Response("400"), "invalid content-length (expected: " + _header["content-length"] + ", got: " + itostr(body.size()) + ")");
+		_body += body;
+	}
 }
 
 void Request::parseRequest(string request_chunk)
 {
 	_raw_request += request_chunk;
 
-	cout << "\n------RAW REQUEST------" << endl; {
-		size_t i = 0;
-		for (; i < _raw_request.size(); ++i) 
-		{
-			if (_raw_request[i] == '\r')
-				cout << RED << "\\r" << NC;
-			else if (_raw_request[i] == '\n')
-				cout << RED << "\\n" << NC << endl;
-			else
-				cout << _raw_request[i];
-		}
-		if (--i == _raw_request.size() - 1 && _raw_request[i] != '\n')
-			cout << BRED << "%\n" << NC;}
-	cout << "-----------------------" << endl;
-
-	if (isCompleteHeader(_raw_request) && !_header_parsed)
+	setIsCompleteRequest();
+	//this->printRaw(); //! debug to see recv() results
+	
+	if (!_header_parsed && isCompleteHeader(_raw_request))
 		parseHeader(request_chunk);
 
 	if (_header_parsed && _header["expect"] == "100-continue")
@@ -147,10 +120,10 @@ void Request::parseRequest(string request_chunk)
 
 	if (_method != "GET" || _method != "HEAD")
 	{
-		//if (_header["content-length"].empty() 
-		//	&& !_header["transfer-encoding"].empty()
-		//	&& _header["transfer-encoding"] != "chunked")
-		//	throw ResponseException(Response("411"), "missing content-length header");
+		if (_header["content-length"].empty() 
+			&& !_header["transfer-encoding"].empty()
+			&& _header["transfer-encoding"] != "chunked")
+			throw ResponseException(Response("411"), "missing content-length header");
 
 		if (_is_complete_request)
 			parseBody(_raw_request.substr(_start));

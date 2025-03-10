@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 15:07:35 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 15:19:18 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,13 @@ class Request : public AMessage
 		void	parseStartLine(string start_line);
 		void	parseHeaderLine(string header_line);
 		void	parseHeader(string header_line);
-		bool	isCompleteHeader(string raw_request);
 		void	parseBody(string body);
 		
+		//STATUS
+		bool	isCompleteHeader(string raw_request);
+		
 		// CHUNKED DECODING
+		bool	_chunked_complete;
 		string	decodeChunked(string body);
 
 		// CHECKS
@@ -73,9 +76,15 @@ class Request : public AMessage
 		string		getHeaderValue(string value);
 		string		getConnectionKeepAlive();
 
-		// SETTERS
-		void		setIsCompleteRequest(bool is_end_of_request);
+		// STATUS
+		void		setIsCompleteRequest();
 		
 		// TESTING
 		void		testParsing();
+		void		printStartLine();
+		void		printHeader();
+		void		printBody();
+		void		printBody(string &body);
+		void		print();
+		void		printRaw();
 };
