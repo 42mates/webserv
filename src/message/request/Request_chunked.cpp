@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 15:34:19 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 14:50:30 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 17:30:16 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static size_t getChunkSize(string body)
 {
-	size_t end = body.find("\r\n");
+	size_t end = body.find(CRLF);
 	if (end == string::npos || end == 0)
 		throw ResponseException(Response("400"), "no chunk size");
 
@@ -50,7 +50,7 @@ string Request::decodeChunked(string body)
 		if (chunk_size == 0)
 			break;
 
-		pos = body.find("\r\n", pos) + 2;
+		pos = body.find(CRLF, pos) + 2;
 		if (pos == string::npos)
 			throw ResponseException(Response("400"), "no end of chunk size");
 		else if (chunk_size + pos > body.size())

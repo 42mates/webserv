@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/27 16:40:13 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 17:30:24 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ extern volatile int run_server; //used for the main loop (WebServ.cpp)
 # define S_QUOTE '\''
 # define D_QUOTE '"'
 # define SPACES " \t\r\n"
+# define CRLF "\r\n"
 
 enum ConfigTokenType
 {

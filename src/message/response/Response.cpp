@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 14:22:40 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 17:30:16 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ string Response::addCRLF(string str)
 	size_t pos = 0;
 	while ((pos = str.find("\n", pos)) != string::npos) 
 	{
-		str.replace(pos, 1, "\r\n");
+		str.replace(pos, 1, CRLF);
 		pos += 2;
 	}
 	return str;

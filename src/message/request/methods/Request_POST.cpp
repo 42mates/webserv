@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 12:09:16 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 17:39:40 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,38 @@ static void parseContentType(string ct_header_val, POSTData &data)
 	}
 }
 
+void parsePUTHeader(string body, POSTData &data)
+{
+	size_t pos = 0;
+	size_t end = 0;
+	string line;
+	string boundary = "--" + data.settings["boundary"];
+
+	body = body.substr(body.find(string(CRLF) + CRLF));
+
+	while ((end = body.substr(pos).find(CRLF)) != string::npos)
+	{
+		line = body.substr(pos, end);
+		if (line.empty())
+			break;
+		size_t sep = line.find(":");
+		if (sep == string::npos)
+			throw ResponseException(Response("400"), "invalid header line format");
+		string key = line.substr(0, sep);
+		string value = line.substr(sep + 1);
+		data.bodies.back().headers[key] = value;
+		pos += end + 2;
+	}
+}
+
 void parseBodies(string body, POSTData &data)
 {
-	string boundary = "--" + data.settings["boundary"];
-	size_t pos = 0;
+	string boundary = string(CRLF) + "--" + data.settings["boundary"];
+	size_t pos = body.find(string(CRLF) + CRLF) + 4;
 	size_t next_pos = 0;
 	size_t boundary_len = boundary.size();
 	size_t content_len = body.size();
-	
-	cerr << pos << " " << content_len << endl;
+
 	while (pos < content_len)
 	{
 		next_pos = body.find(boundary, pos);
@@ -77,16 +100,20 @@ Response Request::handlePOST()
 
 	parseContentType(_header["content-type"], data);
 
-	parseBodies(_body, data);
+	if (data.type == "multipart/form-data")
+	{
+		parsePUTHeader(_body, data);
+		parseBodies(_body, data);
+	}
 
 	for (size_t i = 0; i < data.bodies.size(); i++)
 	{
 		POSTBody body = data.bodies[i];
-		cout << string("\033[0;3") + char((i % 6) + 32)  + "m";
-		cout << "Body " << i << ":\n";
-		cout << body.content << endl;
+		cout << BMAGENTA << "Body " << i << ":\n" << MAGENTA;
+		cout << body.content << BMAGENTA << "%" << endl;
 		cout << NC;
 	}
+	cout << NC;
 	
 	response = Response("200");
 	return response;

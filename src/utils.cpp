@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:30:39 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 15:28:49 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 17:30:16 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ string getTestRequest()
 		filepath = "tools/message/request/valid/simple.txt";
 	ifstream file(filepath.c_str());
 	for (string tmp; getline(file, tmp);)
-		input += tmp + "\r\n";
+		input += tmp + CRLF;
 	file.close();
 
 	return input;

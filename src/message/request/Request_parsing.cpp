@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:09:08 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/10 17:30:16 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void Request::parseHeader(string raw_request)
 	size_t end = 0;
 	string line;
 
-	while ((end = raw_request.substr(_start).find("\r\n")) == 0)
+	while ((end = raw_request.substr(_start).find(CRLF)) == 0)
 		_start += end + 2;
 	if (_start == string::npos)
 		throw ResponseException(Response("400"), "empty request");
@@ -68,7 +68,7 @@ void Request::parseHeader(string raw_request)
 	parseStartLine(raw_request.substr(_start, end - _start));
 	_start = end + 2;
 
-	while ((end = _start + raw_request.substr(_start).find("\r\n")) != _start)
+	while ((end = _start + raw_request.substr(_start).find(CRLF)) != _start)
 	{
 		line = raw_request.substr(_start, end - _start);
 		if (line.empty())
@@ -110,6 +110,7 @@ void Request::parseRequest(string request_chunk)
 	_raw_request += request_chunk;
 
 	setIsCompleteRequest();
+
 	this->printRaw(); //! debug to see recv() results
 	
 	if (!_header_parsed && isCompleteHeader(_raw_request))
@@ -131,4 +132,5 @@ void Request::parseRequest(string request_chunk)
 		if (_is_complete_request)
 			parseBody(_raw_request.substr(_start));
 	}
+	setIsCompleteRequest();
 }
