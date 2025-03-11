@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:08:54 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/11 11:39:54 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,10 @@
 
 void Request::initHeaderFields()
 {
+	_header["connection"];         // Required - Manages `keep-alive` and `close` for connection handling.
+	_header["date"];               // Recommended - Specifies the date of the HTTP response.
+	_header["transfer-encoding"];  // Required if `chunked` - Manages encoding of request/response body.
+	_header["content-length"];     // Required - Specifies the size of the request body
 	_header["expect"];             // Required - Used for `100-continue` before sending request body
 	_header["host"];               // Required - Specifies the target host (mandatory in HTTP/1.1)
 

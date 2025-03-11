@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:30:16 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/11 11:41:00 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,9 @@ void Response::initHeaderFields()
 	_header["server"] = WEBSERV_PUBLIC_NAME;
 	_header["date"] = getDate(); //to update before sending
 	_header["allow"];
-	////_header["content-length"]; //to update before sending
+	_header["connection"];         // Required - Manages `keep-alive` and `close` for connection handling.
+	_header["transfer-encoding"];  // Required if `chunked` - Manages encoding of request/response body.
+	_header["content-length"];     // Required - Specifies the size of the request body
 	
 	// MANDATORY FOR BODY RESPONSES
 	_header["content-type"];

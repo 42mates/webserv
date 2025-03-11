@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:08:37 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/11 11:41:46 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,19 @@
 #include "libs.h"
 #include "Config.hpp"
 
-#include "AMessage.hpp"
 #include "Response.hpp"
 
 /*
  * @brief Represents an HTTP request.
  */
-class Request : public AMessage
+class Request
 {
 	private:
 		string	_method;
 		string	_uri;
 		string	_version;
+		map<string, string>	_header;
+		string	_body;
 		string	_path;
 		
 		// INITIALIZATION METHODS
@@ -68,6 +69,7 @@ class Request : public AMessage
 
 	public:
 		Request();
+		virtual ~Request() {}
 
 		void		parseRequest(string raw_request);
 		Response	handleRequest(ServerConfig &server_config);

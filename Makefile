@@ -3,19 +3,18 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+         #
+#    By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/18 13:05:21 by mbecker           #+#    #+#              #
-#    Updated: 2025/02/18 13:31:04 by sokaraku         ###   ########.fr        #
+#    Updated: 2025/03/11 11:31:21 by mbecker          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = webserv
 
 CC = c++
-CFLAG = -Wall -Wextra -Werror -std=c++98 -Wno-unused #REMOVE
+CFLAG = -Wall -Wextra -Werror -std=c++98
 INCLUDES = $(shell find inc -type d -exec echo -I{} \;)
-DEBUGGER = -g3
 
 SRC_DIR = src
 OBJ_DIR = .obj
@@ -28,7 +27,7 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@echo "$(LYELLOW)Objects successfully compiled in $(YELLOW)$$PWD/obj/$(LYELLOW).$(NC)"
-	@$(CC) $(CFLAG) $(SRC) $(INCLUDES) $(DEBUGGER) -o $(NAME)
+	@$(CC) $(CFLAG) $(SRC) $(INCLUDES) -o $(NAME)
 	@if [ -f $(NAME) ]; then \
 		echo "$(LGREEN)Created $(GREEN)$(NAME)$(LGREEN).$(NC)" ; \
 	else \
@@ -37,7 +36,7 @@ $(NAME): $(OBJ)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
 	@echo "$(LYELLOW)Compiling $(YELLOW)$<$(NC)"
-	@$(CC) $(CFLAG) $(INCLUDES) $(DEBUGGER) -c $< -o $@
+	@$(CC) $(CFLAG) $(INCLUDES) -c $< -o $@
 	@printf "\033[1A\033[2K\r"
 
 clean:

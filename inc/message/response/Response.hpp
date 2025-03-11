@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 13:53:53 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/11 11:41:54 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,18 @@
 
 #include "libs.h"
 
-#include "AMessage.hpp"
 #include "Config.hpp"
 
 /**
  * @class Response
  * @brief Represents an HTTP response with status, headers, body, and debug information.
  */
-class Response : public AMessage
+class Response
 {
 	private:
 		string _status;
+		map<string, string> _header;
 		string _body;
-		//map<string, string> _header; //inherited from AMessage
 
 		map<string, string> _status_line; // status code to reason phrase
 		void initStatusLine();
@@ -38,7 +37,7 @@ class Response : public AMessage
 		Response(string status);
 		Response(const Response &other);
 		Response &operator=(const Response &other);
-		~Response();
+		virtual ~Response();
 
 		string	headerToString();
 		string	addCRLF(string str);
