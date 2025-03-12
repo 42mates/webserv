@@ -31,6 +31,7 @@
 *.out
 *.app
 webserv
+ubuntu_tester
 
 # Personal
 example_poll.cpp
@@ -38,3 +39,4 @@ todo.md
 chatgpt*
 test.cpp
 .vscode/
+5l
