@@ -11,30 +11,12 @@
 <body>
 	<div class="container mx-auto text-center mt-20">
 		<h1 class="text-4xl font-bold mb-10">File Upload Test</h1>
-		<form id="uploadForm" method="post" enctype="multipart/form-data">
+		<form action="/upload/success.html" id="uploadForm" method="post"><!-- enctype="multipart/form-data">-->
 			<input type="file" name="file" class="mb-5">
 			<button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">Upload</button>
 		</form>
 		<div id="response" class="mt-10"></div>
 	</div>
 
-	<!--<script>
-		document.getElementById('uploadForm').addEventListener('submit', async function(event) {
-			event.preventDefault();
-			const formData = new FormData(this);
-			const responseDiv = document.getElementById('response');
-
-			try {
-				const response = await fetch(this.action, {
-					method: 'POST',
-					body: formData
-				});
-				const result = await response.text();
-				responseDiv.innerHTML = `<pre class="bg-gray-100 p-4 rounded">${result}</pre>`;
-			} catch (error) {
-				responseDiv.innerHTML = `<pre class="bg-red-100 p-4 rounded">Error: ${error.message}</pre>`;
-			}
-		});
-	</script>-->
 </body>
 </html>

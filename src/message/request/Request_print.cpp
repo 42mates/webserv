@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 13:59:59 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:10:36 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/11 14:15:07 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,10 @@ void Request::printBody()
 
 	for (size_t i = 0; i < _body.size(); ++i)
 	{
-		if (_body[i] == '\n')
-			cout << "\\n\n";
+		if (_body[i] == '\r')
+			cout << YELLOW << "\\r" << NC;
+		else if (_body[i] == '\n')
+			cout << YELLOW << "\\n\n" << NC;
 		else
 			cout << _body[i];
 	}

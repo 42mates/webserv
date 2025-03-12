@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:39:40 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/11 17:36:14 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ Response Request::handlePOST()
 
 	parseContentType(_header["content-type"], data);
 
-	if (data.type == "multipart/form-data")
+	if (!_body.empty() && data.type == "multipart/form-data")
 	{
 		parsePUTHeader(_body, data);
 		parseBodies(_body, data);
@@ -114,8 +114,9 @@ Response Request::handlePOST()
 		cout << NC;
 	}
 	cout << NC;
-	
+
 	response = Response("200");
+	response.setBody("");
 	return response;
 }
 

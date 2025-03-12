@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:26:42 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/11 12:05:41 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	_server_conf = server_conf;
 	_route_conf = getBestRoute(_server_conf, _uri);
 
-	//this->print();
+	this->print();
 
 	try
 	{
