@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:30:39 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:30:16 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/12 17:23:08 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,4 +58,25 @@ string getDate()
 	char buf[80];
 	strftime(buf, sizeof(buf), "%a, %d %b %Y %H:%M:%S GMT", gmtm);
 	return string(buf);
+}
+
+string getFile(string path)
+{
+	ifstream file(path.c_str());
+	if (!file.is_open() || !file.good())
+		throw runtime_error("getFile(): could not open file \"" + path + "\"");
+	
+	string content;
+	try
+	{
+		content.assign((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+	}
+	catch(const std::exception& e)
+	{
+		runtime_error("getFile(): could not get file \"" + path + "\"" + string(e.what()));
+	}
+
+	file.close();
+
+	return content;
 }
