@@ -31,7 +31,11 @@
 *.out
 *.app
 webserv
-ubuntu_tester
+
+# Test files
+ubuntu*_tester
+YoupiBanane
+5l
 
 # Personal
 example_poll.cpp
@@ -39,4 +43,3 @@ todo.md
 chatgpt*
 test.cpp
 .vscode/
-5l
