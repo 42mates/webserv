@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/11 11:41:46 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/13 12:42:00 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ class Request
 		void		printStartLine();
 		void		printHeader();
 		void		printBody();
-		void		printBody(string &body);
+		static void	printBody(string &body);
 		void		print();
 		void		printRaw();
 };

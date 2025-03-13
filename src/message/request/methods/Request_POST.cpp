@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/12 19:42:11 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/13 15:36:28 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ namespace {
 
 	typedef struct POSTData 
 	{
-		string				type;     // Content-Type
-		map<string, string>	settings; // Content-Type settings (boundary, charset, etc.)
+		string				type;     // whole request Content-Type
+		map<string, string>	settings; // whole request Content-Type settings (boundary, charset, etc.)
 		vector<POSTBody>	bodies;
 	} POSTData;
 }
@@ -51,56 +51,65 @@ static void parseContentType(string ct_header_val, POSTData &data)
 	}
 }
 
-static void parseMultipartHeader(string body, POSTData &data)
+
+static void parseMultipartHeader(string body, POSTBody &part)
 {
 	size_t pos = 0;
-	size_t end = 0;
-	string line;
-	string boundary = "--" + data.settings["boundary"];
+	size_t end_pos = 0;
 
-	body = body.substr(0, body.find(string(CRLF) + CRLF));
-
-	while ((end = body.substr(pos).find(CRLF)) != string::npos)
+	while ((end_pos = body.find("\r\n", pos)) != string::npos)
 	{
-		line = body.substr(pos, end);
+		string line = body.substr(pos, end_pos - pos);
 		if (line.empty())
 			break;
-		size_t sep = line.find(":");
-		if (sep == string::npos)
-			throw ResponseException(Response("400"), "invalid header line format");
-		string key = line.substr(0, sep);
-		string value = line.substr(sep + 1);
-		data.bodies.back().headers[key] = value;
-		pos += end + 2;
+
+		size_t sep_pos = line.find(": ");
+		if (sep_pos == string::npos)
+			throw ResponseException(Response("400"), "invalid multipart header format");
+
+		string key = line.substr(0, sep_pos);
+		transform(key.begin(), key.end(), key.begin(), ::tolower);
+		string value = line.substr(sep_pos + 2);
+
+		part.headers[key] = value;
+
+		pos = end_pos + 2; // Move past CRLF
 	}
 }
 
-static void parseMultipartBodies(string body, POSTData &data)
+static void parseMultipart(string body, POSTData &data)
 {
-	string boundary = string(CRLF) + "--" + data.settings["boundary"];
-	size_t pos = body.find(string(CRLF) + CRLF) + 4;
-	size_t next_pos = 0;
+	string boundary = "--" + data.settings["boundary"];
 	size_t boundary_len = boundary.size();
-	size_t content_len = body.size();
+	size_t pos = body.find(boundary) + boundary_len;
+	size_t next_pos = 0;
 
-	while (pos < content_len)
+	if (pos != boundary_len)
+		throw ResponseException(Response("400"), "invalid multipart body format: no initial boundary");
+
+	while ((next_pos = body.find(string(CRLF) + boundary, pos)) != string::npos)
 	{
-		next_pos = body.find(boundary, pos);
-		if (next_pos == string::npos)
-			next_pos = content_len;
-		POSTBody post_body;
-		post_body.content = body.substr(pos, next_pos - pos);
-		if (post_body.content == string("--") + CRLF)
-			break;
-		data.bodies.push_back(post_body);
-		pos = next_pos + boundary_len;
-	}
+		string entity = body.substr(pos + 2, next_pos - pos); // + 2 = CRLF
+		if (entity.empty())
+			throw runtime_error("empty multipart entity");
 
+		POSTBody part;
+		size_t sep = entity.find(CRLF);
+		if (sep == string::npos)
+			throw ResponseException(Response("400"), "invalid multipart entity format");
+
+		parseMultipartHeader(entity.substr(0, sep), part);
+		part.content = entity.substr(sep + 2);
+
+		Request::printBody(entity);
+
+		pos = next_pos + 2 + boundary_len;
+
+	}
 }
 
 void percentDecode(string &str)
 {
-	//string base = "0123456789ABCDEF";
 	size_t pos = 0;
 
 	while ((pos = str.find('+', pos)) != string::npos)
@@ -115,12 +124,12 @@ void percentDecode(string &str)
 		string tmp = str.substr(pos + 1, 2);
 		char c = (char)strtol(tmp.c_str(), NULL, 16);
 		str.replace(pos, 3, 1, c);
+		pos++;
 	}
 }
 
 static void parseURLEncoded(string body, POSTData &data)
 {
-	
 	istringstream iss(body);
 	string field;
 	
@@ -140,39 +149,44 @@ static void parseURLEncoded(string body, POSTData &data)
 	}
 }
 
-
 Response Request::handlePOST()
 {
 	Response response;
 	POSTData data;
 
 	parseContentType(_header["content-type"], data);
-
-	if (_body.empty())
-		; //? idk what to do with it yet
-	else if (data.type == "multipart/form-data")
-	{
-		parseMultipartHeader(_body, data);
-		parseMultipartBodies(_body, data);
+	
+	try
+	{		
+		if (_body.empty())
+			cout << "debug: Empty body in PUT. what should I do with it ?" << endl; //? idk what to do with it yet
+		else if (data.type == "multipart/form-data")
+			parseMultipart(_body, data);
+		else if (data.type == "application/x-www-form-urlencoded")
+			parseURLEncoded(_body, data);
+		else if (data.type == "text/plain")
+		{
+			POSTBody body;
+			body.content = _body;
+			data.bodies.push_back(body);
+		}
+		else if (!data.type.empty())
+			throw ResponseException(Response("400"), "unsupported content-type");
 	}
-	else if (data.type == "application/x-www-form-urlencoded")
+	catch(const std::exception& e)
 	{
-		parseURLEncoded(_body, data);
-	}
-	else
-		throw ResponseException(Response("400"), "unsupported content-type");
-
+		std::cerr << "debug: handlPOST(): " << e.what() << endl;
+	}	
+	
 
 	//print bodies debug
 	for (size_t i = 0; i < data.bodies.size(); i++)
 	{
 		POSTBody body = data.bodies[i];
-		cout << BMAGENTA << "Body " << i << ":\n" << MAGENTA;
+		cout << BMAGENTA << "Body " << i << ":\n" << NC;
 		cout << body.content << BMAGENTA << "%" << endl;
 		cout << NC;
 	}
-	cout << "Body parsed" << endl;
-
 
 	response = Response("200");
 	//response = handleGET(); // for now, just to test
@@ -180,10 +194,8 @@ Response Request::handlePOST()
 	//temporary response 
 	try { response.setBody(getFile("tools/website/upload/success.html")); }
 	catch(const std::exception& e) { std::cerr << "debug: handlePOST(): " << e.what() << '\n'; }
-	
 
 	return response;
 }
 
 // TEST ~!@#$%^&*()_+`1234567890-={}|[]\:";'<>?,./
-// TEST ~!@#$E&*()_+`1234567890-={}|[]\:";'<>?,./
