@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:33:23 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 15:30:38 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/13 16:20:10 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ std::string itostr(int num);
 int	countOccurrences(const string s, char c);
 string getTestRequest();
 string getDate();
-
+bool	isTimeOutReached(timeval& start, timeval& end, size_t timeout);
 
 // CONFIG_PRINT.CPP
 

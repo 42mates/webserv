@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/28 14:09:20 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/13 15:54:18 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include "Config.hpp"
 #include "SocketOperations.hpp"
 #include "SocketPollManager.hpp"
+#include <sys/time.h>
+
 
 //! Should multiple servers listen on the same port ?
 //! CAREFUL : Since _poll_manager need access to data stored in SocketManager, said data need

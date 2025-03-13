@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   client_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/10 16:05:07 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/13 16:45:49 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketPollManager.hpp"
 #include "SocketManager.hpp"
-
 /**
  * @brief Establishes a connection with a client.
  * 
@@ -42,9 +41,9 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 			{
 				client_events[i].handler(poll_info, manager, *this);
 				if (client_events[i].event == POLLIN)
-					fd_events |= POLLOUT;
+				fd_events |= POLLOUT;
 				if (client_events[i].event == POLLOUT)
-					fd_events &= ~POLLOUT;
+				fd_events &= ~POLLOUT;
 			}
 			catch (exception& e)
 			{
@@ -56,6 +55,7 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 		}
 	}
 }
+
 
 
 /**
@@ -92,7 +92,6 @@ static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_ma
 	return bytes_received;
 }
 
-//todo timer
 //todo add getsockopt to check for errors like ewouldblock
 
 /**
@@ -110,14 +109,33 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 	ssize_t		client_max_body_size = server.client_max_body_size;
 	ssize_t		ret;
 	Request		request;
+	timeval		start, end;
 
+	gettimeofday(&start, NULL);
 	while (total_bytes_read <= client_max_body_size)
 	{
+		gettimeofday(&end, NULL);
+		if (isTimeOutReached(start, end, 1000000) == true)
+			throw ResponseException(Response("408"), "Request timeout"); //! good exception?
+	
 		ret = readOne(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read);
+
 		if (ret < 0 && total_bytes_read == 0)
 			throw runtime_error("clientRecv() " + string(strerror(errno))); //! REMOVE AND REPLACE BY GETSOCKOPT()
 		else if (ret <= 0)
+		{
+			try 
+			{
+				request.parseRequest(raw_request);
+			}
+			catch (ContinueException)
+			{
+				//store ResponseException class into the map
+				//call clientSend here to inform that the request can continue
+				//continue loop
+			}
 			break ;
+		}
 		try 
 		{
 			request.parseRequest(raw_request);
@@ -130,6 +148,9 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 		}
 
 	}
+	gettimeofday(&end, NULL);
+	cout << "TIME OF LOOP IS " << (end.tv_sec - start.tv_sec) << endl;
+	cout << "MS IS " << (end.tv_usec - start.tv_usec) << endl;
 	_socket_to_request[poll_info.pfd.fd] = request;
 }
 
