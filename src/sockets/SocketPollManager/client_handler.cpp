@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/13 16:45:49 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/14 14:16:38 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,10 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 			try 
 			{
 				client_events[i].handler(poll_info, manager, *this);
-				if (client_events[i].event == POLLIN)
-				fd_events |= POLLOUT;
+				// if (client_events[i].event == POLLIN)
+				// fd_events |= POLLOUT;	
 				if (client_events[i].event == POLLOUT)
-				fd_events &= ~POLLOUT;
+					fd_events &= ~POLLOUT;
 			}
 			catch (exception& e)
 			{
@@ -71,7 +71,7 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
  * @param total_bytes_read Reference to the total number of bytes read so far.
  * @return The number of bytes read in this call.
  */
-static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, ssize_t& total_bytes_read)
+static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, ssize_t& total_bytes_read, int& error)
 {
 	const int	BUFFER_SIZE = 1024;
 	char		buffer[BUFFER_SIZE + 1] = {0};
@@ -82,17 +82,34 @@ static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_ma
 		bytes_to_read = client_max_body_size - total_bytes_read;
 
 	bytes_received = recv(socket_fd, buffer, bytes_to_read, MSG_DONTWAIT);
-	if (bytes_received > 0 && bytes_received < BUFFER_SIZE)
+
+	error = getError(socket_fd);
+	if (bytes_received == -1)
+	{
+		error == 0 ? error = BLOCKING_OPERATION : error;
+		return -1;
+	}
+	if (bytes_received > 0) //! removed check of read bytes < to BUFFER_SIZE (if there is a read, it'll never be higher than BUFFER_SIZE)
 		buffer[bytes_received] = '\0';
+
 	raw_request.clear();
 	raw_request = buffer;
 
-	if (bytes_received != -1 && client_max_body_size != string::npos)
+	if (client_max_body_size != string::npos)
 		total_bytes_read += bytes_received;
+
 	return bytes_received;
 }
 
-//todo add getsockopt to check for errors like ewouldblock
+/*
+possible to use getsockopt in accordance with the return value
+If getsockopt() is success, but recv() or send() returns 0, it means there was EAGAIN or EWOULDBLOCK
+(not rigorous, but hey we cant check for errno after a read or write)
+
+If operation is blocking, need to store the request to the map
+Also need to store client_max_body_size and total_bytes_read
+
+*/
 
 /**
  * @brief Receives data from the client.
@@ -104,37 +121,30 @@ static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_ma
  */
 void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& server)
 {
-	ssize_t		total_bytes_read = 0;
 	string		raw_request;
 	ssize_t		client_max_body_size = server.client_max_body_size;
 	ssize_t		ret;
 	Request		request;
+	ssize_t		total_bytes_read = 0;
 	timeval		start, end;
 
+	prepareData(poll_info.pfd.fd, total_bytes_read, request);
 	gettimeofday(&start, NULL);
 	while (total_bytes_read <= client_max_body_size)
 	{
 		gettimeofday(&end, NULL);
-		if (isTimeOutReached(start, end, 1000000) == true)
+		if (isTimeOutReached(start, end, 1500000) == true)
 			throw ResponseException(Response("408"), "Request timeout"); //! good exception?
-	
-		ret = readOne(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read);
+		
+		int error = 0;
+		ret = readOne(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read, error);
 
-		if (ret < 0 && total_bytes_read == 0)
-			throw runtime_error("clientRecv() " + string(strerror(errno))); //! REMOVE AND REPLACE BY GETSOCKOPT()
-		else if (ret <= 0)
+		if (ret < 0)
 		{
-			try 
-			{
-				request.parseRequest(raw_request);
-			}
-			catch (ContinueException)
-			{
-				//store ResponseException class into the map
-				//call clientSend here to inform that the request can continue
-				//continue loop
-			}
-			break ;
+			if (error == BLOCKING_OPERATION)
+				return _socket_to_request[poll_info.pfd.fd] = request, (void)0;
+			else
+				throw runtime_error("clientRecv() " + string(strerror(error)));
 		}
 		try 
 		{
@@ -146,11 +156,9 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 			//call clientSend here to inform that the request can continue
 			//continue loop
 		}
-
+		if (ret == 0)
+			break ;
 	}
-	gettimeofday(&end, NULL);
-	cout << "TIME OF LOOP IS " << (end.tv_sec - start.tv_sec) << endl;
-	cout << "MS IS " << (end.tv_usec - start.tv_usec) << endl;
 	_socket_to_request[poll_info.pfd.fd] = request;
 }
 
@@ -163,7 +171,7 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
  * @return The total number of bytes sent.
  * @throws std::runtime_error If an error occurs while sending data to the socket.
  */
-ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& manager, ServerConfig& server)
+ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& manager, ServerConfig& server) //prepare non blocking here too
 {
 	Response	class_response = _socket_to_request[poll_info.pfd.fd].handleRequest(server);
 	string		string_response = class_response.getResponse();

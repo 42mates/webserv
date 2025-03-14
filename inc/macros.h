@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   macros.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:30:24 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/14 12:09:56 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ enum ConfigTokenType
 # define INVALID_IP "invalid ip in "
 # define METHOD_UNKNOWN "unknown method "
 
+//--> client_handler.cpp
+# define BLOCKING_OPERATION EWOULDBLOCK
 
 /************ COLORS ************/
 

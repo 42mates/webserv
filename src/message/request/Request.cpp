@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:08:54 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/14 13:35:47 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,4 +211,9 @@ string Request::getHeaderValue(string value)
 string Request::getConnectionKeepAlive()
 {
 	return (_header["connection"]);
+}
+
+string Request::getRawRequest()
+{
+	return _raw_request;
 }
