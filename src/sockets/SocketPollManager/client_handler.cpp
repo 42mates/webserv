@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/14 15:02:14 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/14 15:04:23 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 			try 
 			{
 				client_events[i].handler(poll_info, manager, *this);
-				// if (client_events[i].event == POLLIN)
-				// fd_events |= POLLOUT;	
+				if (client_events[i].event == POLLIN)
+					fd_events |= POLLOUT;	
 				if (client_events[i].event == POLLOUT)
 					fd_events &= ~POLLOUT;
 			}

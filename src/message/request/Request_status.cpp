@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:30:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:30:16 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/14 17:43:20 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void Request::setIsCompleteRequest()
 	if (!_header_parsed || _is_complete_request)
 		return ;
 
-	if (_method == "GET" || _method == "HEAD")
+	if (_method == "GET" || _method == "HEAD" || _method == "DELETE")
 	{
 		_is_complete_request = true;
 		return ;	

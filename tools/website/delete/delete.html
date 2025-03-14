@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>File Delete Test</title>
+	<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+	<link rel="icon" href="/favicon.png">
+	<link rel="stylesheet" type="text/css" href="/style.css">
+	<script>
+		async function handleDeleteRequest(fileName) {
+			try {
+				const response = await fetch(fileName, {
+					method: 'DELETE',
+				});
+				const text = await response.text();
+				alert(text);
+			} catch (error) {
+				alert('An error occurred: ' + error.message);
+			}
+		}
+	</script>
+</head>
+<body>
+	<div class="container mx-auto text-center mt-20">
+		<h1 class="text-4xl font-bold mb-10">File Delete Test</h1>
+		<p class="mb-5">Click the buttons below to test the DELETE method:</p>
+		<div class="space-x-4">
+			<!-- 
+			TODO: create cgi gateway to undelete file
+echo "Noooooooo don't delete me :(" > tools/website/delete/deleteme.txt
+			 -->
+			<button onclick="handleDeleteRequest('delete/deleteme.txt')" class="bg-red-500 text-white py-2 px-4 rounded">Delete deleteme.txt</button>
+			<!-- 
+			TODO: create cgi gateway to create undeletable file
+echo "Some really important documents" > tools/website/delete/undeletable.txt && chmod 000 tools/website/delete/undeletable.txt
+			-->
+			<button onclick="handleDeleteRequest('delete/undeletable.txt')" class="bg-red-500 text-white py-2 px-4 rounded">Delete undeletable.txt</button>
+			<button onclick="handleDeleteRequest('delete/notfound.txt')" class="bg-red-500 text-white py-2 px-4 rounded">Delete notfound.txt</button>
+		</div>
+	</div>
+</body>
+</html>

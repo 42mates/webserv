@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:31:21 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/26 15:32:17 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/14 18:03:07 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ void	SocketPollManager::serverHandler(SocketPollInfo poll_info, SocketManager& m
 			{
 				server_events[i].handler(poll_info, manager, *this);
 			}
-			catch (exception& e)
+			catch (const exception& e)
 			{
-				cerr << e.what() << endl;
+				cerr << "debug: serverHandler(): " << e.what() << endl;
 				manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET);
 				break ;
 			}

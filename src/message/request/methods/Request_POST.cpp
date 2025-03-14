@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/13 15:36:28 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/14 16:08:04 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,22 +89,19 @@ static void parseMultipart(string body, POSTData &data)
 
 	while ((next_pos = body.find(string(CRLF) + boundary, pos)) != string::npos)
 	{
-		string entity = body.substr(pos + 2, next_pos - pos); // + 2 = CRLF
+		string entity = body.substr(pos + 2, next_pos - pos - 2); // + 2 = CRLF
 		if (entity.empty())
 			throw runtime_error("empty multipart entity");
 
 		POSTBody part;
-		size_t sep = entity.find(CRLF);
+		size_t sep = entity.find(string(CRLF) + CRLF);
 		if (sep == string::npos)
 			throw ResponseException(Response("400"), "invalid multipart entity format");
 
 		parseMultipartHeader(entity.substr(0, sep), part);
-		part.content = entity.substr(sep + 2);
-
-		Request::printBody(entity);
-
+		part.content = entity.substr(sep + 4);
+		data.bodies.push_back(part);
 		pos = next_pos + 2 + boundary_len;
-
 	}
 }
 
@@ -166,6 +163,7 @@ Response Request::handlePOST()
 			parseURLEncoded(_body, data);
 		else if (data.type == "text/plain")
 		{
+			
 			POSTBody body;
 			body.content = _body;
 			data.bodies.push_back(body);
@@ -175,25 +173,18 @@ Response Request::handlePOST()
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << "debug: handlPOST(): " << e.what() << endl;
+		std::cerr << "debug: handlePOST(): " << e.what() << endl;
 	}	
-	
 
-	//print bodies debug
-	for (size_t i = 0; i < data.bodies.size(); i++)
-	{
-		POSTBody body = data.bodies[i];
-		cout << BMAGENTA << "Body " << i << ":\n" << NC;
-		cout << body.content << BMAGENTA << "%" << endl;
-		cout << NC;
-	}
 
 	response = Response("200");
 	//response = handleGET(); // for now, just to test
 
-	//temporary response 
-	try { response.setBody(getFile("tools/website/upload/success.html")); }
-	catch(const std::exception& e) { std::cerr << "debug: handlePOST(): " << e.what() << '\n'; }
+	string response_body = "POST request received successfully\n\n";
+	for (size_t i = 0; i < data.bodies.size(); i++)
+		response_body += "[" + itostr(i) + "] - \"" + data.bodies[i].content + "\"\n";
+
+	response.setBody(response_body);
 
 	return response;
 }

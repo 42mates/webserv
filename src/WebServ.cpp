@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebServ.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/28 15:47:24 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/14 18:02:00 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,9 +60,9 @@ void WebServ::handleOneEvent(pollfd& poll_fd, SocketManager& manager)
 		else
 			poll_manager.clientHandler(poll_info, manager, poll_fd.events);
 	}
-	catch (ResponseException& e)
+	catch (const ResponseException& e)
 	{
-		cerr << "debug: " << e.what() << endl; //debug message 
+		cerr << "response: " << e.what() << endl; //debug message 
 		
 		Response response = e.getResponse();
 		(*_socket_to_response)[poll_fd.fd] = response;
@@ -91,7 +91,7 @@ void WebServ::run(const char* arg, int& ret)
 			handleAllEvents(events, *sockets);
 		}
 	}
-	catch (exception& e)
+	catch (const exception& e)
 	{
 		cerr << "webserv: " << e.what() << endl;
 		ret = 1;
