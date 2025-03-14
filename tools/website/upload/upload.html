@@ -10,7 +10,7 @@
 </head>
 <body>
 	<div class="container mx-auto text-center mt-20">
-		<h1 class="text-4xl font-bold mb-10">File Upload Test</h1>
+		<h1 class="text-4xl font-bold mb-10">File Upload Test (multipart/form-data)</h1>
 		<form action="/upload" id="uploadForm" method="POST" enctype="multipart/form-data">
 			<input type="file" name="file" class="mb-5">
 			<button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">Upload</button>
@@ -18,7 +18,7 @@
 	</div>
 
 	<div class="container mx-auto text-center mt-20">
-		<h1 class="text-4xl font-bold mb-10">Contact Us</h1>
+		<h1 class="text-4xl font-bold mb-10">Contact Test (url encoding)</h1>
 		<form action="/upload" id="contactForm" method="POST" enctype="application/x-www-form-urlencoded"> <!--enctype="multipart/form-data">-->
 			<input type="text" name="name" placeholder="Xavier Niel" class="mb-5 p-2 border rounded">
 			<br>

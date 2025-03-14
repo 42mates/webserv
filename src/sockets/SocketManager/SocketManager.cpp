@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/20 17:21:19 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/14 13:57:04 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,20 +65,8 @@ SocketManager::~SocketManager(void)
 	}
 }
 
-/**
- * @brief Run the PollManager class.
- */
-void SocketManager::runPollManager() { _poll_manager.runPoll(*this); }
-
-				//! testing purposes only
-ostream& operator<<(ostream& o, const PortInfo& rhs) 
-{
-    o << "Server Socket: " << rhs.server_fd << "\n";
-    o << "Server Address: " << inet_ntoa(rhs.server_address.sin_addr) << ":" << ntohs(rhs.server_address.sin_port) << "\n";
-    o << "Client Sockets: ";
-    for (vector<ClientInfo>::const_iterator it = rhs.clients.begin(); it != rhs.clients.end(); ++it) {
-        o << it->client_fd << " (" << inet_ntoa(it->address.sin_addr) << ":" << ntohs(it->address.sin_port) << ") ";
-    }
-    o << "\n";
-    return o;
-}
+// //! DELETE ME
+// /**
+//  * @brief Run the PollManager class.
+//  */
+// void SocketManager::runPollManager() { _poll_manager.runPoll(*this); }

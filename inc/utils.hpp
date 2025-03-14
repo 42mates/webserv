@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:33:23 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/12 17:23:12 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/14 14:24:53 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,12 @@
 
 // UTILS.CPP
 
-std::string itostr(int num);
-int	countOccurrences(const string s, char c);
-string getTestRequest();
-string getDate();
-string getFile(string path);
-
+string	itostr(int num);
+int		countOccurrences(const string s, char c);
+string	getTestRequest();
+string	getDate();
+string	getFile(string path);
+bool	isTimeOutReached(timeval& start, timeval& end, size_t timeout);
 
 // CONFIG_PRINT.CPP
 

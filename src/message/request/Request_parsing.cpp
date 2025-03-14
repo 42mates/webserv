@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/12 18:28:33 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/13 15:51:51 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,8 @@ void Request::parseHeader(string raw_request)
 
 void Request::parseBody(string body)
 {
+	cerr << "parseBody() called" << endl;
+
 	if (body.empty())
 		return;
 
@@ -111,7 +113,7 @@ void Request::parseRequest(string request_chunk)
 
 	setIsCompleteRequest();
 
-	if (_raw_request.substr(0, 10).find("GET") == string::npos) // debug: avoid printing GET requests
+	//if (_raw_request.substr(0, 10).find("GET") == string::npos) // debug: avoid printing GET requests
 		this->printRaw(); //! debug to see recv() results
 	
 	if (!_header_parsed && isCompleteHeader(_raw_request))

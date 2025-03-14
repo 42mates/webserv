@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:35:36 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/26 13:05:43 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/14 11:59:48 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,4 +113,24 @@ void	SocketManager::storeSocket(int port, t_sockfd socket_fd, short options, e_S
 
 	if (client != NULL)
 		_ports_info[port].clients.push_back(*client);
+}
+
+
+/**
+ * @brief Gets the error status of a socket.
+ * 
+ * This function retrieves the pending error for the socket, which represents
+ * the last error encountered by the socket layer.
+ * 
+ * @param socket_fd The file descriptor of the socket to check.
+ * @return int The error status of the socket. Returns 0 if no error is pending.
+ */
+int		getError(t_sockfd socket_fd)
+{
+	int			error = 0;
+	socklen_t	error_len = sizeof(error);
+
+	getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
+
+	return error;
 }

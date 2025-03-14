@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/13 12:42:00 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/14 14:25:02 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ class Request
 		// GETTERS
 		string		getHeaderValue(string value);
 		string		getConnectionKeepAlive();
+		string		getRawRequest();
 
 		// STATUS
 		void		setIsCompleteRequest();
