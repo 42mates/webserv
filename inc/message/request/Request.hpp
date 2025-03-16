@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/14 14:25:02 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/16 20:19:44 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ class Request
 		string		getHeaderValue(string value);
 		string		getConnectionKeepAlive();
 		string		getRawRequest();
+		bool		getIsCompleteRequest();
 
 		// STATUS
 		void		setIsCompleteRequest();

@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:52:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/14 13:52:56 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/16 20:50:20 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,39 +99,3 @@ void	SocketPollManager::prepareData(t_sockfd socket_fd, ssize_t& total_bytes_rea
 	request = it->second;
 }
 
-// //! TO DELETE
-// /**
-//  * @brief Runs the poll loop to monitor socket events.
-//  * 
-//  * This function runs a loop that calls the poll system call to monitor socket events.
-//  * It handles server and client events based on the poll results.
-//  * 
-//  * @param manager Reference to the SocketManager instance.
-//  * @throws std::runtime_error If an error occurs during the poll system call.
-//  */
-// void	SocketPollManager::runPoll(SocketManager& manager)
-// {
-// 	int				ret;
-
-// 	cout << "Running webserv, press ctrl + C or ctrl + \\ to end" << endl;
-// 	while (true)
-// 	{
-// 		ret = poll(&_poll_fds->at(0), _poll_fds->size(), 60 * 1000); // one min
-// 		if (ret < 0)
-// 			throw runtime_error(string("SocketPollManager::runPoll(): ") + strerror(errno));
-// 		if (ret == 0)
-// 			continue ;
-
-// 		for (size_t i = 0; i < _poll_fds->size() && ret; i++)
-// 		{
-// 			if (_poll_fds->at(i).revents == 0)
-// 				continue ;
-// 			SocketPollInfo socket_info = getSocketInfo(_poll_fds->at(i));
-// 			if (socket_info.type == SERVER_SOCKET)
-// 				serverHandler(socket_info, manager);
-// 			else
-// 				clientHandler(socket_info, manager, _poll_fds->at(i).events);
-// 			ret--;
-// 		}
-// 	}
-// }

@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:40:43 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/14 13:56:36 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/16 20:53:43 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ public:
 		void	clientRecv(SocketPollInfo poll_info, ServerConfig& server);
 
 		void	prepareData(t_sockfd socket_fd, ssize_t& total_bytes_read, Request& request);
+		// void	prepareData(t_sockfd socket_fd, ssize_t& total_bytes_sent, Response& response);
 		
 		SocketPollInfo				getSocketInfo(pollfd pfd);
 		map<t_sockfd, Request>*		getSocketToRequest( void );
@@ -76,7 +77,7 @@ struct eventHandler
 };
 
 
-int		getError(t_sockfd socket_fd);
+int		checkSocketStatus(t_sockfd socket_fd);
 
 
 void	serverPollIn(SocketPollInfo poll_info, SocketManager& manager, SocketPollManager& poll_manager);

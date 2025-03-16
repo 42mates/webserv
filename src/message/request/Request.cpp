@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/14 14:25:09 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/16 20:20:11 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,4 +220,10 @@ string Request::getConnectionKeepAlive()
 string Request::getRawRequest()
 {
 	return _raw_request;
+}
+
+
+bool	Request::getIsCompleteRequest()
+{
+	return _is_complete_request;
 }

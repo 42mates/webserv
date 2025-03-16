@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/14 15:04:23 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/16 20:58:13 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 			try 
 			{
 				client_events[i].handler(poll_info, manager, *this);
-				if (client_events[i].event == POLLIN)
-					fd_events |= POLLOUT;	
+				if (client_events[i].event == POLLIN && _socket_to_request.at(poll_info.pfd.fd).getIsCompleteRequest() == true)
+					fd_events |= POLLOUT;
 				if (client_events[i].event == POLLOUT)
 					fd_events &= ~POLLOUT;
 			}
@@ -71,7 +71,7 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
  * @param total_bytes_read Reference to the total number of bytes read so far.
  * @return The number of bytes read in this call.
  */
-static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, ssize_t& total_bytes_read, int& error)
+static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, ssize_t& total_bytes_read, int& status)
 {
 	const int	BUFFER_SIZE = 1024;
 	char		buffer[BUFFER_SIZE + 1] = {0};
@@ -83,10 +83,10 @@ static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_ma
 
 	bytes_received = recv(socket_fd, buffer, bytes_to_read, MSG_DONTWAIT);
 
-	error = getError(socket_fd);
+	status = checkSocketStatus(socket_fd);
 	if (bytes_received == -1)
 	{
-		error == 0 ? error = BLOCKING_OPERATION : error;
+		status == 0 ? status = BLOCKING_OPERATION : status;
 		return -1;
 	}
 	if (bytes_received > 0) //! removed check of read bytes < to BUFFER_SIZE (if there is a read, it'll never be higher than BUFFER_SIZE)
@@ -136,15 +136,15 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 		if (isTimeOutReached(start, end, 1500000) == true)
 			throw ResponseException(Response("408"), "Request timeout"); //! good exception?
 		
-		int error = 0;
-		ret = readOne(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read, error);
+		int status = 0;
+		ret = readOne(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read, status);
 
 		if (ret < 0)
 		{
-			if (error == BLOCKING_OPERATION)
+			if (status == BLOCKING_OPERATION)
 				return _socket_to_request[poll_info.pfd.fd] = request, (void)0;
 			else
-				throw runtime_error("clientRecv() " + string(strerror(error)));
+				throw runtime_error("clientRecv() " + string(strerror(status)));
 		}
 		try 
 		{
@@ -171,9 +171,9 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
  * @return The total number of bytes sent.
  * @throws std::runtime_error If an error occurs while sending data to the socket.
  */
-ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& manager, ServerConfig& server) //prepare non blocking here too
+ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& manager, ServerConfig& server) //prepare non blocking here too and add try catch
 {
-	Response	class_response = _socket_to_request[poll_info.pfd.fd].handleRequest(server);
+	Response	class_response = _socket_to_request[poll_info.pfd.fd].handleRequest(server); 
 	string		string_response = class_response.getResponse();
 	char		*buffer = (char *)string_response.c_str();
 	ssize_t		len_response = string_response.size();
