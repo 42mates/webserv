@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:38:12 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/03 15:19:26 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/17 17:37:30 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void ServerBlock::initAllowedDirectives()
 	_allowed_fields["client_max_body_size"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&ServerBlock::parseClientMaxBodySize);
 
 	//default route fields
+	_allowed_fields["alias"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&ServerBlock::parseAlias);
 	_allowed_fields["root"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&ServerBlock::parseRoot);
 	_allowed_fields["index"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&ServerBlock::parseIndexFile);
 	_allowed_fields["return"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&ServerBlock::parseReturn);
@@ -72,6 +73,7 @@ LocationBlock::LocationBlock(struct RouteConfig &config, string &filepath)
 */
 void LocationBlock::initAllowedDirectives()
 {
+	_allowed_fields["alias"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&LocationBlock::parseAlias);
 	_allowed_fields["root"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&LocationBlock::parseRoot);
 	_allowed_fields["methods"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&LocationBlock::parseMethods);
 	_allowed_fields["directory_listing"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&LocationBlock::parseDirectoryListing);

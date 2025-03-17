@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Request_methods.cpp                                :+:      :+:    :+:   */
+/*   Request_methods_utils.cpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 15:10:23 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 15:10:29 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/17 13:37:48 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ string Request::getFileContent()
 	{
 		content.assign((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 	}
-	catch(const std::exception& e)
+	catch(const exception& e)
 	{
 		throw ResponseException(Response("404"), "getFileContent(): " + string(e.what()));
 	}

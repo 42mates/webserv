@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/14 18:16:16 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/17 17:59:18 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	_route_conf = getBestRoute(_server_conf, _uri);
 
 	//if (_method != "GET") // debug (avoiding GET printing)
-	//	this->print();
+		this->print(); //!leave this line for debug purposes during correction
 
 	try
 	{
@@ -86,7 +86,17 @@ Response Request::handleRequest(ServerConfig &server_conf)
 			throw ResponseException(Response("400"), "incomplete request");
 		checkStartLine();
 		checkHeader();
-		_path = getFilePath(_route_conf.root + _uri);
+		
+		//TODO: handle query string !!!
+
+		if (!_route_conf.alias.empty())
+		{
+			if (_uri.find(_route_conf.path) == 0)
+				_uri = _uri.substr(_route_conf.path.length());
+			_path = getFilePath(_route_conf.alias + _uri);
+		}
+		else
+			_path = getFilePath(_route_conf.root + _uri);
 		checkMethod();
 
 		response = (this->*_method_handling[_method])(); // call the method handling function

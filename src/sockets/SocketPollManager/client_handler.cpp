@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/16 20:58:13 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/17 13:35:37 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,6 +155,11 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 			//store ResponseException class into the map
 			//call clientSend here to inform that the request can continue
 			//continue loop
+		}
+		catch(const runtime_error& e)
+		{
+			cerr << "debug: in parsing: " <<  e.what() << '\n';
+			throw ResponseException(Response("400"), "invalid request");
 		}
 		if (ret == 0)
 			break ;

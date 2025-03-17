@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/14 16:08:04 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/17 15:27:12 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,44 +105,24 @@ static void parseMultipart(string body, POSTData &data)
 	}
 }
 
-void percentDecode(string &str)
-{
-	size_t pos = 0;
-
-	while ((pos = str.find('+', pos)) != string::npos)
-		str.replace(pos, 1, 1, ' ');
-	pos = 0;
-
-	while ((pos = str.find('%', pos)) != string::npos)
-	{
-		if (pos + 2 >= str.size())
-			throw ResponseException(Response("400"), "invalid percent encoding");
-		
-		string tmp = str.substr(pos + 1, 2);
-		char c = (char)strtol(tmp.c_str(), NULL, 16);
-		str.replace(pos, 3, 1, c);
-		pos++;
-	}
-}
-
-static void parseURLEncoded(string body, POSTData &data)
+void parseURLEncoded(string body, POSTData &data)
 {
 	istringstream iss(body);
 	string field;
 	
-	while (getline(iss, field, '&'))
+	try
 	{
-		size_t pos = field.find('=');
-		if (pos == string::npos)
-			throw ResponseException(Response("400"), "invalid url-encoded field");
-			
-		percentDecode(field);
-		string key = field.substr(0, pos);
-		string value = field.substr(pos + 1);
-			
-		POSTBody post_body;
-		post_body.content = key + "=" + value;
-		data.bodies.push_back(post_body);
+		map<string, string> decoded = decodeURL(body);
+		for (map<string, string>::iterator it = decoded.begin(); it != decoded.end(); it++)
+		{
+			POSTBody post_body;
+			post_body.content = it->first + "=" + it->second;
+			data.bodies.push_back(post_body);
+		}
+	}
+	catch(const runtime_error& e)
+	{
+		throw ResponseException(Response("400"), e.what());
 	}
 }
 
@@ -156,7 +136,12 @@ Response Request::handlePOST()
 	try
 	{		
 		if (_body.empty())
-			cout << "debug: Empty body in PUT. what should I do with it ?" << endl; //? idk what to do with it yet
+		{
+			response = Response("400");
+			response.setBody("");
+			return response;
+		}
+			//cout << "debug: Empty body in PUT. what should I do with it ?" << endl; //? idk what to do with it yet
 		else if (data.type == "multipart/form-data")
 			parseMultipart(_body, data);
 		else if (data.type == "application/x-www-form-urlencoded")
@@ -171,9 +156,9 @@ Response Request::handlePOST()
 		else if (!data.type.empty())
 			throw ResponseException(Response("400"), "unsupported content-type");
 	}
-	catch(const std::exception& e)
+	catch(const runtime_error& e)
 	{
-		std::cerr << "debug: handlePOST(): " << e.what() << endl;
+		cerr << "debug: handlePOST(): " << e.what() << endl;
 	}	
 
 

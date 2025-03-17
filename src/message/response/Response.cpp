@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/11 11:41:00 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/17 15:31:46 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,9 @@ Response::Response()
 {
 	initStatusLine();
 	initHeaderFields();
-	setErrorBody();
+	
+	_body = ""; //expected behaviour from tester
+	//setErrorBody();
 }
 
 Response::Response(string status) 
@@ -85,9 +87,11 @@ Response::Response(string status)
 {
 	initStatusLine();
 	if (_status_line.find(_status) == _status_line.end())
-		throw invalid_argument(string("debug: Response constructor used with invalid arg \"") + _status + "\"");
+		throw runtime_error(string("debug: Response constructor used with invalid arg \"") + _status + "\"");
 	initHeaderFields();
-	setErrorBody();
+	
+	_body = ""; //expected behaviour from tester
+	//setErrorBody();
 }
 
 Response::Response(const Response &other) 

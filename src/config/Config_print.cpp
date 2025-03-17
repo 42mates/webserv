@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 15:14:12 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 17:27:00 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/17 18:01:20 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	printConfig(RouteConfig &config)
 	cout << "****** ROUTE ******" << endl;
 	cout << "Path:              " << config.path << endl;
 	cout << "Root:              " << config.root << endl;
+	cout << "Alias:             " << config.alias << endl;
 	cout << "Methods:           ";
 	for (vector<string>::iterator it = config.methods.begin(); it != config.methods.end(); it++)
 		cout << *it << " ";
@@ -57,9 +58,10 @@ void	printConfig(RouteConfig &config, int indent_level)
 
 	//adding colors
 	cout << "\033[0;3" << string(1, (indent_level % 6) + 48) << "m";
-	
+
 	cout << il << "Path:              " << config.path << endl;
 	cout << il << "Root:              " << config.root << endl;
+	cout << il << "Alias:             " << config.alias << endl;
 	cout << il << "Methods:           ";
 	for (vector<string>::iterator it = config.methods.begin(); it != config.methods.end(); it++)
 		cout << *it << " ";

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/14 18:02:00 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/17 18:00:07 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ void WebServ::run(const char* arg, int& ret)
 	try
 	{
 		_conf.parse(config_file);
+		//printConfig(*_conf.getBestServer("0.0.0.0", 42420, "localhost")); //debug
 		sockets = new SocketManager(_conf.getServers());
 		setVariables(*sockets);
 		while (run_server)

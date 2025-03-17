@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 17:07:20 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/17 17:41:51 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,13 @@ void printVector(const vector<ConfigToken>& v)
  * @brief Puts a string between double quotes and returns it.
  */
 string	qString(string to_quote) { return "\"" + to_quote + "\""; }
+
+void ServerBlock::parseAlias(vector<ConfigToken> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseAlias(val);
+	_config->alias = val[0].token;
+}
 
 void ServerBlock::parseRoot(vector<ConfigToken> val)
 {
@@ -205,11 +212,22 @@ void LocationBlock::parseRoot(vector<ConfigToken> val)
 	_config->root = val[0].token;
 }
 
+void LocationBlock::parseAlias(vector<ConfigToken> val)
+{
+	//todo only one argument ✅
+	//todo starts with / (but nginx doesnt throw an error when it is not)
+	//? so does that cause error at the execution?
+
+	if (val.size() != 1 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"alias\" directive in ") + _filepath + ":" + itostr(val[0].line));
+	_config->alias = val[0].token;
+}
+
 void LocationBlock::parseMethods(vector<ConfigToken> val)
 {
 	if (val.size() == 0 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"methods\" directive ") + _filepath + ":" + itostr(val[0].line));
-	_config->methods.resize(0); //! just for testing purposes
+	_config->methods.clear();
 	for (size_t i = 0; i < val.size(); i++)
 	{
 		string	tmp(val[i].token);

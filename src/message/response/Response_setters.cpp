@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 14:29:34 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 14:34:02 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/17 13:35:06 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void Response::setStatus(string status)
 {
 	if (_status_line.find(status) == _status_line.end())
-		throw invalid_argument(string("debug: Response setStatus() used with invalid arg \"") + status + "\"");
+		throw runtime_error(string("debug: Response setStatus() used with invalid arg \"") + status + "\"");
 	_status = status;
 }
 
@@ -26,7 +26,7 @@ void Response::setHeaderValue(string key, string value)
 	if (_header.find(key) != _header.end())
 		_header[key] = value;
 	else
-		throw invalid_argument(string("debug: Response setHeaderValue() used with invalid key \"") + key + "\"");
+		throw runtime_error(string("debug: Response setHeaderValue() used with invalid key \"") + key + "\"");
 }
 
 void Response::setBody(string body)
