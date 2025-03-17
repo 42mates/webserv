@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:08:37 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/16 20:19:44 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,19 @@
 #include "libs.h"
 #include "Config.hpp"
 
-#include "AMessage.hpp"
 #include "Response.hpp"
 
 /*
  * @brief Represents an HTTP request.
  */
-class Request : public AMessage
+class Request
 {
 	private:
 		string	_method;
 		string	_uri;
 		string	_version;
+		map<string, string>	_header;
+		string	_body;
 		string	_path;
 		
 		// INITIALIZATION METHODS
@@ -68,6 +69,7 @@ class Request : public AMessage
 
 	public:
 		Request();
+		virtual ~Request() {}
 
 		void		parseRequest(string raw_request);
 		Response	handleRequest(ServerConfig &server_config);
@@ -75,6 +77,8 @@ class Request : public AMessage
 		// GETTERS
 		string		getHeaderValue(string value);
 		string		getConnectionKeepAlive();
+		string		getRawRequest();
+		bool		getIsCompleteRequest();
 
 		// STATUS
 		void		setIsCompleteRequest();
@@ -86,7 +90,7 @@ class Request : public AMessage
 		void		printStartLine();
 		void		printHeader();
 		void		printBody();
-		void		printBody(string &body);
+		static void	printBody(string &body);
 		void		print();
 		void		printRaw();
 };

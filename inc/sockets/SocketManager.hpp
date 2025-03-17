@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/28 14:09:20 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/14 13:57:13 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include "Config.hpp"
 #include "SocketOperations.hpp"
 #include "SocketPollManager.hpp"
+#include <sys/time.h>
+
 
 //! Should multiple servers listen on the same port ?
 //! CAREFUL : Since _poll_manager need access to data stored in SocketManager, said data need
@@ -66,13 +68,8 @@ class SocketManager
 		void			closeConnection(int port, t_sockfd socket_fd, e_SocketType type);
 		//? Client's socket in non blocking ? (i.e. should it wait for an answer?)
 
-							/*RUNNING POLL*/
-		void			runPollManager( void );
-							/*TESTING*/
-
-		void			printInfo( void ) const;
+		// 					/*RUNNING POLL*/
+		// void			runPollManager( void );
 };	
-
-ostream&	operator<<(ostream& o, PortInfo& rhs); //! testing purposes only
 
 

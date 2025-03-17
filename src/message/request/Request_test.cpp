@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 15:31:20 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 15:04:50 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/14 18:02:12 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void Request::testParsing()
 		}
 		cout << "Body: " << _body << endl;
 	}
-	catch (ResponseException &e)
+	catch (const ResponseException &e)
 	{
 		Response r = e.getResponse();
 		cout << r.getStatus() << " " << r.getReason() << endl;

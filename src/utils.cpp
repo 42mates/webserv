@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:30:39 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:30:16 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/14 14:26:52 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,4 +58,46 @@ string getDate()
 	char buf[80];
 	strftime(buf, sizeof(buf), "%a, %d %b %Y %H:%M:%S GMT", gmtm);
 	return string(buf);
+}
+
+string getFile(string path)
+{
+	ifstream file(path.c_str());
+	if (!file.is_open() || !file.good())
+		throw runtime_error("getFile(): could not open file \"" + path + "\"");
+	
+	string content;
+	try
+	{
+		content.assign((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+	}
+	catch(const std::exception& e)
+	{
+		runtime_error("getFile(): could not get file \"" + path + "\"" + string(e.what()));
+	}
+
+	file.close();
+
+	return content;
+}
+
+/**
+ * @brief Checks if a timeout has been reached between two timeval structs.
+ * 
+ * This function calculates the time difference in microseconds between two timeval structs
+ * and compares it to a given timeout value.
+ * 
+ * @param start The starting timeval struct.
+ * @param end The ending timeval struct.
+ * @param timeout The timeout value in microseconds.
+ * @return True if the timeout has been reached, false otherwise.
+ */
+bool	isTimeOutReached(timeval& start, timeval& end, size_t timeout)
+{
+	size_t	start_time_ms = start.tv_sec * 1000000 + start.tv_usec;
+	size_t	end_time_ms = end.tv_sec * 1000000 + end.tv_usec;
+
+	if ((end_time_ms - start_time_ms) >= timeout)
+		return (true);
+	return (false);
 }

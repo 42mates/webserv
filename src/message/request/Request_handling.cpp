@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:26:42 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/14 18:16:16 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ string Request::getFilePath(const string &path)
 	paths.push_back(path);
 	for (size_t i = 0; i < _route_conf.index_file.size(); ++i)
 		paths.push_back(path + "/" + _route_conf.index_file[i]);
-	
+
 	for (size_t i = 0; i < paths.size(); ++i)
 	{
 		struct stat buffer;
@@ -52,6 +52,8 @@ string Request::getFilePath(const string &path)
 		{
 			if (S_ISREG(buffer.st_mode) && access(paths[i].c_str(), R_OK) == 0)
 				return paths[i];
+			else if (access(paths[i].c_str(), R_OK) != 0 && errno == EACCES)
+				throw ResponseException(Response("403"), "getFilePath(): access denied to file " + paths[i]);
 		}
 	}
 	throw ResponseException(Response("404"), "getFilePath(): could not find file " + path);	
@@ -75,7 +77,8 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	_server_conf = server_conf;
 	_route_conf = getBestRoute(_server_conf, _uri);
 
-	//this->print();
+	//if (_method != "GET") // debug (avoiding GET printing)
+	//	this->print();
 
 	try
 	{
@@ -90,7 +93,7 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	}
 	catch(const ResponseException& e)
 	{
-		cerr << "debug: " << "handleRequest(): " << e.what() << endl;
+		cerr << "response: " << "handleRequest(): " << e.what() << endl;
 		response = e.getResponse();
 	}
 	catch(const exception& e)

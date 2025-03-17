@@ -32,6 +32,11 @@
 *.app
 webserv
 
+# Test files
+ubuntu*_tester
+YoupiBanane
+5l
+
 # Personal
 example_poll.cpp
 todo.md
