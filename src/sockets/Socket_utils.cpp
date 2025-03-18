@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:35:36 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/16 20:40:00 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/18 17:59:38 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,10 @@ void	SocketManager::removeClientSocket(int port, t_sockfd socket_fd)
 	vector<ClientInfo>&	a_clients = _ports_info[port].clients;
 
 	vector<ClientInfo>::iterator to_del_client = find(a_clients.begin(), a_clients.end(), socket_fd);
-	if (to_del_client != a_clients.end()) //!testing purposes
+	if (to_del_client != a_clients.end())
 		a_clients.erase(to_del_client);
 	vector<pollfd>::iterator to_del_poll = find(_poll_fds.begin(), _poll_fds.end(), socket_fd);
-	if (to_del_poll != _poll_fds.end()) //!testing purposes
+	if (to_del_poll != _poll_fds.end())
 		_poll_fds.erase(to_del_poll);
 	_socket_to_poll.erase(socket_fd);
 	_poll_manager.removeSocket(socket_fd);
@@ -72,7 +72,7 @@ void	SocketManager::removeServerSocket(int port)
 	map<int, PortInfo>::iterator	it_port_info = _ports_info.find(port);
 
 	if (it_port_info == _ports_info.end())
-		return ; //? Is it necessary?
+		return ;
 
 	for (size_t i = 0; i  < it_port_info->second.clients.size(); i++)
 		close(it_port_info->second.clients[i].client_fd);
@@ -108,7 +108,7 @@ void	SocketManager::storeSocket(int port, t_sockfd socket_fd, short options, e_S
 	tmp.type = type;
 	tmp.port = port;
 
-	_poll_fds.push_back(tmp.pfd); //*pollfd is copied, so no dangling pointer issue
+	_poll_fds.push_back(tmp.pfd);
 	_socket_to_poll[socket_fd] = tmp;
 
 	if (client != NULL)

@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   client_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/18 15:25:40 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 19:51:15 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketPollManager.hpp"
 #include "SocketManager.hpp"
+
 /**
  * @brief Establishes a connection with a client.
  * 
@@ -42,7 +43,7 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 				client_events[i].handler(poll_info, manager, *this);
 				if (client_events[i].event == POLLIN && _socket_to_request.at(poll_info.pfd.fd).getIsCompleteRequest() == true)
 					fd_events |= POLLOUT;
-				if (client_events[i].event == POLLOUT)
+				if (client_events[i].event == POLLOUT && _socket_to_response[poll_info.pfd.fd].fully_sent == true)
 					fd_events &= ~POLLOUT;
 			}
 			catch (ResponseException& e)
@@ -65,62 +66,13 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 }
 
 
-
-/**
- * @brief Reads a portion of data from the socket.
- * 
- * This function reads a portion of data from the specified socket in a non-blocking manner.
- * The amount of data read is determined by the client_max_body_size and BUFFER_SIZE.
- * The read data is stored in the request string.
- * 
- * @param socket_fd The file descriptor of the socket to read from.
- * @param request Reference to the string to store the read data.
- * @param client_max_body_size The maximum allowed size of the client's body.
- * @param total_bytes_read Reference to the total number of bytes read so far.
- * @return The number of bytes read in this call.
- */
-static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, ssize_t& total_bytes_read, int& status)
-{
-	const int	BUFFER_SIZE = 1024;
-	char		buffer[BUFFER_SIZE + 1] = {0};
-	ssize_t		bytes_to_read = (client_max_body_size > BUFFER_SIZE ? BUFFER_SIZE : client_max_body_size);
-	ssize_t		bytes_received = 0;
-
-	if (static_cast<size_t>(total_bytes_read + bytes_to_read) > client_max_body_size)
-	{
-		cout << "client_max_body_size: " << client_max_body_size << endl;
-		bytes_to_read = client_max_body_size - total_bytes_read;
-	}
-
-	bytes_received = recv(socket_fd, buffer, bytes_to_read, MSG_DONTWAIT);
-
-	status = checkSocketStatus(socket_fd);
-	if (bytes_received == -1)
-	{
-		status == 0 ? status = BLOCKING_OPERATION : status;
-		return -1;
-	}
-	if (bytes_received > 0) //! removed check of read bytes < to BUFFER_SIZE (if there is a read, it'll never be higher than BUFFER_SIZE)
-		buffer[bytes_received] = '\0';
-
-	raw_request.clear();
-	raw_request = buffer;
-
-	if (client_max_body_size != string::npos)
-		total_bytes_read += bytes_received;
-
-	return bytes_received;
-}
-
-
 // 1. add exception class with response (sendResponse to the client). All exceptions must be caught in clientHandler and sent to the client (see catch)
 // 1. and check if connection must be closed or not
+// 1. add getStatus() in send for appropriate error handling
 
 // 2. Implement 100 continue 
 
-// 3. Add a wrapper structure for Response with the informations about the number of bytes sent
 
-// 4. Correct parsing of client_max_body_size (size start at bytes, not kilobytes)
 /**
  * @brief Receives data from the client.
  * 
@@ -132,31 +84,21 @@ static ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_ma
 void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& server)
 {
 	string		raw_request;
-	ssize_t		client_max_body_size = server.client_max_body_size;
+	size_t		client_max_body_size = server.client_max_body_size;
 	ssize_t		ret;
 	Request		request;
-	ssize_t		total_bytes_read = 0;
+	size_t		total_bytes_read = 0;
 	timeval		start, end;
 
-	prepareData(poll_info.pfd.fd, total_bytes_read, request);
-	gettimeofday(&start, NULL);
-	while (total_bytes_read <= client_max_body_size)
+	prepareRecv(poll_info.pfd.fd, total_bytes_read, request, start);
+	while (total_bytes_read <= client_max_body_size && ret)
 	{
-		gettimeofday(&end, NULL);
-		if (isTimeOutReached(start, end, 10000000) == true)
-			throw ResponseException(Response("408"), "Request timeout"); //! good exception?
-		
+		checkRequestTimeout(start, end);
 		int status = 0;
 		ret = readOne(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read, status);
-
 		if (ret < 0)
-		{
-			if (status == BLOCKING_OPERATION)
-				return _socket_to_request[poll_info.pfd.fd] = request, (void)0;
-			else
-				throw runtime_error("clientRecv() " + string(strerror(status)));
-		}
-		try 
+			return recvError(poll_info.pfd.fd, status, request);
+		try
 		{
 			request.parseRequest(raw_request);
 		}
@@ -166,66 +108,86 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 			//call clientSend here to inform that the request can continue
 			//continue loop
 		}
-		catch(const runtime_error& e)
-		{
-			cerr << "debug: in parsing: " <<  e.what() << '\n';
-			throw ResponseException(Response("400"), "invalid request");
-		}
-		if (ret == 0)
-		{
-			request.setIsCompleteRequest(true);
-			break ;
-		}
 	}
+	if (ret == 0)
+		request.setIsCompleteRequest(true);
 	_socket_to_request[poll_info.pfd.fd] = request;
+
 }
 
+
 /**
- * @brief Sends data to the client.
+ * @brief Sends the response to the client through the socket.
  * 
- * This function sends the response data to the client socket in a non-blocking manner.
+ * This function handles the process of sending the generated HTTP response to the client.
+ * It retrieves the response from the request handler, converts it to a C-style string,
+ * and then sends it through the socket in a non-blocking manner. It also handles potential
+ * errors during the send operation and closes the connection after sending the data.
  * 
- * @param poll_info The poll information containing the file descriptor and events.
- * @return The total number of bytes sent.
- * @throws std::runtime_error If an error occurs while sending data to the socket.
+ * @param poll_info The SocketPollInfo struct containing information about the socket.
+ * @param manager The SocketManager instance used to manage the socket connections.
+ * @param server The ServerConfig instance containing the server configuration.
+ * 
+ * @return The number of bytes sent to the client.
+ * 
+ * @throws runtime_error if the `send` function fails.
  */
 ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& manager, ServerConfig& server) //prepare non blocking here too and add try catch
 {
-	Response	class_response = _socket_to_request[poll_info.pfd.fd].handleRequest(server); 
+	Response	class_response;
+	size_t		len_sent = 0;
+	timeval		start, end;
+	prepareSend(poll_info.pfd.fd, len_sent, class_response, start, server);
+
 	string		string_response = class_response.getResponse();
-	char		*buffer = (char *)string_response.c_str();
-	ssize_t		len_response = string_response.size();
-	ssize_t		len_sent = 0;
+	char*		buffer = (char *)string_response.c_str();
+	size_t		len_response = string_response.size();
 
 	while (len_sent != len_response)
 	{
+		checkResponseTimeout(start, end);
 		ssize_t ret = send(poll_info.pfd.fd, buffer + len_sent, len_response - len_sent, MSG_DONTWAIT);
+		int status = checkSocketStatus(poll_info.pfd.fd);
+
 		if (ret < 0)
-			throw runtime_error("sendData()");
+			return sendError(poll_info.pfd.fd, status, class_response, len_sent), len_sent;
 		len_sent += ret;
+
 		if (ret == 0)
 			break ;
 	}
-	manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET); //*for now, connection close each time. Need to use connection-keep-alive
+
+	string	keepConnection = _socket_to_request.at(poll_info.pfd.fd).getConnectionKeepAlive();
+	if (keepConnection == "close")
+		manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET);
+	_socket_to_response.at(poll_info.pfd.fd).fully_sent = true;
 	return len_sent;
 }
 
 /**
- * @brief Sends data to the client.
- * 
- * This function sends the response data to the client socket in a non-blocking manner.
- * 
- * @param poll_info The poll information containing the file descriptor and events.
- * @return The total number of bytes sent.
- * @throws std::runtime_error If an error occurs while sending data to the socket.
+ * @brief Sends the HTTP response to the client socket in a non-blocking manner.
+ *
+ * This function takes a `SocketPollInfo` object containing information about the client socket
+ * and a `Response` object containing the HTTP response to be sent. It converts the response
+ * into a C-style string, then uses a loop to send the data in chunks using the `send` function
+ * with the `MSG_DONTWAIT` flag to prevent blocking.
+ *
+ * @param poll_info A `SocketPollInfo` object containing information about the client socket,
+ *                  including the file descriptor (`pfd.fd`).
+ * @param response A `Response` object containing the HTTP response to be sent to the client.
+ * @return The total number of bytes sent to the client.
+ * @throws runtime_error if the `send` function returns an error (less than 0).
+ *
+ * @note The connection is closed after each send operation.  Future implementations should
+ *       implement connection keep-alive functionality.
  */
-ssize_t	SocketPollManager::clientSend(SocketPollInfo &poll_info, Response& response) //prepare non blocking here too and add try catch
+ssize_t	SocketPollManager::clientSend(SocketPollInfo &poll_info, Response& response) //! balls breaking if the send is blocking here
 {
 	string		string_response = response.getResponse();
 	char		*buffer = (char *)string_response.c_str();
-	ssize_t		len_response = string_response.size();
-	ssize_t		len_sent = 0;
-
+	size_t		len_response = string_response.size();
+	size_t		len_sent = 0;
+	
 	while (len_sent != len_response)
 	{
 		ssize_t ret = send(poll_info.pfd.fd, buffer + len_sent, len_response - len_sent, MSG_DONTWAIT);

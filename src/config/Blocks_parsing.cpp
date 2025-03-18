@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Blocks_parsing.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/18 14:46:28 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 19:24:57 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ void ServerBlock::parseErrorPage(vector<ConfigToken> val)
 
 void ServerBlock::parseClientMaxBodySize(vector<ConfigToken> val)
 {
-	size_t	bytes_multiplier = 1000;
+	size_t	bytes_multiplier = 1;
 	string	err_msg = qString("client_max_body_size") + " directive invalid value in " + _filepath + ":" + itostr(val[0].line);
 	size_t	first_not_of;
 	size_t	bytes;
@@ -177,10 +177,14 @@ void ServerBlock::parseClientMaxBodySize(vector<ConfigToken> val)
 	first_not_of = val[0].token.find_first_not_of("0123456789");
 	if (first_not_of != string::npos)
 	{
-		char	tmp = toupper(val[0].token.at(first_not_of));
-		if (tmp != 'K' && tmp != 'M' && tmp != 'G')
+		char	unit = toupper(val[0].token.at(first_not_of));
+		if (unit != 'K' && unit != 'M' && unit != 'G')
 			throw runtime_error(err_msg);
-		(tmp == 'M') ? bytes_multiplier *= 1000000 : bytes_multiplier *= (1000000 * 1000000);
+
+		if (unit == 'K') bytes_multiplier = 1000;
+		if (unit == 'M') bytes_multiplier = 1000 * 1000;
+		if (unit == 'G') bytes_multiplier = 1000 * 1000 * 1000;
+		
 		if (val[0].token.size() != first_not_of + 1) //* means that there is something after the unit
 			throw runtime_error(err_msg);
 	}
@@ -189,7 +193,6 @@ void ServerBlock::parseClientMaxBodySize(vector<ConfigToken> val)
 	if (iss.fail())
 		throw runtime_error("string stream conversion error in parseClientMaxBodySize()");
 	bytes *= bytes_multiplier;
-	cout << "bytes: " << bytes << endl;
 	if (bytes == 0)
 		_config->client_max_body_size = string::npos; //* disables the limit
 	else

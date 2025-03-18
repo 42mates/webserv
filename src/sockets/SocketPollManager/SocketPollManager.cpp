@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketPollManager.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:52:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/18 14:41:17 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 19:09:57 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,26 +32,6 @@ SocketPollManager::SocketPollManager(SocketManager& manager)
 
 SocketPollManager::~SocketPollManager() {}
 
-std::ostream& operator<<(std::ostream& os, const SocketPollManager& spm)
-{
-    os << "Poll FDs:" << std::endl;
-    for (size_t i = 0; i < spm._poll_fds->size(); ++i)
-    {
-        const pollfd& pfd = spm._poll_fds->at(i);
-        os << "FD: " << pfd.fd << ", Events: " << pfd.events << ", Revents: " << pfd.revents << std::endl;
-    }
-
-    os << "Socket to Poll Mapping:" << std::endl;
-    for (std::map<t_sockfd, SocketPollInfo>::const_iterator it = spm._socket_to_poll->begin(); it != spm._socket_to_poll->end(); ++it)
-    {
-        const SocketPollInfo& spi = it->second;
-        os << "Socket FD: " << it->first << ", Poll FD: " << spi.pfd.fd << ", Poll Events: " << spi.pfd.events << ", Poll Revents: " << spi.pfd.revents << ", Type: " << (spi.type == SERVER_SOCKET ? "Server" : "Client") << std::endl;
-    }
-
-    return os;
-}
-
-
 /**
  * @brief Retrieves the socket information for a given poll file descriptor.
  *
@@ -72,16 +52,40 @@ SocketPollInfo	SocketPollManager::getSocketInfo(pollfd pfd)
 	return info;
 }
 
+/**
+ * @brief Gets the map of socket file descriptors to Request objects.
+ *
+ * This function returns a pointer to the internal map that stores the association
+ * between socket file descriptors and Request objects.
+ *
+ * @return A pointer to the map of socket file descriptors to Request objects.
+ */
 map<t_sockfd, Request>*	SocketPollManager::getSocketToRequest() 
 {
 	return &_socket_to_request;
 }
 
-map<t_sockfd, Response>*	SocketPollManager::getSocketToResponse() 
+/**
+ * @brief Gets the map of socket file descriptors to infoResponse objects.
+ *
+ * This function returns a pointer to the internal map that stores the association
+ * between socket file descriptors and infoResponse objects.
+ *
+ * @return A pointer to the map of socket file descriptors to infoResponse objects.
+ */
+map<t_sockfd, infoResponse>*	SocketPollManager::getSocketToResponse() 
 {
 	return &_socket_to_response;
 }
 
+/**
+ * @brief Removes a socket from the internal maps.
+ *
+ * This function removes the entries associated with the given socket file descriptor
+ * from the internal maps `_socket_to_response` and `_socket_to_request`.
+ *
+ * @param socket_fd The file descriptor of the socket to be removed.
+ */
 void	SocketPollManager::removeSocket(t_sockfd socket_fd)
 {
 	_socket_to_response.erase(socket_fd);
@@ -89,14 +93,57 @@ void	SocketPollManager::removeSocket(t_sockfd socket_fd)
 }
 
 
-void	SocketPollManager::prepareData(t_sockfd socket_fd, ssize_t& total_bytes_read, Request& request)
+/**
+ * @brief Prepares data for a socket before reading a request.
+ *
+ * This function retrieves the total bytes read and the Request object associated with
+ * the given socket file descriptor. If the socket is not found in the internal map,
+ * it initializes the start time.
+ *
+ * @param socket_fd The file descriptor of the socket.
+ * @param total_bytes_read A reference to the variable to store the total bytes read.
+ * @param request A reference to the variable to store the Request object.
+ * @param start A reference to the timeval structure to store the start time.
+ */
+void	SocketPollManager::prepareRecv(t_sockfd socket_fd, size_t& total_bytes_read, Request& request, timeval& start)
 {
 	map<t_sockfd, Request>::iterator it = _socket_to_request.find(socket_fd);
 
 	if (it == _socket_to_request.end())
+	{
+		gettimeofday(&start, NULL);
 		return ;
+	}
+
 	total_bytes_read = it->second.getRawRequest().size();
-	cout << "total_bytes_read: " << total_bytes_read << endl;
 	request = it->second;
+	gettimeofday(&start, NULL);
 }
 
+/**
+ * @brief Prepares data for a socket before sending a response.
+ *
+ * This function retrieves the length sent and the Response object associated with the
+ * given socket file descriptor. If the socket is not found in the internal map,
+ * it handles the request and generates a response.
+ *
+ * @param socket_fd The file descriptor of the socket.
+ * @param len_sent A reference to the variable to store the length sent.
+ * @param response A reference to the variable to store the Response object.
+ * @param server A reference to the ServerConfig object.
+ */
+void	SocketPollManager::prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, ServerConfig& server)
+{
+	map<t_sockfd, infoResponse>::iterator it = _socket_to_response.find(socket_fd);
+
+	if (it == _socket_to_response.end())
+	{
+		gettimeofday(&start, NULL);
+		response = _socket_to_request[socket_fd].handleRequest(server);
+		return ;
+	}
+
+	response = it->second.response;
+	len_sent = it->second.len_sent;
+	gettimeofday(&start, NULL);
+}
