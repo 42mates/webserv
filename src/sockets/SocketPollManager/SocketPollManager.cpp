@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketPollManager.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:52:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/16 20:50:20 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/18 14:41:17 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ void	SocketPollManager::prepareData(t_sockfd socket_fd, ssize_t& total_bytes_rea
 	if (it == _socket_to_request.end())
 		return ;
 	total_bytes_read = it->second.getRawRequest().size();
+	cout << "total_bytes_read: " << total_bytes_read << endl;
 	request = it->second;
 }
 

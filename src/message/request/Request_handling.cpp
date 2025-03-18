@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/17 17:59:18 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 14:35:25 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	_route_conf = getBestRoute(_server_conf, _uri);
 
 	//if (_method != "GET") // debug (avoiding GET printing)
-		this->print(); //!leave this line for debug purposes during correction
+		//this->print(); //!leave this line for debug purposes during correction
 
 	try
 	{
