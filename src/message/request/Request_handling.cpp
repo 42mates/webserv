@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/18 16:11:08 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 17:02:45 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,15 @@ void Request::checkStartLine()
 		response.setHeaderValue("allow", Config::getAllowedMethods(_route_conf.methods));
 		throw ResponseException(response, "unknown method");
 	}
+
+	// get query string
+	if (_uri.find("?") != string::npos)
+	{
+		_query = decodeURL(_uri.substr(_uri.find("?") + 1));
+		_uri = _uri.substr(0, _uri.find("?"));
+		for (map<string, string>::iterator it = _query.begin(); it != _query.end(); ++it)
+			cout << "query: " << it->first << " = " << it->second << endl;
+	}
 }
 
 void Request::checkHeader()
@@ -34,8 +43,6 @@ void Request::checkHeader()
 		throw ResponseException(Response("417"), "expect value not supported");
 	//if (_header["content-length"].empty())
 	//	throw ResponseException(Response("400"), "missing required header field \"Content-Length\"");
-	
-	printConfig(_server_conf);
 
 	if (!_route_conf.http_redirect.first.empty())
 	{
@@ -75,23 +82,9 @@ string Request::getFilePath(const string &path)
 	throw ResponseException(Response("404"), "getFilePath(): could not find file " + path);	
 }
 
-void Request::checkMethod()
-{
-	if (std::find(_route_conf.methods.begin(), _route_conf.methods.end(), _method) == _route_conf.methods.end())
-	{
-		Response response("405");
-		response.setHeaderValue("allow", Config::getAllowedMethods(_route_conf.methods));
-		throw ResponseException(response, "unknown method");
-	}
-}
-
 Response Request::handleRequest(ServerConfig &server_conf)
 {
 	Response response;
-	
-	// find the best matching route
-	_server_conf = server_conf;
-	_route_conf = getBestRoute(_server_conf, _uri);
 
 	//if (_method != "GET") // debug (avoiding GET printing)
 		//this->print(); //!leave this line for debug purposes during correction
@@ -101,23 +94,19 @@ Response Request::handleRequest(ServerConfig &server_conf)
 		if (!_is_complete_request)
 			throw ResponseException(Response("500"), "incomplete request");
 		checkStartLine();
+		_server_conf = server_conf;
+		_route_conf = getBestRoute(_server_conf, _uri);
 		checkHeader();
-		
-		//TODO: handle query string !!!
-
-
-		checkMethod();
-
 		response = (this->*_method_handling[_method])(); // call the method handling function
 	}
 	catch(const ResponseException& e)
 	{
-		cerr << "response: " << "handleRequest(): " << e.what() << endl;
+		cerr << "response: " << "handleRequest() response: " << e.what() << endl;
 		response = e.getResponse();
 	}
 	catch(const exception& e)
 	{
-		cerr << "debug: " << "handleRequest(): " << e.what() << endl;
+		cerr << "debug: " << "handleRequest() exception: " << e.what() << endl;
 		response = Response("500");
 	}
 
