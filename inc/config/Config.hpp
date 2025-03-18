@@ -26,16 +26,16 @@ class LocationBlock;
  * @brief Configuration data for a specific route in the web server (`location` block).
  */
 struct RouteConfig {	
-	string root;             	// Root directory associated with the route	
-	string alias;             	// Alias directory associated with the route	
-	string path;             	// Path of the route (e.g., "/upload")	
-	vector<string> methods;  	// Accepted HTTP methods (e.g., {"GET", "POST"})	
-	bool directory_listing;  	// Enable or disable directory listing	
-	vector<string> index_file;  // Default file for a directory (e.g., "index.html")
-	string cgi_path;         	// Path to the CGI program (e.g., "/usr/bin/php-cgi")	
-	string upload_dir;       	// Upload directory for sent files	
-	string http_redirect;    	// HTTP redirection (e.g., "301 https://example.com")
-	
+	string root;             	        // Root directory associated with the route	
+	string alias;             	        // Alias directory associated with the route	
+	string path;             	        // Path of the route (e.g., "/upload")	
+	vector<string> methods;  	        // Accepted HTTP methods (e.g., {"GET", "POST"})	
+	bool directory_listing;  	        // Enable or disable directory listing	
+	vector<string> index_file;          // Default file for a directory (e.g., "index.html")
+	string cgi_path;         	        // Path to the CGI program (e.g., "/usr/bin/php-cgi")	
+	string upload_dir;       	        // Upload directory for sent files	
+	pair<string, string> http_redirect; // HTTP redirection (e.g., "301 https://example.com")
+
 	map<string, RouteConfig> subroutes; // List of subroutes
 
 	RouteConfig() :
@@ -45,7 +45,7 @@ struct RouteConfig {
 		directory_listing(false),
 		cgi_path(""),
 		upload_dir("tools/uploads"),
-		http_redirect("")
+		http_redirect("", "")
 	{
 		methods.push_back("GET");
 		//methods.push_back("POST");
@@ -57,15 +57,15 @@ struct RouteConfig {
  * @brief Configuration data for a specific server in the web server (`server` block).
  */
 struct ServerConfig {	
-	string host;                     // Server IP address (default: 0.0.0.0)	
-	int port;                        // Server listening port (default: 80)	
-	vector<string> server_names;     // Domain names associated with the server	
-	map<string, string> error_pages; // Error pages (key: HTTP code, value: file path)	
-	size_t client_max_body_size;     // Max body size (default: 1 MB)
-	string root;             		 // Root directory associated with the route
-	string alias;             		 // Alias directory associated with the route
-	vector<string> index_file;       // Default file for a directory (e.g., "index.html")
-	string http_redirect;    		 // HTTP redirection (e.g., "301 https://example.com")
+	string host;                        // Server IP address (default: 0.0.0.0)	
+	int port;                           // Server listening port (default: 80)	
+	vector<string> server_names;        // Domain names associated with the server	
+	map<string, string> error_pages;    // Error pages (key: HTTP code, value: file path)	
+	size_t client_max_body_size;        // Max body size (default: 1 MB)
+	string root;             		    // Root directory associated with the route
+	string alias;             		    // Alias directory associated with the route
+	vector<string> index_file;          // Default file for a directory (e.g., "index.html")
+	pair<string, string> http_redirect; // HTTP redirection (e.g., "301 https://example.com")
 
 
 	map<string, RouteConfig> routes; // List of configured routes
@@ -76,7 +76,7 @@ struct ServerConfig {
 		client_max_body_size(1 * 1024 * 1024),
 		root("tools/html"),
 		alias(""),
-		http_redirect("")
+		http_redirect("", "")
 	{
 		server_names.push_back("localhost");
 		index_file.push_back("index.html");

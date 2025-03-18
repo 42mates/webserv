@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/18 14:35:25 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 16:11:08 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,25 @@ void Request::checkHeader()
 		throw ResponseException(Response("400"), "missing required header field \"Host\"");
 	if (!_header["expect"].empty() && _header["expect"] != "100-continue")
 		throw ResponseException(Response("417"), "expect value not supported");
-
 	//if (_header["content-length"].empty())
 	//	throw ResponseException(Response("400"), "missing required header field \"Content-Length\"");
+	
+	printConfig(_server_conf);
+
+	if (!_route_conf.http_redirect.first.empty())
+	{
+		Response r(_route_conf.http_redirect.first);
+		r.setHeaderValue("location", _route_conf.http_redirect.second);
+		throw ResponseException(r, "redirecting to " + _route_conf.http_redirect.second);
+	}
+	if (!_route_conf.alias.empty())
+	{
+		if (_uri.find(_route_conf.path) == 0)
+			_uri = _uri.substr(_route_conf.path.length());
+		_path = getFilePath(_route_conf.alias + _uri);
+	}
+	else
+		_path = getFilePath(_route_conf.root + _uri);
 }
 
 string Request::getFilePath(const string &path)
@@ -83,20 +99,13 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	try
 	{
 		if (!_is_complete_request)
-			throw ResponseException(Response("400"), "incomplete request");
+			throw ResponseException(Response("500"), "incomplete request");
 		checkStartLine();
 		checkHeader();
 		
 		//TODO: handle query string !!!
 
-		if (!_route_conf.alias.empty())
-		{
-			if (_uri.find(_route_conf.path) == 0)
-				_uri = _uri.substr(_route_conf.path.length());
-			_path = getFilePath(_route_conf.alias + _uri);
-		}
-		else
-			_path = getFilePath(_route_conf.root + _uri);
+
 		checkMethod();
 
 		response = (this->*_method_handling[_method])(); // call the method handling function

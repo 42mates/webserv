@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/18 14:32:52 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 15:51:51 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,6 @@ class Request
 		// TESTING
 		int			_id; //debug
 		int			_parsingcalls; //debug
-		void		testParsing();
 		void		printStartLine();
 		void		printHeader();
 		void		printBody();

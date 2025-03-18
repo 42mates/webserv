@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:38:12 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/17 17:37:30 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 16:41:24 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,12 @@ void LocationBlock::initAllowedDirectives()
 	_allowed_fields["index"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&LocationBlock::parseIndexFile);
 	_allowed_fields["cgi_pass"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&LocationBlock::parseCgiPath);
 	_allowed_fields["upload_dir"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&LocationBlock::parseUploadDir);
-	_allowed_fields["http_redirect"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&LocationBlock::parseHttpRedirect);
 	_allowed_fields["return"] = static_cast<void (ABlock::*)(vector <ConfigToken>)>(&LocationBlock::parseReturn);
 
 	_allowed_blocks.push_back("location");
+}
+
+RouteConfig *LocationBlock::getConfig()
+{
+	return _config;
 }

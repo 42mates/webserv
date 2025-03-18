@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/17 15:31:46 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 16:43:16 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ void Response::initHeaderFields()
 	
 	// MANDATORY FOR BODY RESPONSES
 	_header["content-type"];
+	_header["location"];
 }
 
 Response::Response() 

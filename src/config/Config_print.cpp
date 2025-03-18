@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 15:14:12 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/17 18:01:20 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 16:12:35 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	printConfig(RouteConfig &config)
 	cout << "Index file:        " << config.index_file[0] << endl;
 	cout << "CGI path:          " << config.cgi_path << endl;
 	cout << "Upload directory:  " << config.upload_dir << endl;
-	cout << "HTTP redirect:     " << config.http_redirect << endl;
+	cout << "HTTP redirect:     " << config.http_redirect.first << " " << config.http_redirect.second << endl;
 
 	for (map<string, RouteConfig>::iterator it = config.subroutes.begin(); it != config.subroutes.end(); it++)
 	{
@@ -72,7 +72,7 @@ void	printConfig(RouteConfig &config, int indent_level)
 		cout << *it << " ";
 	cout << endl;	cout << il << "CGI path:          " << config.cgi_path << endl;
 	cout << il << "Upload directory:  " << config.upload_dir << endl;
-	cout << il << "HTTP redirect:     " << config.http_redirect << endl;
+	cout << il << "HTTP redirect:     " << config.http_redirect.first << " " << config.http_redirect.second << endl;
 
 	for (map<string, RouteConfig>::iterator it = config.subroutes.begin(); it != config.subroutes.end(); it++)
 	{

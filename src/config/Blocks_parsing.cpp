@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/18 14:46:28 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 16:41:03 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void ServerBlock::parseReturn(vector<ConfigToken> val)
 {
 	LocationBlock block(_config->routes["/"], _filepath);
 	block.parseReturn(val);
-	_config->http_redirect = val[0].token;
+	_config->http_redirect = block.getConfig()->http_redirect;
 }
 
 
@@ -189,7 +189,6 @@ void ServerBlock::parseClientMaxBodySize(vector<ConfigToken> val)
 	if (iss.fail())
 		throw runtime_error("string stream conversion error in parseClientMaxBodySize()");
 	bytes *= bytes_multiplier;
-	cout << "bytes: " << bytes << endl;
 	if (bytes == 0)
 		_config->client_max_body_size = string::npos; //* disables the limit
 	else
@@ -279,44 +278,19 @@ void LocationBlock::parseUploadDir(vector<ConfigToken> val)
 
 //TODO when there is no return code, 302 is assumed
 //? Store error code somewhere?
-void LocationBlock::parseHttpRedirect(vector<ConfigToken> val)
-{
-	long	return_value;
-	string	return_string = "\"return\" directive in ";
-
-	if (val.size() == 0 || val.size() > 2 || val[0].token.empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + return_string + _filepath + ":" + itostr(val[0].line)); //?nginx doesn't throw an error when one arg only
-
-	if (val.size() == 1)
-	{
-		_config->http_redirect = val[0].token;
-		return ;
-	}
-
-	if (val[0].token.find_first_not_of("0123465789") != string::npos)
-		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + return_string + _filepath + ":" + itostr(val[0].line));
-
-	return_value = strtol(val[0].token.c_str(), NULL, 10);
-	if (return_value < 300 || return_value > 399)
-		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + return_string + _filepath + ":" + itostr(val[0].line));
-	_config->http_redirect = val[1].token;
-
-}
-
 void LocationBlock::parseReturn(vector<ConfigToken> val)
 {
-	long	return_value;
-
 	if (val.size() == 0 || val.size() > 2 || val[0].token.empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"return\" directive ") + _filepath + ":" + itostr(val[0].line));
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"return\" directive in ") + _filepath + ":" + itostr(val[0].line));
 
 	if (val[0].token.find_first_not_of("0123465789") != string::npos)
-		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + _filepath + ":" + itostr(val[0].line));
+		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in \"return\" directive in " + _filepath + ":" + itostr(val[0].line));
 
-	return_value = strtol(val[0].token.c_str(), NULL, 10);
-	if (return_value > 999)
-		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + _filepath + ":" + itostr(val[0].line));
+	short num = strtol(val[0].token.c_str(), NULL, 10);
+	if (num < 300 || num > 307)
+		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in \"return\" directive in " + _filepath + ":" + itostr(val[0].line));
+	_config->http_redirect.first = val[0].token;
+	_config->http_redirect.second = (val.size() == 2) ? val[1].token : "";
 }
-
 
 LocationBlock::~LocationBlock(void) {}

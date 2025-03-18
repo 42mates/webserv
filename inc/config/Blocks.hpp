@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/17 17:38:22 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 16:41:21 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,10 +87,11 @@ class LocationBlock : public ABlock
 		void parseIndexFile(vector<ConfigToken> val);
 		void parseCgiPath(vector<ConfigToken> val);
 		void parseUploadDir(vector<ConfigToken> val);
-		void parseHttpRedirect(vector<ConfigToken> val);
 		void parseReturn(vector<ConfigToken> val);
 
 		LocationBlock(struct RouteConfig &config, string &path);
 		~LocationBlock();
 		void initAllowedDirectives();
+
+		RouteConfig *getConfig();
 };
