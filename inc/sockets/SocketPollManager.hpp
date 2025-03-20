@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:40:43 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/18 19:33:15 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/20 19:03:40 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,47 +43,55 @@ public:
 		SocketPollManager(SocketManager& manager);
 		~SocketPollManager( void );
 	
-									/* SERVER SIDE */
+								/* SERVER SIDE */
 
 		void	serverHandler(SocketPollInfo poll_info, SocketManager& manager);
 		void	establishConnection(t_sockfd server_socket, int port, SocketManager& manager);
 
-									/* CLIENT SIDE */
-									
+								/* CLIENT SIDE */
+				
 		void	clientHandler(SocketPollInfo poll_info, SocketManager& manager, short& fd_events);
+		
+
 		
 		ssize_t	clientSend(SocketPollInfo& poll_info, Response& response);
 		ssize_t	clientSend(SocketPollInfo& poll_info, SocketManager& manager, ServerConfig& server);
-
+		
 		void	clientRecv(SocketPollInfo poll_info, ServerConfig& server);
 		
-											//--> utils
-		
-		ssize_t	readOne(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, size_t& total_bytes_read, int& status);
-		
-		void	recvError(t_sockfd socket_fd, int& status, Request& request);
-		void	sendError(t_sockfd socket_fd, int& status, Response& response, size_t& len_sent);
-		
-		void	checkRequestTimeout(timeval& start, timeval& end);
-		void	checkResponseTimeout(timeval& start, timeval& end);
+												//--> utils
 		
 		void	prepareRecv(t_sockfd socket_fd, size_t& total_bytes_read, Request& request, timeval& start);
 		void	prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, ServerConfig& server);
+		
+		ssize_t	readOneChunk(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, size_t& total_bytes_read, int& status);
+		
+		void	checkRequestTimeout(timeval& start, timeval& end);
+		void	checkResponseTimeout(timeval& start, timeval& end);
+
+		void	recvError(t_sockfd socket_fd, int& status, Request& request);
+		void	sendError(t_sockfd socket_fd, int& status, Response& response, size_t& len_sent);
+		
+		bool	isMessageEnd(t_sockfd socket_fd, __int8_t type);
+		
+		
+		
 
 		
 
-									/* GETTERS */
+								/* GETTERS */
 		
 		SocketPollInfo					getSocketInfo(pollfd pfd);
 		map<t_sockfd, Request>*			getSocketToRequest( void );
 		map<t_sockfd, infoResponse>*	getSocketToResponse( void ); 
 
 
-									/* OTHER */
+								/* OTHER */
 
 		void	removeSocket(t_sockfd socket_fd);
 };
 
+bool	keepConnectionOpen(Response& r);
 
 /**
  * @brief This structure holds a `Response` object and the length of the data it sent (`len_sent`) to the client.
@@ -95,7 +103,8 @@ struct infoResponse
 	size_t		len_sent;
 	bool		fully_sent;
 
-	infoResponse() : fully_sent(false) {}
+	infoResponse() : len_sent(0), fully_sent(false) {}
+	infoResponse(const Response& r, const size_t& len) : response(r), len_sent(len), fully_sent(false) {}
 };
 
 /**

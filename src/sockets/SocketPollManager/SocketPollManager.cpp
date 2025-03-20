@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:52:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/18 19:09:57 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/20 19:28:55 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,60 +90,4 @@ void	SocketPollManager::removeSocket(t_sockfd socket_fd)
 {
 	_socket_to_response.erase(socket_fd);
 	_socket_to_request.erase(socket_fd);
-}
-
-
-/**
- * @brief Prepares data for a socket before reading a request.
- *
- * This function retrieves the total bytes read and the Request object associated with
- * the given socket file descriptor. If the socket is not found in the internal map,
- * it initializes the start time.
- *
- * @param socket_fd The file descriptor of the socket.
- * @param total_bytes_read A reference to the variable to store the total bytes read.
- * @param request A reference to the variable to store the Request object.
- * @param start A reference to the timeval structure to store the start time.
- */
-void	SocketPollManager::prepareRecv(t_sockfd socket_fd, size_t& total_bytes_read, Request& request, timeval& start)
-{
-	map<t_sockfd, Request>::iterator it = _socket_to_request.find(socket_fd);
-
-	if (it == _socket_to_request.end())
-	{
-		gettimeofday(&start, NULL);
-		return ;
-	}
-
-	total_bytes_read = it->second.getRawRequest().size();
-	request = it->second;
-	gettimeofday(&start, NULL);
-}
-
-/**
- * @brief Prepares data for a socket before sending a response.
- *
- * This function retrieves the length sent and the Response object associated with the
- * given socket file descriptor. If the socket is not found in the internal map,
- * it handles the request and generates a response.
- *
- * @param socket_fd The file descriptor of the socket.
- * @param len_sent A reference to the variable to store the length sent.
- * @param response A reference to the variable to store the Response object.
- * @param server A reference to the ServerConfig object.
- */
-void	SocketPollManager::prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, ServerConfig& server)
-{
-	map<t_sockfd, infoResponse>::iterator it = _socket_to_response.find(socket_fd);
-
-	if (it == _socket_to_response.end())
-	{
-		gettimeofday(&start, NULL);
-		response = _socket_to_request[socket_fd].handleRequest(server);
-		return ;
-	}
-
-	response = it->second.response;
-	len_sent = it->second.len_sent;
-	gettimeofday(&start, NULL);
 }

@@ -6,15 +6,11 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:35:36 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/18 17:59:38 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/19 15:46:51 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketManager.hpp"
-
-//? check for existing socket in the map before ? Should be ok normally
-
-//TODO store mesage received in raw_request for the constructor of the class Request
 
 /**
  * @brief Closes a connection and removes the socket from the SocketManager.
@@ -47,6 +43,9 @@ static bool operator==(const pollfd& s, t_sockfd socket) { return s.fd == socket
  */
 void	SocketManager::removeClientSocket(int port, t_sockfd socket_fd)
 {
+	if (_socket_to_poll.find(socket_fd) == _socket_to_poll.end())
+		return ;
+
 	vector<ClientInfo>&	a_clients = _ports_info[port].clients;
 
 	vector<ClientInfo>::iterator to_del_client = find(a_clients.begin(), a_clients.end(), socket_fd);

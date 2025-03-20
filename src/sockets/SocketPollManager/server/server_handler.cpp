@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:31:21 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/18 13:59:06 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/19 16:04:36 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,13 @@ void	SocketPollManager::serverHandler(SocketPollInfo poll_info, SocketManager& m
 			{
 				server_events[i].handler(poll_info, manager, *this);
 			}
+			catch (ResponseException& e)
+			{
+				cerr << "serverHandler(): " << e.what() << endl;
+				Response r = e.getResponse();
+				clientSend(poll_info, r);
+				manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET); //! careful with MSG_DONTWAIT see(clientHandler())
+			}
 			catch (const exception& e)
 			{
 				cerr << "debug: serverHandler(): " << e.what() << endl;
@@ -68,6 +75,6 @@ void	SocketPollManager::establishConnection(t_sockfd server_socket, int port, So
 
 	new_client.client_fd = accept(server_socket, (sockaddr *) &new_client.address, &new_client.size);
 	if (new_client.client_fd == -1)
-		throw runtime_error(string("SocketPollManager::establishConnection() ") + strerror(errno));
+		throw ResponseException(Response("500"), strerror(errno));
 	manager.storeSocket(port, new_client.client_fd, (POLLIN | POLLERR | POLLHUP), CLIENT_SOCKET, &new_client);
 }
