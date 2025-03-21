@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:31:21 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/19 16:04:36 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/21 11:54:05 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,13 +43,14 @@ void	SocketPollManager::serverHandler(SocketPollInfo poll_info, SocketManager& m
 			{
 				cerr << "serverHandler(): " << e.what() << endl;
 				Response r = e.getResponse();
-				clientSend(poll_info, r);
+				// clientSend(poll_info, r);
+				closeConnectionToAllClients(r, poll_info, manager);
 				manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET); //! careful with MSG_DONTWAIT see(clientHandler())
 			}
 			catch (const exception& e)
 			{
 				cerr << "debug: serverHandler(): " << e.what() << endl;
-				manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET);
+				manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET); //! might be somer other issues here
 				break ;
 			}
 		}
@@ -77,4 +78,29 @@ void	SocketPollManager::establishConnection(t_sockfd server_socket, int port, So
 	if (new_client.client_fd == -1)
 		throw ResponseException(Response("500"), strerror(errno));
 	manager.storeSocket(port, new_client.client_fd, (POLLIN | POLLERR | POLLHUP), CLIENT_SOCKET, &new_client);
+}
+
+
+void	SocketPollManager::closeConnectionToAllClients(Response& r, SocketPollInfo server, SocketManager& manager)
+{
+	t_sockfd&	server_fd = server.pfd.fd;
+
+	if (_ports_info->count(server_fd) == 0)
+		return ;
+
+	vector<ClientInfo>&	r_client = _ports_info->at(server_fd).clients;
+	vector<ClientInfo>::iterator it = r_client.begin();
+	vector<ClientInfo>::iterator end = r_client.end();
+
+	if (it == end)
+		return ;
+
+	while (it != end)
+	{
+		SocketPollInfo tmp = getSocketInfo(_poll_fds->at(it->client_fd));
+		clientSend(tmp, r);
+		manager.closeConnection(server.port, tmp.pfd.fd, CLIENT_SOCKET);
+		it = r_client.erase(it);
+		end = r_client.end();
+	}
 }

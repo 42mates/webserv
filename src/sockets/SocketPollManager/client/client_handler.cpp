@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/20 19:49:36 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/20 19:53:59 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 		catch (ContinueException& e_continue)
 		{
 			infoResponse r_continue(e_continue.getResponse(), 0);
-			_socket_to_response[poll_info.pfd.fd] = r_continue; //feels like not needed
+			// _socket_to_response[poll_info.pfd.fd] = r_continue; //* feels like not needed so commented
 			clientSend(poll_info, r_continue.response);
 			continue ;
 		}
