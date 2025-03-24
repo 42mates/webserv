@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/17 15:27:12 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/24 17:21:41 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,8 +112,8 @@ void parseURLEncoded(string body, POSTData &data)
 	
 	try
 	{
-		map<string, string> decoded = decodeURL(body);
-		for (map<string, string>::iterator it = decoded.begin(); it != decoded.end(); it++)
+		vector< pair<string, string> > decoded = decodeURL(body);
+		for (vector< pair<string, string> >::iterator it = decoded.begin(); it != decoded.end(); it++)
 		{
 			POSTBody post_body;
 			post_body.content = it->first + "=" + it->second;
@@ -122,7 +122,7 @@ void parseURLEncoded(string body, POSTData &data)
 	}
 	catch(const runtime_error& e)
 	{
-		throw ResponseException(Response("400"), e.what());
+		throw ResponseException(Response("500"), e.what());
 	}
 }
 

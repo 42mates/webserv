@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:33:23 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/17 13:14:27 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/24 17:23:10 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,13 @@ string	getTestRequest();
 string	getDate();
 string	getFile(string path);
 bool	isTimeOutReached(timeval& start, timeval& end, size_t timeout);
-map<string, string> decodeURL(string body);
+vector< pair<string, string> > decodeURL(string body);
+
+
+// CGI
+
+class Response;
+Response handle_cgi(string path, string query);
 
 
 // CONFIG_PRINT.CPP

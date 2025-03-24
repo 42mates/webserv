@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/18 16:53:19 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/24 17:37:51 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ class Request
 		string	_uri;
 		string	_version;
 		map<string, string>	_header;
-		map<string, string>	_query;
+		string	_query;
 		string	_body;
 		string	_path;
 		
@@ -56,6 +56,10 @@ class Request
 		void	checkStartLine();
 		void	checkHeader();
 		string	getFilePath(const string &path);
+
+		// CGI
+		char**		initEnv();
+		Response	handle_cgi();
 		
 		// METHOD HANDLING
 		map<string, Response (Request::*)()> _method_handling; // Map of methods to their handling functions

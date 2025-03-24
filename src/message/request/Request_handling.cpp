@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/24 12:50:24 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/24 17:45:49 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,8 @@ void Request::checkStartLine()
 	// get query string
 	if (_uri.find("?") != string::npos)
 	{
-		_query = decodeURL(_uri.substr(_uri.find("?") + 1));
+		_query = _uri.substr(_uri.find("?") + 1);
 		_uri = _uri.substr(0, _uri.find("?"));
-		for (map<string, string>::iterator it = _query.begin(); it != _query.end(); ++it)
-			cout << "query: " << it->first << " = " << it->second << endl;
 	}
 }
 
@@ -94,6 +92,8 @@ Response Request::handleRequest(ServerConfig &server_conf)
 		if (!_is_complete_request)
 			throw ResponseException(Response("500"), "incomplete request");
 		checkStartLine();
+		if (_uri.size() >= 3 && (_uri.substr(_uri.size() - 3) == ".py")) // if file is cgi
+			return handle_cgi();
 		_server_conf = server_conf;
 		_route_conf = getBestRoute(_server_conf, _uri);
 		checkHeader();

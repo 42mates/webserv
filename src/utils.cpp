@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:30:39 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/17 13:35:48 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/24 17:20:05 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,9 +122,9 @@ static void decodeURLPercent(string &str)
 	}
 }
 
-map<string, string> decodeURL(string body)
+vector< pair<string, string> > decodeURL(string body)
 {
-	map<string, string> result;
+	vector< pair<string, string> > result;
 	istringstream iss(body);
 	string field;
 	
@@ -136,7 +136,7 @@ map<string, string> decodeURL(string body)
 		decodeURLPercent(field);
 		string key = field.substr(0, pos);
 		string value = field.substr(pos + 1);
-		result[key] = value;
+		result.push_back(make_pair(key, value));
 	}
 	return result;
 }
