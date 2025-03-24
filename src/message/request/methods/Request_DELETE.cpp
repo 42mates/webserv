@@ -25,7 +25,7 @@ Response Request::handleDELETE()
 			throw ResponseException(Response("403"), "Failed to delete the file (permission denied)");
 
 		// Set response status to 204 (No Content) as the file was successfully deleted
-		response.setStatus("200");
+		response.setCode("200");
 		response.setBody("File deleted successfully: " + _uri);
 		cout << GREEN << "DELETE REQUEST ACCEPTED 😎" << NC << endl;
 	}
@@ -37,7 +37,7 @@ Response Request::handleDELETE()
 	catch (const exception &e)
 	{
 		cerr << "debug: handleDELETE(): Unexpected error: " << e.what() << endl;
-		response.setStatus("500");
+		response.setCode("500");
 		response.setBody("Internal Server Error");
 	}
 

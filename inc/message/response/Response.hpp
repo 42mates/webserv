@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/18 15:22:36 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/24 12:49:19 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 class Response
 {
 	private:
-		string _status;
+		string _code;
 		map<string, string> _header;
 		string _body;
 
@@ -32,6 +32,16 @@ class Response
 
 		void initHeaderFields();
 
+		string	headerToString();
+		string	addCRLF(string str);
+
+		// PARSING
+		size_t	_start;
+		void	parseStartLine(string start_line);
+		void	parseHeaderLine(string header_line);
+		void	parseHeader(string header_line);
+		void	parseBody(string body);
+
 	public:
 		Response();
 		Response(string status);
@@ -39,11 +49,10 @@ class Response
 		Response &operator=(const Response &other);
 		virtual ~Response();
 
-		string	headerToString();
-		string	addCRLF(string str);
-		
+		void	parseResponse(string raw_response);
+
 		// SETTERS
-		void	setStatus(string status);
+		void	setCode(string status);
 		void	setHeaderValue(string key, string value);
 		void	setBody(string body);
 		void	setErrorBody();
@@ -52,7 +61,7 @@ class Response
 
 		// GETTERS
 		string	getResponse();
-		string	getStatus();
+		string	getCode();
 		string	getReason();
 		string	getHeader();
 		string	getHeader(string key);

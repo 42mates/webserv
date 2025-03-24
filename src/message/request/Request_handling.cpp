@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/18 17:02:45 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/24 12:50:24 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ Response Request::handleRequest(ServerConfig &server_conf)
 		response = Response("500");
 	}
 
-	if(_server_conf.error_pages.find(response.getStatus()) != _server_conf.error_pages.end())
+	if(_server_conf.error_pages.find(response.getCode()) != _server_conf.error_pages.end())
 		response.setErrorBody(_server_conf, _route_conf.root);
 
 	return response;

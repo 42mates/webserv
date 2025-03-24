@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 15:11:44 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/24 12:51:34 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ Response Request::handleHEAD()
 	{
 		string file = getFileContent();
 		response.setBody("");
-		response.setStatus("200");
+		response.setCode("200");
 		//response.setHeader(???);
 	}
 	catch(const ResponseException& e)

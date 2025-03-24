@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/14 17:02:57 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/24 12:50:59 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Response Request::handleGET()
 	{
 		string file = getFileContent();
 		response.setBody(file);
-		response.setStatus("200");
+		response.setCode("200");
 		cout << GREEN << "GET REQUEST ACCEPTED 😎" << NC << endl;
 	}
 	catch(const ResponseException& e)
