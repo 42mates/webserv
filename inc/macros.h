@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   macros.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/20 17:48:35 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/25 15:21:11 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,10 @@ enum ConfigTokenType
 
 # define T_REQUEST 0
 # define T_RESPONSE 1
+
+
+/************ TIMEOUT ************/
+# define CGI_TIMEOUT 5 // Set timeout to 5 seconds
 
 /************ COLORS ************/
 

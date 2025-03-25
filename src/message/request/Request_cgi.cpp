@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 10:33:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/25 14:31:15 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/25 16:04:17 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ char**	Request::initEnv()
 	map<string, string> cgi_env;
 
 	cgi_env["_QUERY"] = _query;
+	cgi_env["_BODY"] = _body;
 	cgi_env["_METHOD"] = _method;
 	if (_header.find("content-type") != _header.end())
 		cgi_env["_CONTENT_TYPE"] = _header["content-type"];
@@ -41,10 +42,73 @@ char**	Request::initEnv()
 
 string	executeScript(char **args, char **env)
 {
-	(void)env;
-	cout << "executing " << args[0] << " " << args[1] << endl;
-	
-	return "Content-Type: text/html\n\n<html><body><h1>CGI SCRIPT</h1></body></html>";
+	cout << "Executing script " << args[1] << endl;
+	int pipefd[2];
+	if (pipe(pipefd) == -1)
+		throw ResponseException(Response("500"), "Pipe creation failed");
+
+	pid_t pid = fork();
+	if (pid == -1)
+	{
+		close(pipefd[0]);
+		close(pipefd[1]);
+		throw ResponseException(Response("500"), "Fork failed");
+	}
+
+	if (pid == 0) // Child process
+	{
+		close(pipefd[0]); // Close read end of the pipe
+		dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to the pipe
+		close(pipefd[1]);
+
+		if (execve(args[0], args, env) == -1)
+		{
+			cout << "execve failed on \"" << args[0] << "\": " << strerror(errno) << endl;
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		close(pipefd[1]); // Close write end of the pipe
+
+		string output;
+		char buffer[1024];
+		ssize_t bytes_read;
+
+		while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0)
+		{
+			buffer[bytes_read] = '\0';
+			output += buffer;
+		}
+
+		close(pipefd[0]);
+
+		int status;
+		struct timespec timeout;
+		timeout.tv_sec = CGI_TIMEOUT; // Set timeout to 5 seconds
+		timeout.tv_nsec = 0;
+
+		int ret;
+		while ((ret = waitpid(pid, &status, WNOHANG)) == 0)
+		{
+			nanosleep(&timeout, NULL);
+			if ((ret = waitpid(pid, &status, WNOHANG)) == 0)
+			{
+				kill(pid, SIGKILL); // Kill the process if it exceeds the timeout
+				throw ResponseException(Response("504"), "CGI script execution timed out");
+			}
+		}
+
+		if (ret == -1)
+			throw ResponseException(Response("500"), "Error while waiting for CGI script");
+
+		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+			throw ResponseException(Response("502"), "CGI script execution failed: " + output);
+
+		return output;
+	}
+
+	return ""; // Should never reach here
 }
 
 Response Request::handle_cgi()
@@ -54,8 +118,8 @@ Response Request::handle_cgi()
 	char		**args = new char*[3];
 	char		**env = initEnv();
 
-	args[0] = new char[8];
-	strcpy(args[0], "python3");
+	args[0] = new char[17];
+	strcpy(args[0], "/usr/bin/python3");
 	if (_route_conf.cgi_path.empty())
 		throw ResponseException(Response("500"), "CGI script not set in configuration file");
 	args[1] = new char[_route_conf.cgi_path.size() + 1];
@@ -69,7 +133,7 @@ Response Request::handle_cgi()
 	}
 	catch(const ResponseException& e)
 	{
-		cerr << e.what() << endl;
+		cerr << "debug: handle_cgi(): " << e.what() << endl;
 		response = e.getResponse();
 	}
 

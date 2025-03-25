@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketOperations.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 14:39:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/25 16:29:07 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/25 18:25:37 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,12 @@ void SocketOperations::bindSocket(PortInfo& port_info, int port)
 	int8_t	max_try = 5;
 	int		bind_return = 0;
 
+	if (!run_server)
+		return ;
 	while (max_try)
 	{
+		if (!run_server)
+			throw runtime_error(string("webserv: server stopped"));
 		bind_return = bind(port_info.server_fd, (struct sockaddr*)(&port_info.server_address), sizeof(port_info.server_address));
 		if (bind_return == 0)
 			return ;

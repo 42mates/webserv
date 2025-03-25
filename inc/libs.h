@@ -24,6 +24,7 @@
 # include <map>           // STL
 # include <list>          // STL
 # include <vector>        // STL
+# include <sys/wait.h>    // for wait
 # include <sys/stat.h>    // for stat
 # include <sys/types.h>   // Socket functions
 # include <sys/socket.h>  // Socket functions

@@ -2,12 +2,21 @@
 
 import os
 import urllib.parse
+import sys
 
-print("Content-Type: text/html")
-print()
+try:
+	query = os.environ.get('_QUERY', '')
+	params = urllib.parse.parse_qs(query)
+	name = params.get('name', ['guest'])[0]
+	with open('tools/website/cgi/cgi.html', 'r') as file:
+		content = file.read()
 
-query_string = os.environ.get('_QUERY_STRING', '')
-params = urllib.parse.parse_qs(query_string)
-name = params.get('name', ['Guest'])[0]
+	custom_text = f"<div><h2 class=\"text-4xl font-bold mb-10\">Hello, {name}!</h2></div>"
+	content = content.replace('<!--PLACEHOLDER-->', custom_text)
 
-print(f"<html><body><h1>Hello, {name}!</h1><p>CGI Script Executed Successfully</p></body></html>")
+	print("Content-Type: text/html")
+	print()
+	print(content)
+except Exception as e:
+	print(f"{e}", file=sys.stdout)
+	exit(1)
