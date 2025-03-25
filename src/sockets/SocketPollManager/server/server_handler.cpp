@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:31:21 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/21 11:54:05 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/25 15:22:08 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,14 @@ void	SocketPollManager::establishConnection(t_sockfd server_socket, int port, So
 	new_client.client_fd = accept(server_socket, (sockaddr *) &new_client.address, &new_client.size);
 	if (new_client.client_fd == -1)
 		throw ResponseException(Response("500"), strerror(errno));
+
+	int flags = fcntl(new_client.client_fd, F_GETFL, 0);
+	if (flags == -1)
+		throw ResponseException(Response("500"), strerror(errno));
+
+	if (fcntl(new_client.client_fd, F_SETFL, flags | O_NONBLOCK | FD_CLOEXEC) == -1)
+		throw ResponseException(Response("500"), strerror(errno));
+
 	manager.storeSocket(port, new_client.client_fd, (POLLIN | POLLERR | POLLHUP), CLIENT_SOCKET, &new_client);
 }
 

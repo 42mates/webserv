@@ -6,11 +6,12 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/14 13:57:04 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/25 16:16:08 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketManager.hpp"
+
 
 /**
  * @file SocketManager.cpp
@@ -34,20 +35,29 @@ SocketManager::SocketManager(const vector <ServerConfig*>* servers) : _poll_mana
 		try
 		{
 			int port = servers->at(i)->port;
+			cout << "Host: " << servers->at(i)->host << "\n";
+			cout << "Port: " << servers->at(i)->port << "\n";
+		
+			cout << "Server Names: ";
+			for (vector<string>::const_iterator it = servers->at(i)->server_names.begin(); it != servers->at(i)->server_names.end(); ++it) {
+				cout << *it << " ";
+			}
+			cout << "\n";
 			_ops.createSocket(servers->at(i)->host, port, _ports_info[port]);
 			_ops.setReusability(_ports_info[port].server_fd);
-			_ops.setToNonBlockingMode(_ports_info[port].server_fd);
-			_ops.bindSocket(_ports_info[port]);
+			_ops.setOptions(_ports_info[port].server_fd);
+			_ops.bindSocket(_ports_info[port], port);
 			_ops.listenSocket(_ports_info[port]);
 			storeSocket(port, _ports_info[port].server_fd, (POLLIN | POLLERR | POLLHUP), SERVER_SOCKET, NULL);
 			_ports_info[port].server = servers->at(i);
+			cout << "Now other server\n\n";
 		}
 		catch(exception& e) { cout << e.what() << endl; }
 	}
 }
 
 /**
- * @brief Ensures that all client and server sockets ar closed for each port 
+ * @brief Ensures that all client and server sockets are closed for each port 
  * managed by the SocketManager.
  */
 SocketManager::~SocketManager(void)
@@ -64,9 +74,3 @@ SocketManager::~SocketManager(void)
 			close(port_it->second.server_fd);
 	}
 }
-
-// //! DELETE ME
-// /**
-//  * @brief Run the PollManager class.
-//  */
-// void SocketManager::runPollManager() { _poll_manager.runPoll(*this); }

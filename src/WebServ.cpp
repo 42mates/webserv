@@ -3,18 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   WebServ.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/17 18:00:07 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/25 15:59:51 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServ.hpp"
 
 volatile int run_server = true;
-void	handle_sigint(int signum) { (void)signum, run_server = false; }
-void	handle_sigquit(int signum) { (void)signum, run_server = false; }
+void	handle_sigint(int signum)
+{
+	(void)signum;
+	run_server = false;
+	cout << endl;
+}
+void	handle_sigquit(int signum)
+{
+	(void)signum;
+	run_server = false; 
+	cout << endl;
+}
 
 
 WebServ::WebServ()
@@ -34,6 +44,8 @@ void	WebServ::setVariables(SocketManager& manager)
 int WebServ::checkForEvents()
 {
 	int	timeout = 60 * 1000;
+	if (_poll_fds->empty())
+		throw runtime_error("no socket to monitor");
 	return poll(&_poll_fds->at(0), _poll_fds->size(), timeout);
 }
 
@@ -60,13 +72,14 @@ void WebServ::handleOneEvent(pollfd& poll_fd, SocketManager& manager)
 		else
 			poll_manager.clientHandler(poll_info, manager, poll_fd.events);
 	}
-	catch (const ResponseException& e)
-	{
-		cerr << "response: " << e.what() << endl; //debug message 
+	catch(exception& e) { cerr << e.what() << endl; }
+	// catch (const ResponseException& e) //?useless i think
+	// {
+	// 	cerr << "response: " << e.what() << endl; //debug message 
 		
-		Response response = e.getResponse();
-		(*_socket_to_response)[poll_fd.fd] = response;
-	}
+	// 	Response response = e.getResponse();
+	// 	(*_socket_to_response)[poll_fd.fd] = response;
+	// }
 	
 	
 }
@@ -87,8 +100,10 @@ void WebServ::run(const char* arg, int& ret)
 		while (run_server)
 		{
 			int events = checkForEvents();
-			if (events <= 0)
+			if (events == 0)
 				continue ;
+			else if (events < 0)
+				throw runtime_error(strerror(errno));
 			handleAllEvents(events, *sockets);
 		}
 	}

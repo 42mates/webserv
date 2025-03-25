@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 14:39:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/26 17:08:45 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/25 16:29:07 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,19 +30,19 @@
  * @param ip The IP address to bind the socket to.
  * @param port The port number to bind the socket to.
  * @param port_info The PortInfo structure to initialize.
- * @throws std::runtime_error If an error occurs while creating the socket.
+ * @throws runtime_error If an error occurs while creating the socket.
  */
-void SocketOperations::createSocket(const std::string& ip, int port, PortInfo& port_info)
+void SocketOperations::createSocket(const string& ip, int port, PortInfo& port_info)
 {
     int socket_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (socket_fd == -1)
-        throw std::runtime_error(string("SocketOperations: createSocket() ") +  SOCKET_CREATION_ERROR);
+        throw runtime_error(string("SocketOperations: createSocket() ") +  SOCKET_CREATION_ERROR);
 
     port_info.server_fd = socket_fd;
     port_info.server_address.sin_family = AF_INET;
     port_info.server_address.sin_port = htons(port);
     if (inet_pton(AF_INET, ip.c_str(), &port_info.server_address.sin_addr) <= 0)
-        throw std::runtime_error("SocketOperations: createSocket() invalid IP address in " + ip);
+        throw runtime_error("SocketOperations: createSocket() invalid IP address in " + ip);
 }
 
 
@@ -53,12 +53,27 @@ void SocketOperations::createSocket(const std::string& ip, int port, PortInfo& p
  * 
  * @param port The port number to bind the socket to.
  * @param port_info The PortInfo structure containing the socket and address information.
- * @throws std::runtime_error If an error occurs while binding the socket.
+ * @throws runtime_error If an error occurs while binding the socket.
  */
-void SocketOperations::bindSocket(PortInfo& port_info)
+void SocketOperations::bindSocket(PortInfo& port_info, int port)
 {
-    if (bind(port_info.server_fd, (struct sockaddr*)(&port_info.server_address), sizeof(port_info.server_address)) < 0)
-        throw std::runtime_error(string("SocketOperations::bindSocket() ") + SOCKET_BINDING_ERROR);
+	int8_t	max_try = 5;
+	int		bind_return = 0;
+
+	while (max_try)
+	{
+		bind_return = bind(port_info.server_fd, (struct sockaddr*)(&port_info.server_address), sizeof(port_info.server_address));
+		if (bind_return == 0)
+			return ;
+		char	ip_address[INET_ADDRSTRLEN];
+		inet_ntop(AF_INET, &port_info.server_address.sin_addr, ip_address, INET_ADDRSTRLEN);
+		cout
+		<< "webserv: [emerg] bind() to " << ip_address << ":" << itostr(port)
+		<< " failed (" << itostr(errno) << ": " << strerror(errno) << ')' << endl;
+		max_try--;
+		sleep(1);
+	}
+	throw runtime_error(string("SocketOperations::bindSocket() ") + SOCKET_BINDING_ERROR);
 }
 
 
@@ -69,34 +84,32 @@ void SocketOperations::bindSocket(PortInfo& port_info)
  * 
  * @param port The port number to listen on.
  * @param port_info The PortInfo structure containing the socket information.
- * @throws std::runtime_error If an error occurs while setting the socket to listen.
+ * @throws runtime_error If an error occurs while setting the socket to listen.
  */
 void SocketOperations::listenSocket(PortInfo& port_info)
 {
     if (listen(port_info.server_fd, 10) < 0)//COME BACK connexion queue
-        throw std::runtime_error(string("SocketOperations::listenSocket() ") +  SOCKET_LISTENING_ERROR);
+        throw runtime_error(string("SocketOperations::listenSocket() ") +  SOCKET_LISTENING_ERROR);
 }
 
 
 /**
- * @brief Sets the specified socket to non-blocking mode.
+ * @brief Sets the socket options for a given socket.
  * 
- * This function sets the specified socket to non-blocking mode using the `fcntl` system call.
- * In non-blocking mode, socket operations such as `read` and `write` will return immediately
- * if they cannot be completed, rather than blocking the calling thread.
+ * This function sets the socket to non-blocking mode and sets the close-on-exec flag.
  * 
- * @param socket The file descriptor of the socket to set to non-blocking mode.
- * @throws std::runtime_error If an error occurs while setting the socket to non-blocking mode.
+ * @param socket The socket file descriptor.
+ * @throw runtime_error if fcntl fails.
  */
-void SocketOperations::setToNonBlockingMode(t_sockfd socket)
+void SocketOperations::setOptions(t_sockfd socket)
 {
     int flags = fcntl(socket, F_GETFL, 0);
 
     if (flags == -1)
-		throw std::runtime_error(string("SocketOperations::setToNonBlockingMode() ") + strerror(errno));
+		throw runtime_error(string("SocketOperations::setToNonBlockingMode() ") + strerror(errno));
 
-    if (fcntl(socket, F_SETFL, flags | O_NONBLOCK) == -1)
-		throw std::runtime_error(string("SocketOperations::setToNonBlockingMode() ") + strerror(errno));
+    if (fcntl(socket, F_SETFL, flags | O_NONBLOCK | FD_CLOEXEC) == -1)
+		throw runtime_error(string("SocketOperations::setToNonBlockingMode() ") + strerror(errno));
 }
 
 
@@ -114,19 +127,20 @@ void SocketOperations::setReusability(t_sockfd socket)
 {
     int opt = 1;
     setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    setsockopt(socket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 }
 
-//! might be useless
-/**
- * @brief Closes the specified socket.
- * 
- * This function closes the specified socket using the `close` system call.
- * 
- * @param socket The file descriptor of the socket to close.
- * @throws std::runtime_error If an error occurs while closing the socket.
- */
-void SocketOperations::closeSocket(t_sockfd socket)
-{
-    if (close(socket) == -1)
-        throw std::runtime_error("SocketOperations: closeSocket() " + string(strerror(errno)));
-}
+// //! might be useless
+// /**
+//  * @brief Closes the specified socket.
+//  * 
+//  * This function closes the specified socket using the `close` system call.
+//  * 
+//  * @param socket The file descriptor of the socket to close.
+//  * @throws runtime_error If an error occurs while closing the socket.
+//  */
+// void SocketOperations::closeSocket(t_sockfd socket)
+// {
+//     if (close(socket) == -1)
+//         throw runtime_error("SocketOperations: closeSocket() " + string(strerror(errno)));
+// }

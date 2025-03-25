@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:50:23 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/19 15:38:01 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/25 16:19:20 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,14 @@ void	clientPollIn(SocketPollInfo poll_info, SocketManager& manager, SocketPollMa
 void	clientPollOut(SocketPollInfo poll_info, SocketManager& manager, SocketPollManager& poll_manager)
 {
 	ServerConfig*	server = manager.getPortInfo(poll_info.port)->server;
+	cout << "Host: " << server->host << "\n";
+	cout << "Port: " << server->port << "\n";
+
+	cout << "Server Names: ";
+	for (vector<string>::const_iterator it = server->server_names.begin(); it != server->server_names.end(); ++it) {
+		cout << *it << " ";
+	}
+	cout << "\n";
 	poll_manager.clientSend(poll_info, manager, *server);
 }
 
