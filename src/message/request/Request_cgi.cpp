@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 10:33:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/24 18:01:31 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/25 13:27:32 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,23 +56,23 @@ Response Request::handle_cgi()
 
 	args[0] = new char[8];
 	strcpy(args[0], "python3");
-
 	if (_route_conf.cgi_path.empty())
 		throw ResponseException(Response("500"), "CGI path not set in configuration file");
-	
-	//TODO: replace cgi with the path to the cgi script
 	args[1] = new char[_route_conf.cgi_path.size() + 1];
 	strcpy(args[0], _route_conf.cgi_path.c_str());
-
 	args[2] = NULL;
 
-	// open file and execute script
-	script_output = executeScript(args, env);
+	try
+	{
+		script_output = executeScript(args, env);
+		response.parseResponse(script_output);
+	}
+	catch(const ResponseException& e)
+	{
+		cerr << e.what() << endl;
+		response = e.getResponse();
+	}
 
-	// parse script output
-	response.parseResponse(script_output);
-
-	//? delete each string of args and env ?
 	for (size_t i = 0; args[i]; ++i)
 		delete[] args[i];
 	delete[] args;

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/24 17:45:49 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/25 13:28:35 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,19 +85,21 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	Response response;
 
 	//if (_method != "GET") // debug (avoiding GET printing)
-		//this->print(); //!leave this line for debug purposes during correction
+		//this->print(); //!leave this line for debugging purposes during correction
 
 	try
 	{
 		if (!_is_complete_request)
 			throw ResponseException(Response("500"), "incomplete request");
 		checkStartLine();
-		if (_uri.size() >= 3 && (_uri.substr(_uri.size() - 3) == ".py")) // if file is cgi
-			return handle_cgi();
 		_server_conf = server_conf;
 		_route_conf = getBestRoute(_server_conf, _uri);
 		checkHeader();
-		response = (this->*_method_handling[_method])(); // call the method handling function
+
+		if (_uri.size() >= 3 && _uri.substr(_uri.size() - 3) == ".py") // if file is cgi
+			response =  handle_cgi();
+		else
+			response = (this->*_method_handling[_method])(); // call the method handling function
 	}
 	catch(const ResponseException& e)
 	{
