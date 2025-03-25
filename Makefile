@@ -3,17 +3,17 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+         #
+#    By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/18 13:05:21 by mbecker           #+#    #+#              #
-#    Updated: 2025/03/11 11:31:21 by mbecker          ###   ########.fr        #
+#    Updated: 2025/03/18 13:52:38 by sokaraku         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = webserv
 
 CC = c++
-CFLAG = -Wall -Wextra -Werror -std=c++98
+CFLAG = -Wall -Wextra -Werror -std=c++98 -g3
 INCLUDES = $(shell find inc -type d -exec echo -I{} \;)
 
 SRC_DIR = src

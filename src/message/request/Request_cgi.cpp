@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 10:33:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/25 13:27:32 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/25 14:31:15 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ string	executeScript(char **args, char **env)
 	(void)env;
 	cout << "executing " << args[0] << " " << args[1] << endl;
 	
-	return "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>CGI SCRIPT</h1></body></html>";
+	return "Content-Type: text/html\n\n<html><body><h1>CGI SCRIPT</h1></body></html>";
 }
 
 Response Request::handle_cgi()
@@ -57,14 +57,14 @@ Response Request::handle_cgi()
 	args[0] = new char[8];
 	strcpy(args[0], "python3");
 	if (_route_conf.cgi_path.empty())
-		throw ResponseException(Response("500"), "CGI path not set in configuration file");
+		throw ResponseException(Response("500"), "CGI script not set in configuration file");
 	args[1] = new char[_route_conf.cgi_path.size() + 1];
-	strcpy(args[0], _route_conf.cgi_path.c_str());
+	strcpy(args[1], _route_conf.cgi_path.c_str());
 	args[2] = NULL;
 
 	try
 	{
-		script_output = executeScript(args, env);
+		script_output = "HTTP/1.1 200 OK\n" + executeScript(args, env);
 		response.parseResponse(script_output);
 	}
 	catch(const ResponseException& e)

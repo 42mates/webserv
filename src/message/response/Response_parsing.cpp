@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 10:42:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/24 12:48:57 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/25 14:30:33 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,26 +65,26 @@ void Response::parseHeader(string raw_response)
 	size_t end = 0;
 	string line;
 
-	while ((end = raw_response.find(CRLF)) == 0)
-		_start += end + 2;
+	while ((end = raw_response.find("\n")) == 0)
+		_start += end + 1;
 	if (_start == string::npos)
 		throw ResponseException(Response("502"), "empty Response");
 
 	parseStartLine(raw_response.substr(_start, end - _start));
-	_start = end + 2;
+	_start = end + 1;
 
-	while ((end = _start + raw_response.substr(_start).find(CRLF)) != _start)
+	while ((end = _start + raw_response.substr(_start).find("\n")) != _start)
 	{
 		line = raw_response.substr(_start, end - _start);
 		if (line.empty())
 			break;
 		parseHeaderLine(line);
-		_start = end + 2;
+		_start = end + 1;
 	}
 	if (_start == string::npos)
-		throw ResponseException(Response("502"), "no CRLF at the end of the headers");
+		throw ResponseException(Response("502"), "no newline at the end of the headers");
 	else
-		_start += 2;
+		_start += 1;
 }
 
 void Response::parseBody(string body)

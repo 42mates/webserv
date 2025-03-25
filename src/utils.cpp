@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:30:39 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/24 17:20:05 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/25 13:31:06 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,10 +94,10 @@ string getFile(string path)
  */
 bool	isTimeOutReached(timeval& start, timeval& end, size_t timeout)
 {
-	size_t	start_time_ms = start.tv_sec * 1000000 + start.tv_usec;
-	size_t	end_time_ms = end.tv_sec * 1000000 + end.tv_usec;
+	size_t	start_time_mcs = start.tv_sec * 1000000 + start.tv_usec;
+	size_t	end_time_mcs = end.tv_sec * 1000000 + end.tv_usec;
 
-	if ((end_time_ms - start_time_ms) >= timeout)
+	if ((end_time_mcs - start_time_mcs) >= timeout)
 		return (true);
 	return (false);
 }
