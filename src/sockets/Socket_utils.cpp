@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:35:36 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/19 15:46:51 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/25 17:54:29 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,4 +132,25 @@ int		checkSocketStatus(t_sockfd socket_fd)
 	getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
 
 	return error;
+}
+
+/**
+ * @brief Stores associated servers for a given port in the SocketManager.
+ * 
+ * This function iterates through a vector of ServerConfig pointers and identifies servers
+ * that are associated with the specified port. It then stores copies of these servers
+ * in the `_ports_info` map, under the corresponding port's PortInfo structure.
+ * 
+ * @param port The port number for which to store associated servers.
+ * @param servers A pointer to a vector of ServerConfig pointers, representing the available servers.
+ */
+void SocketManager::storeAssociatedServers(int port, const vector <ServerConfig*>* servers)
+{
+	PortInfo&	curr = _ports_info[port];
+
+	for (size_t i = 0; i < servers->size(); i++)
+	{
+		if (servers->at(i)->port == port)
+			curr.servers.push_back(*servers->at(i));
+	}
 }

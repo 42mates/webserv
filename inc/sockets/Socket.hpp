@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 13:47:24 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/18 19:04:39 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/25 17:35:54 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,9 @@ struct PortInfo
 	t_sockfd						server_fd;
 	sockaddr_in						server_address;
 	vector<ClientInfo>				clients;
-	ServerConfig					*server;
+	vector<ServerConfig>			servers;
 
-	PortInfo() : server_fd(-1), server(NULL)
+	PortInfo() : server_fd(-1)
 	{
 		memset(&server_address, 0, sizeof(server_address));
 	}

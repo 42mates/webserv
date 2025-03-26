@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/21 11:12:17 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/25 17:54:51 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ class SocketManager
 		SocketPollManager&				getSocketPollManager( void );
 
 							/*UTILS*/
-
+		void			storeAssociatedServers(int port, const vector <ServerConfig*>* servers);
 		void			storeSocket(int port, t_sockfd socket_fd, short options, e_SocketType type, ClientInfo *client);
 		void			removeClientSocket(int port, t_sockfd socket_fd);
 		void			removeServerSocket(int port);

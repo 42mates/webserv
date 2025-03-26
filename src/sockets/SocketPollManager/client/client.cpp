@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:50:23 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/25 16:19:20 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/26 15:10:12 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include "SocketManager.hpp"
 
 
-//TODO use getBestServer to find the server associated for a given socket (avoid issues with multiple server block and same port)
 /**
  * @brief Handles the POLLIN event for a client socket.
  * 
@@ -28,7 +27,7 @@
  */
 void	clientPollIn(SocketPollInfo poll_info, SocketManager& manager, SocketPollManager& poll_manager)
 {
-	ServerConfig*	server = manager.getPortInfo(poll_info.port)->server;
+	ServerConfig*	server = &manager.getPortInfo(poll_info.port)->servers.at(0);
 	poll_manager.clientRecv(poll_info, *server);
 }
 
@@ -45,15 +44,7 @@ void	clientPollIn(SocketPollInfo poll_info, SocketManager& manager, SocketPollMa
  */
 void	clientPollOut(SocketPollInfo poll_info, SocketManager& manager, SocketPollManager& poll_manager)
 {
-	ServerConfig*	server = manager.getPortInfo(poll_info.port)->server;
-	cout << "Host: " << server->host << "\n";
-	cout << "Port: " << server->port << "\n";
-
-	cout << "Server Names: ";
-	for (vector<string>::const_iterator it = server->server_names.begin(); it != server->server_names.end(); ++it) {
-		cout << *it << " ";
-	}
-	cout << "\n";
+	ServerConfig*	server = &manager.getPortInfo(poll_info.port)->servers.at(0);
 	poll_manager.clientSend(poll_info, manager, *server);
 }
 

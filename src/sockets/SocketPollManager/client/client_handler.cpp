@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/20 19:53:59 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/26 15:08:34 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,7 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 	}
 	if (ret == 0)
 		request.setIsCompleteRequest(true);
+	cout <<"HEADER " << request.getHeaderValue("host") << endl;
 	_socket_to_request[poll_info.pfd.fd] = request;
 
 }
