@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_utils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 18:19:55 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/25 13:37:23 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/26 16:01:33 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,14 +54,18 @@ void	SocketPollManager::prepareRecv(t_sockfd socket_fd, size_t& total_bytes_read
  * @param response A reference to the variable to store the Response object.
  * @param server A reference to the ServerConfig object.
  */
-void	SocketPollManager::prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, ServerConfig& server)
+void	SocketPollManager::prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, vector <ServerConfig>& server)
 {
 	map<t_sockfd, infoResponse>::iterator it = _socket_to_response.find(socket_fd);
-
+	size_t	index = 0;
+	string	infos = _socket_to_request[socket_fd].getHeaderValue("host");
+	// if (infos.empty() == true)
+		
 	if (it == _socket_to_response.end())
 	{
 		gettimeofday(&start, NULL);
 		response = _socket_to_request[socket_fd].handleRequest(server);
+		//*find best server here
 		return ;
 	}
 
@@ -95,9 +99,6 @@ ssize_t	SocketPollManager::readOneChunk(t_sockfd socket_fd, string& raw_request,
 	ssize_t		bytes_to_read = (client_max_body_size > BUFFER_SIZE ? BUFFER_SIZE : client_max_body_size);
 	ssize_t		bytes_received = 0;
 
-	// if (static_cast<size_t>(total_bytes_read + bytes_to_read) > client_max_body_size)
-	// 	bytes_to_read = client_max_body_size - total_bytes_read;
-
 	if (static_cast<size_t>(total_bytes_read + bytes_to_read) > client_max_body_size)
 		throw ResponseException(Response("413"), "Request Entity Too Large");
 
@@ -114,8 +115,7 @@ ssize_t	SocketPollManager::readOneChunk(t_sockfd socket_fd, string& raw_request,
 
 	raw_request.clear();
 	raw_request = buffer;
-	
-	//! removed condition (doesnt depend on the existence of a limit or not anymore. Check running of loop in clientRecv())
+
 	total_bytes_read += bytes_received;
 
 	return bytes_received;
@@ -231,4 +231,9 @@ bool	keepConnectionOpen(Response& r)
 	if (status == "400" || status == "413" || status == "500")
 		return false;
 	return true;
+}
+
+ServerConfig*	findBestServer(vector<ServerConfig>& servers, const string host, const string port)
+{
+	
 }

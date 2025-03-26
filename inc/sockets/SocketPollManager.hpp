@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:40:43 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/21 11:50:45 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/26 15:59:17 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ public:
 												//--> utils
 		
 		void	prepareRecv(t_sockfd socket_fd, size_t& total_bytes_read, Request& request, timeval& start);
-		void	prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, ServerConfig& server);
+		void	prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, vector<ServerConfig>& servers);
 		
 		ssize_t	readOneChunk(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, size_t& total_bytes_read, int& status);
 		
@@ -100,11 +100,12 @@ bool	keepConnectionOpen(Response& r);
  */
 struct infoResponse
 {
-	Response	response;
-	size_t		len_sent;
-	bool		fully_sent;
+	Response		response;
+	size_t			len_sent;
+	bool			fully_sent;
+	ServerConfig	*best_server;
 
-	infoResponse() : len_sent(0), fully_sent(false) {}
+	infoResponse() : len_sent(0), fully_sent(false), best_server(NULL) {}
 	infoResponse(const Response& r, const size_t& len) : response(r), len_sent(len), fully_sent(false) {}
 };
 

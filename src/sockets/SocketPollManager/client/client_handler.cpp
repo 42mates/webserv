@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/26 15:08:34 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/26 15:43:53 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 				Response r = e.getResponse();
 				clientSend(poll_info, r);
 				manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET); //left without checking for now
-				// if (keepConnectionOpen(r) == false)
-				// 	manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET); //* handled double close in removeClientSocket()
+				if (keepConnectionOpen(r) == false)
+					manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET); //* handled double close in removeClientSocket()
 				// break ;
 			}
 			catch (exception& e)
@@ -103,6 +103,7 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 			clientSend(poll_info, r_continue.response);
 			continue ;
 		}
+		cout <<"HEADER in loop " << request.getHeaderValue("host") << endl;
 	}
 	if (ret == 0)
 		request.setIsCompleteRequest(true);
@@ -139,7 +140,8 @@ ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& 
 	char*		buffer = (char *)string_response.c_str();
 	size_t		len_response = string_response.size();
 	ssize_t		ret;
-
+	cout << "Header in clientSend is " << class_response.getHeader("host") << endl;
+	cout << "string resp is \n" << string_response << "\n size " << string_response.size() << endl;
 	while (len_sent != len_response)
 	{
 		checkResponseTimeout(start, end);
