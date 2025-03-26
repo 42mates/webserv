@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 18:19:55 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/26 16:01:33 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:35:58 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,34 +43,49 @@ void	SocketPollManager::prepareRecv(t_sockfd socket_fd, size_t& total_bytes_read
 
 
 /**
- * @brief Prepares data for a socket before sending a response.
+ * @brief Prepares the response to be sent for a given socket file descriptor.
  *
- * This function retrieves the length sent and the Response object associated with the
- * given socket file descriptor. If the socket is not found in the internal map,
- * it handles the request and generates a response.
+ * This function determines the appropriate server configuration based on the 
+ * host and port information extracted from the request header. It either 
+ * initializes a new response or retrieves an existing one from the internal 
+ * mapping. Additionally, it updates the start time for the response handling.
  *
- * @param socket_fd The file descriptor of the socket.
- * @param len_sent A reference to the variable to store the length sent.
- * @param response A reference to the variable to store the Response object.
- * @param server A reference to the ServerConfig object.
+ * @param socket_fd The socket file descriptor associated with the client request.
+ * @param len_sent Reference to the length of data already sent for the response.
+ * @param response Reference to the Response object to be prepared or updated.
+ * @param start Reference to a timeval structure to store the start time of the response handling.
+ * @param servers A vector of ServerConfig objects representing the available server configurations.
  */
-void	SocketPollManager::prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, vector <ServerConfig>& server)
+void	SocketPollManager::prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, vector <ServerConfig>& servers)
 {
 	map<t_sockfd, infoResponse>::iterator it = _socket_to_response.find(socket_fd);
-	size_t	index = 0;
 	string	infos = _socket_to_request[socket_fd].getHeaderValue("host");
-	// if (infos.empty() == true)
-		
+	size_t	index = infos.find(":");
+	string	host;
+	string	port;
+
+	if (index == string::npos)
+		index = 0;
+	if (infos.empty() == true)
+		index = 0;
+	else
+	{
+		host = infos.substr(0, index);
+		port = infos.substr(index + 1);
+		index = findBestServer(servers, host, port);
+	}
+
 	if (it == _socket_to_response.end())
 	{
 		gettimeofday(&start, NULL);
-		response = _socket_to_request[socket_fd].handleRequest(server);
+		response = _socket_to_request[socket_fd].handleRequest(servers[index]);
 		//*find best server here
 		return ;
 	}
 
 	response = it->second.response;
 	len_sent = it->second.len_sent;
+	
 	gettimeofday(&start, NULL);
 }
 
@@ -213,7 +228,6 @@ bool	SocketPollManager::isMessageEnd(t_sockfd socket_fd, __int8_t type)
 			return true;
 		return false;
 	}
-	//* type is T_RESPONSE
 	map<t_sockfd, infoResponse>::iterator it = _socket_to_response.find(socket_fd);
 	if (it == _socket_to_response.end())
 		return false;
@@ -233,7 +247,12 @@ bool	keepConnectionOpen(Response& r)
 	return true;
 }
 
-ServerConfig*	findBestServer(vector<ServerConfig>& servers, const string host, const string port)
+size_t	findBestServer(vector<ServerConfig>& servers, const string host, const string port)
 {
-	
+	for (size_t i = 0; i < servers.size(); i++)
+	{
+		if (servers[i].host == host && servers[i].port == atoi(port.c_str()))
+			return i;
+	}
+	return 0; //? can webserv be launched if no servers ?
 }

@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:50:23 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/26 15:18:03 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:38:06 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	clientPollIn(SocketPollInfo poll_info, SocketManager& manager, SocketPollMa
 {
 	ServerConfig*	server = &manager.getPortInfo(poll_info.port)->servers.at(0);
 	poll_manager.clientRecv(poll_info, *server);
-}
+}//todo add findbestserver here
 
 /**
  * @brief Handles the POLLOUT event for a client socket.
@@ -44,8 +44,8 @@ void	clientPollIn(SocketPollInfo poll_info, SocketManager& manager, SocketPollMa
  */
 void	clientPollOut(SocketPollInfo poll_info, SocketManager& manager, SocketPollManager& poll_manager)
 {
-	ServerConfig*	server = &manager.getPortInfo(poll_info.port)->servers.at(0);
-	poll_manager.clientSend(poll_info, manager, *server);
+	// ServerConfig	servers = manager.getPortInfo(poll_info.port)->servers;
+	poll_manager.clientSend(poll_info, manager, manager.getPortInfo(poll_info.port)->servers);
 }
 
 /**

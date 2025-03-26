@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/26 15:43:53 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:52:11 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,12 +129,12 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
  * 
  * @throws runtime_error if the `send` function fails.
  */
-ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& manager, ServerConfig& server) //prepare non blocking here too and add try catch
+ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& manager, vector<ServerConfig>& servers)
 {
 	Response	class_response;
 	size_t		len_sent = 0;
 	timeval		start, end;
-	prepareSend(poll_info.pfd.fd, len_sent, class_response, start, server);
+	prepareSend(poll_info.pfd.fd, len_sent, class_response, start, servers);
 
 	string		string_response = class_response.getResponse();
 	char*		buffer = (char *)string_response.c_str();

@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:40:43 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/26 15:59:17 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:52:24 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ public:
 
 		
 		ssize_t	clientSend(SocketPollInfo& poll_info, Response& response);
-		ssize_t	clientSend(SocketPollInfo& poll_info, SocketManager& manager, ServerConfig& server);
+		ssize_t	clientSend(SocketPollInfo& poll_info, SocketManager& manager, vector<ServerConfig>& servers);
 		
 		void	clientRecv(SocketPollInfo poll_info, ServerConfig& server);
 		
