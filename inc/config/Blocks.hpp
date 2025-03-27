@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 15:20:32 by mbecker           #+#    #+#             */
-/*   Updated: 2025/02/03 15:19:26 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/18 16:41:21 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ class ServerBlock : public ABlock
 	private:
 		struct ServerConfig *_config;
 
+		void parseAlias(vector<ConfigToken> val);
 		void parseRoot(vector<ConfigToken> val);
 		void parseIndexFile(vector<ConfigToken> val);
 		void parseReturn(vector<ConfigToken> val);
@@ -79,16 +80,18 @@ class LocationBlock : public ABlock
 
 	public:		
 		void parseBlock(string context, vector<ConfigToken> tokens);
+		void parseAlias(vector<ConfigToken> val);
 		void parseRoot(vector<ConfigToken> val);
 		void parseMethods(vector<ConfigToken> val);
 		void parseDirectoryListing(vector<ConfigToken> val);
 		void parseIndexFile(vector<ConfigToken> val);
 		void parseCgiPath(vector<ConfigToken> val);
 		void parseUploadDir(vector<ConfigToken> val);
-		void parseHttpRedirect(vector<ConfigToken> val);
 		void parseReturn(vector<ConfigToken> val);
 
 		LocationBlock(struct RouteConfig &config, string &path);
 		~LocationBlock();
 		void initAllowedDirectives();
+
+		RouteConfig *getConfig();
 };

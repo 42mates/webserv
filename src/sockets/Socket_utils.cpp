@@ -6,15 +6,11 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:35:36 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/16 20:40:00 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/25 17:54:29 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketManager.hpp"
-
-//? check for existing socket in the map before ? Should be ok normally
-
-//TODO store mesage received in raw_request for the constructor of the class Request
 
 /**
  * @brief Closes a connection and removes the socket from the SocketManager.
@@ -47,13 +43,16 @@ static bool operator==(const pollfd& s, t_sockfd socket) { return s.fd == socket
  */
 void	SocketManager::removeClientSocket(int port, t_sockfd socket_fd)
 {
+	if (_socket_to_poll.find(socket_fd) == _socket_to_poll.end())
+		return ;
+
 	vector<ClientInfo>&	a_clients = _ports_info[port].clients;
 
 	vector<ClientInfo>::iterator to_del_client = find(a_clients.begin(), a_clients.end(), socket_fd);
-	if (to_del_client != a_clients.end()) //!testing purposes
+	if (to_del_client != a_clients.end())
 		a_clients.erase(to_del_client);
 	vector<pollfd>::iterator to_del_poll = find(_poll_fds.begin(), _poll_fds.end(), socket_fd);
-	if (to_del_poll != _poll_fds.end()) //!testing purposes
+	if (to_del_poll != _poll_fds.end())
 		_poll_fds.erase(to_del_poll);
 	_socket_to_poll.erase(socket_fd);
 	_poll_manager.removeSocket(socket_fd);
@@ -72,7 +71,7 @@ void	SocketManager::removeServerSocket(int port)
 	map<int, PortInfo>::iterator	it_port_info = _ports_info.find(port);
 
 	if (it_port_info == _ports_info.end())
-		return ; //? Is it necessary?
+		return ;
 
 	for (size_t i = 0; i  < it_port_info->second.clients.size(); i++)
 		close(it_port_info->second.clients[i].client_fd);
@@ -108,7 +107,7 @@ void	SocketManager::storeSocket(int port, t_sockfd socket_fd, short options, e_S
 	tmp.type = type;
 	tmp.port = port;
 
-	_poll_fds.push_back(tmp.pfd); //*pollfd is copied, so no dangling pointer issue
+	_poll_fds.push_back(tmp.pfd);
 	_socket_to_poll[socket_fd] = tmp;
 
 	if (client != NULL)
@@ -133,4 +132,25 @@ int		checkSocketStatus(t_sockfd socket_fd)
 	getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
 
 	return error;
+}
+
+/**
+ * @brief Stores associated servers for a given port in the SocketManager.
+ * 
+ * This function iterates through a vector of ServerConfig pointers and identifies servers
+ * that are associated with the specified port. It then stores copies of these servers
+ * in the `_ports_info` map, under the corresponding port's PortInfo structure.
+ * 
+ * @param port The port number for which to store associated servers.
+ * @param servers A pointer to a vector of ServerConfig pointers, representing the available servers.
+ */
+void SocketManager::storeAssociatedServers(int port, const vector <ServerConfig*>* servers)
+{
+	PortInfo&	curr = _ports_info[port];
+
+	for (size_t i = 0; i < servers->size(); i++)
+	{
+		if (servers->at(i)->port == port)
+			curr.servers.push_back(*servers->at(i));
+	}
 }

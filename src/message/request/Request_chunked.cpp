@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 15:34:19 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/10 17:30:16 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/17 15:10:20 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ string Request::decodeChunked(string body)
 	string chunk;
 
 	// remove any data after the last chunk
-	_body.erase(_body.find("\r\n0\r\n\r\n") + 7);
+	body.erase(body.find("0\r\n\r\n") + 5);
 
 	while (pos < body.size())
 	{

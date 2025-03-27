@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 15:11:44 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:46 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,16 @@ Response Request::handleHEAD()
 	{
 		string file = getFileContent();
 		response.setBody("");
-		response.setStatus("200");
+		response.setCode("200");
 		//response.setHeader(???);
 	}
 	catch(const ResponseException& e)
 	{
-		cerr << "debug: " << "handleGET(): " << e.what() << endl;
+		error_log  << "handleGET(): " << e.what() << endl;
 		response = e.getResponse();
-		cout << RED << "REQUEST DENIED 😱" << NC << endl;
+		access_log << "REQUEST DENIED 😱" << endl;
 		return response;
 	}
-	cout << GREEN << "REQUEST ACCEPTED 😎" << NC << endl;
+	access_log << "REQUEST ACCEPTED 😎" << endl;
 	return response;
 }

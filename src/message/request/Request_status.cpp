@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:30:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/14 17:43:20 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 16:56:13 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,9 @@ void Request::setIsCompleteRequest()
 	else if (_header["transfer-encoding"] == "chunked")
 	{
 		string body = _raw_request.substr(_raw_request.find("\r\n\r\n") + 4);
-		if (body.find("\r\n0\r\n\r\n") != string::npos)
-		_is_complete_request = true;
+		if (body.find("0\r\n\r\n") != string::npos)
+			_is_complete_request = true;
+
 	}
 	else if (!_header["content-length"].empty())
 	{
@@ -55,9 +56,7 @@ void Request::setIsCompleteRequest()
 			_is_complete_request = true;
 	}
 
-	//! in case of a POST request, the content-length header is mandatory
-	//? where should we place the catch ?
-	if (_header["content-length"].empty())
+	if (_header["content-length"].empty() && _header["transfer-encoding"] != "chunked")
 		throw ResponseException(Response("411"), "missing required header field \"Content-Length\"");
 }
  

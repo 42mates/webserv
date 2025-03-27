@@ -6,15 +6,25 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/14 18:02:00 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServ.hpp"
 
 volatile int run_server = true;
-void	handle_sigint(int signum) { (void)signum, run_server = false; }
-void	handle_sigquit(int signum) { (void)signum, run_server = false; }
+void	handle_sigint(int signum)
+{
+	(void)signum;
+	run_server = false;
+	cout << endl;
+}
+void	handle_sigquit(int signum)
+{
+	(void)signum;
+	run_server = false; 
+	cout << endl;
+}
 
 
 WebServ::WebServ()
@@ -34,6 +44,8 @@ void	WebServ::setVariables(SocketManager& manager)
 int WebServ::checkForEvents()
 {
 	int	timeout = 60 * 1000;
+	if (_poll_fds->empty())
+		throw runtime_error("no socket to monitor");
 	return poll(&_poll_fds->at(0), _poll_fds->size(), timeout);
 }
 
@@ -60,15 +72,10 @@ void WebServ::handleOneEvent(pollfd& poll_fd, SocketManager& manager)
 		else
 			poll_manager.clientHandler(poll_info, manager, poll_fd.events);
 	}
-	catch (const ResponseException& e)
-	{
-		cerr << "response: " << e.what() << endl; //debug message 
-		
-		Response response = e.getResponse();
-		(*_socket_to_response)[poll_fd.fd] = response;
+	catch(exception& e) 
+	{ 
+		error_log << "handleOneEvent(): " << e.what() << endl; 
 	}
-	
-	
 }
 
 void WebServ::run(const char* arg, int& ret)
@@ -81,19 +88,22 @@ void WebServ::run(const char* arg, int& ret)
 	try
 	{
 		_conf.parse(config_file);
+		//printConfig(*_conf.getBestServer("0.0.0.0", 42420, "localhost")); //debug
 		sockets = new SocketManager(_conf.getServers());
 		setVariables(*sockets);
 		while (run_server)
 		{
 			int events = checkForEvents();
-			if (events <= 0)
+			if (events == 0)
 				continue ;
+			else if (events < 0)
+				throw runtime_error(strerror(errno));
 			handleAllEvents(events, *sockets);
 		}
 	}
 	catch (const exception& e)
 	{
-		cerr << "webserv: " << e.what() << endl;
+		error_log << "webserv: " << e.what() << endl;
 		ret = 1;
 	}
 	if (sockets != NULL)

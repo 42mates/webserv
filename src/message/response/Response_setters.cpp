@@ -6,17 +6,17 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 14:29:34 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 14:34:02 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 
-void Response::setStatus(string status)
+void Response::setCode(string code)
 {
-	if (_status_line.find(status) == _status_line.end())
-		throw invalid_argument(string("debug: Response setStatus() used with invalid arg \"") + status + "\"");
-	_status = status;
+	if (_status_line.find(code) == _status_line.end())
+		throw runtime_error(string("Response setCode() used with invalid arg \"") + code + "\"");
+	_code = code;
 }
 
 void Response::setHeaderValue(string key, string value)
@@ -26,7 +26,7 @@ void Response::setHeaderValue(string key, string value)
 	if (_header.find(key) != _header.end())
 		_header[key] = value;
 	else
-		throw invalid_argument(string("debug: Response setHeaderValue() used with invalid key \"") + key + "\"");
+		throw runtime_error(string("Response setHeaderValue() used with invalid key \"") + key + "\"");
 }
 
 void Response::setBody(string body)
@@ -38,9 +38,9 @@ void Response::setErrorBody()
 {
 	//DEFAULT ERROR BODY WITHOUT CARRIAGE RETURN
 	_body = string("<html>\n")
-		+ "<head><title>" + _status + " " + _status_line[_status] + "</title></head>\n"
+		+ "<head><title>" + _code + " " + _status_line[_code] + "</title></head>\n"
 		+ "<body>\n"
-		+ "<center><h1>" + _status + " " + _status_line[_status] + "</h1></center>\n"
+		+ "<center><h1>" + _code + " " + _status_line[_code] + "</h1></center>\n"
 		+ "<hr><center>webserv/1.0</center>\n"
 		+ "</body>\n"
 		+ "</html>\n";
@@ -51,7 +51,7 @@ void Response::setErrorBody(ServerConfig &server_conf, string &root)
 	map<string, string>::iterator it;
 	for (it = server_conf.error_pages.begin(); it != server_conf.error_pages.end(); ++it)
 	{
-		if (it->first == _status)
+		if (it->first == _code)
 		{
 			ifstream file((root + it->second).c_str());
 			if (file.is_open() && file.good())
@@ -63,7 +63,7 @@ void Response::setErrorBody(ServerConfig &server_conf, string &root)
 		}
 	}
 	if (!server_conf.error_pages.empty())
-		cerr << "debug: Response setErrorBody() could not set custom error body for " << _status << endl;
+		error_log << "Response setErrorBody() could not set custom error body for " << _code << endl;
 }
 
 void Response::setDate()

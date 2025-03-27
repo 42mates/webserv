@@ -3,26 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   SocketManager.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/14 13:57:13 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:42:46 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# pragma once
+#pragma once
 
 #include "Config.hpp"
 #include "SocketOperations.hpp"
 #include "SocketPollManager.hpp"
 #include <sys/time.h>
-
-
-//! Should multiple servers listen on the same port ?
-//! CAREFUL : Since _poll_manager need access to data stored in SocketManager, said data need
-//! to be initialized first of all. Should be ok since c++ initiliaze data in the order they appear
-//! in the class, but it still needs testing
-
 
 /**
  * @brief Manages socket operations and polling for multiple servers.
@@ -61,15 +54,11 @@ class SocketManager
 		SocketPollManager&				getSocketPollManager( void );
 
 							/*UTILS*/
-
+		void			storeAssociatedServers(int port, const vector <ServerConfig*>* servers);
 		void			storeSocket(int port, t_sockfd socket_fd, short options, e_SocketType type, ClientInfo *client);
 		void			removeClientSocket(int port, t_sockfd socket_fd);
 		void			removeServerSocket(int port);
 		void			closeConnection(int port, t_sockfd socket_fd, e_SocketType type);
-		//? Client's socket in non blocking ? (i.e. should it wait for an answer?)
-
-		// 					/*RUNNING POLL*/
-		// void			runPollManager( void );
 };	
 
 

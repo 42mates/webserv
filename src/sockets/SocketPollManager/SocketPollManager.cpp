@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketPollManager.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:52:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/16 20:50:20 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/25 13:40:52 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,26 +32,6 @@ SocketPollManager::SocketPollManager(SocketManager& manager)
 
 SocketPollManager::~SocketPollManager() {}
 
-std::ostream& operator<<(std::ostream& os, const SocketPollManager& spm)
-{
-    os << "Poll FDs:" << std::endl;
-    for (size_t i = 0; i < spm._poll_fds->size(); ++i)
-    {
-        const pollfd& pfd = spm._poll_fds->at(i);
-        os << "FD: " << pfd.fd << ", Events: " << pfd.events << ", Revents: " << pfd.revents << std::endl;
-    }
-
-    os << "Socket to Poll Mapping:" << std::endl;
-    for (std::map<t_sockfd, SocketPollInfo>::const_iterator it = spm._socket_to_poll->begin(); it != spm._socket_to_poll->end(); ++it)
-    {
-        const SocketPollInfo& spi = it->second;
-        os << "Socket FD: " << it->first << ", Poll FD: " << spi.pfd.fd << ", Poll Events: " << spi.pfd.events << ", Poll Revents: " << spi.pfd.revents << ", Type: " << (spi.type == SERVER_SOCKET ? "Server" : "Client") << std::endl;
-    }
-
-    return os;
-}
-
-
 /**
  * @brief Retrieves the socket information for a given poll file descriptor.
  *
@@ -72,30 +52,42 @@ SocketPollInfo	SocketPollManager::getSocketInfo(pollfd pfd)
 	return info;
 }
 
+/**
+ * @brief Gets the map of socket file descriptors to Request objects.
+ *
+ * This function returns a pointer to the internal map that stores the association
+ * between socket file descriptors and Request objects.
+ *
+ * @return A pointer to the map of socket file descriptors to Request objects.
+ */
 map<t_sockfd, Request>*	SocketPollManager::getSocketToRequest() 
 {
 	return &_socket_to_request;
 }
 
-map<t_sockfd, Response>*	SocketPollManager::getSocketToResponse() 
+/**
+ * @brief Gets the map of socket file descriptors to infoResponse objects.
+ *
+ * This function returns a pointer to the internal map that stores the association
+ * between socket file descriptors and infoResponse objects.
+ *
+ * @return A pointer to the map of socket file descriptors to infoResponse objects.
+ */
+map<t_sockfd, infoResponse>*	SocketPollManager::getSocketToResponse() 
 {
 	return &_socket_to_response;
 }
 
+/**
+ * @brief Removes a socket from the internal maps.
+ *
+ * This function removes the entries associated with the given socket file descriptor
+ * from the internal maps `_socket_to_response` and `_socket_to_request`.
+ *
+ * @param socket_fd The file descriptor of the socket to be removed.
+ */
 void	SocketPollManager::removeSocket(t_sockfd socket_fd)
 {
 	_socket_to_response.erase(socket_fd);
 	_socket_to_request.erase(socket_fd);
 }
-
-
-void	SocketPollManager::prepareData(t_sockfd socket_fd, ssize_t& total_bytes_read, Request& request)
-{
-	map<t_sockfd, Request>::iterator it = _socket_to_request.find(socket_fd);
-
-	if (it == _socket_to_request.end())
-		return ;
-	total_bytes_read = it->second.getRawRequest().size();
-	request = it->second;
-}
-

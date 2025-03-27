@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:30:39 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/14 14:26:52 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/25 13:31:06 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ string getFile(string path)
 	{
 		content.assign((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 	}
-	catch(const std::exception& e)
+	catch(const exception& e)
 	{
 		runtime_error("getFile(): could not get file \"" + path + "\"" + string(e.what()));
 	}
@@ -94,10 +94,49 @@ string getFile(string path)
  */
 bool	isTimeOutReached(timeval& start, timeval& end, size_t timeout)
 {
-	size_t	start_time_ms = start.tv_sec * 1000000 + start.tv_usec;
-	size_t	end_time_ms = end.tv_sec * 1000000 + end.tv_usec;
+	size_t	start_time_mcs = start.tv_sec * 1000000 + start.tv_usec;
+	size_t	end_time_mcs = end.tv_sec * 1000000 + end.tv_usec;
 
-	if ((end_time_ms - start_time_ms) >= timeout)
+	if ((end_time_mcs - start_time_mcs) >= timeout)
 		return (true);
 	return (false);
+}
+
+static void decodeURLPercent(string &str)
+{
+	size_t pos = 0;
+
+	while ((pos = str.find('+', pos)) != string::npos)
+		str.replace(pos, 1, 1, ' ');
+	pos = 0;
+
+	while ((pos = str.find('%', pos)) != string::npos)
+	{
+		if (pos + 2 >= str.size())
+			throw runtime_error("invalid percent encoding");
+		
+		string tmp = str.substr(pos + 1, 2);
+		char c = (char)strtol(tmp.c_str(), NULL, 16);
+		str.replace(pos, 3, 1, c);
+		pos++;
+	}
+}
+
+vector< pair<string, string> > decodeURL(string body)
+{
+	vector< pair<string, string> > result;
+	istringstream iss(body);
+	string field;
+	
+	while (getline(iss, field, '&'))
+	{
+		size_t pos = field.find('=');
+		if (pos == string::npos)
+			throw runtime_error("invalid url-encoded field");
+		decodeURLPercent(field);
+		string key = field.substr(0, pos);
+		string value = field.substr(pos + 1);
+		result.push_back(make_pair(key, value));
+	}
+	return result;
 }

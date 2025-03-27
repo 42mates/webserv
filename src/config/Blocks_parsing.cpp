@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/07 17:07:20 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 16:45:44 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,13 @@ void printVector(const vector<ConfigToken>& v)
  */
 string	qString(string to_quote) { return "\"" + to_quote + "\""; }
 
+void ServerBlock::parseAlias(vector<ConfigToken> val)
+{
+	LocationBlock block(_config->routes["/"], _filepath);
+	block.parseAlias(val);
+	_config->alias = val[0].token;
+}
+
 void ServerBlock::parseRoot(vector<ConfigToken> val)
 {
 	LocationBlock block(_config->routes["/"], _filepath);
@@ -54,7 +61,7 @@ void ServerBlock::parseReturn(vector<ConfigToken> val)
 {
 	LocationBlock block(_config->routes["/"], _filepath);
 	block.parseReturn(val);
-	_config->http_redirect = val[0].token;
+	_config->http_redirect = block.getConfig()->http_redirect;
 }
 
 
@@ -122,7 +129,7 @@ void ServerBlock::parseServerName(vector<ConfigToken> val)
 {
 	if (val.size() == 0 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"server_name\" directive in ") + _filepath + ":" + itostr(val[0].line));
-	_config->server_names.resize(0); //! just for testing purposes
+	_config->server_names.resize(0);
 	for (size_t i = 0; i < val.size(); i++)
 		_config->server_names.push_back(val[i].token);
 }
@@ -156,7 +163,7 @@ void ServerBlock::parseErrorPage(vector<ConfigToken> val)
 
 void ServerBlock::parseClientMaxBodySize(vector<ConfigToken> val)
 {
-	int		bytes_multiplier = 1024;
+	size_t	bytes_multiplier = 1;
 	string	err_msg = qString("client_max_body_size") + " directive invalid value in " + _filepath + ":" + itostr(val[0].line);
 	size_t	first_not_of;
 	size_t	bytes;
@@ -170,11 +177,15 @@ void ServerBlock::parseClientMaxBodySize(vector<ConfigToken> val)
 	first_not_of = val[0].token.find_first_not_of("0123456789");
 	if (first_not_of != string::npos)
 	{
-		char	tmp = toupper(val[0].token.at(first_not_of));
-		if (tmp != 'K' && tmp != 'M' && tmp != 'G')
+		char	unit = toupper(val[0].token.at(first_not_of));
+		if (unit != 'K' && unit != 'M' && unit != 'G')
 			throw runtime_error(err_msg);
-		(tmp == 'M') ? bytes_multiplier *= 1024 : bytes_multiplier *= (1024 * 1024);
-		if (val[0].token.size() != first_not_of + 1) //* means that there is something after the unit
+
+		if (unit == 'K') bytes_multiplier = 1000;
+		if (unit == 'M') bytes_multiplier = 1000 * 1000;
+		if (unit == 'G') bytes_multiplier = 1000 * 1000 * 1000;
+		
+		if (val[0].token.size() != first_not_of + 1)
 			throw runtime_error(err_msg);
 	}
 	istringstream	iss(val[0].token);
@@ -182,11 +193,8 @@ void ServerBlock::parseClientMaxBodySize(vector<ConfigToken> val)
 	if (iss.fail())
 		throw runtime_error("string stream conversion error in parseClientMaxBodySize()");
 	bytes *= bytes_multiplier;
-	if (bytes == 0)
-		_config->client_max_body_size = string::npos; //* disables the limit
-	else
+	if (bytes >= 0)
 		_config->client_max_body_size = bytes;
-	//? set a maximum value (so that it doesn't exceed system limits)
 }
 
 ServerBlock::~ServerBlock(void) {}
@@ -196,25 +204,33 @@ ServerBlock::~ServerBlock(void) {}
 
 void LocationBlock::parseRoot(vector<ConfigToken> val)
 {
-	//todo only one argument ✅
-	//todo starts with / (but nginx doesnt throw an error when it is not)
-	//? so does that cause error at the execution?
 
 	if (val.size() != 1 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"root\" directive in ") + _filepath + ":" + itostr(val[0].line));
 	_config->root = val[0].token;
 }
 
+void LocationBlock::parseAlias(vector<ConfigToken> val)
+{
+
+	if (val.size() != 1 || val[0].token.empty() == true)
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"alias\" directive in ") + _filepath + ":" + itostr(val[0].line));
+	_config->alias = val[0].token;
+}
+
 void LocationBlock::parseMethods(vector<ConfigToken> val)
 {
 	if (val.size() == 0 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"methods\" directive ") + _filepath + ":" + itostr(val[0].line));
-	_config->methods.resize(0); //! just for testing purposes
+	_config->methods.clear();
 	for (size_t i = 0; i < val.size(); i++)
 	{
 		string	tmp(val[i].token);
 		transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper);
-		if (tmp != "GET" && tmp != "POST" && tmp != "DELETE")
+		if (   tmp != "GET"
+			&& tmp != "POST"
+			&& tmp != "DELETE"
+			&& tmp != "HEAD")
 			throw runtime_error(METHOD_UNKNOWN + qString(val[i].token) + " in \"methods\" directive " + _filepath + ":" + itostr(val[i].line));
 		_config->methods.push_back(tmp);
 	}
@@ -222,7 +238,6 @@ void LocationBlock::parseMethods(vector<ConfigToken> val)
 
 void LocationBlock::parseDirectoryListing(vector<ConfigToken> val)
 {
-	//! is triggered only if no index_file is found
 	string	auto_index("\"auto_index\" directive ");
 
 	if (val.size() != 1 || val[0].token.empty() == true)
@@ -238,7 +253,7 @@ void LocationBlock::parseIndexFile(vector<ConfigToken> val)
 {
 	if (val.size() < 1 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"index_file\" directive ") + _filepath + ":" + itostr(val[0].line));
-	_config->index_file.resize(0); //! just for testing purposes
+	_config->index_file.resize(0);
 	for (size_t i = 0; i < val.size(); i++)
 		_config->index_file.push_back(val[i].token);
 }
@@ -258,46 +273,19 @@ void LocationBlock::parseUploadDir(vector<ConfigToken> val)
 
 }
 
-//TODO when there is no return code, 302 is assumed
-//? Store error code somewhere?
-void LocationBlock::parseHttpRedirect(vector<ConfigToken> val)
-{
-	long	return_value;
-	string	return_string = "\"return\" directive in ";
-
-	if (val.size() == 0 || val.size() > 2 || val[0].token.empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + return_string + _filepath + ":" + itostr(val[0].line)); //?nginx doesn't throw an error when one arg only
-
-	if (val.size() == 1)
-	{
-		_config->http_redirect = val[0].token;
-		return ;
-	}
-
-	if (val[0].token.find_first_not_of("0123465789") != string::npos)
-		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + return_string + _filepath + ":" + itostr(val[0].line));
-
-	return_value = strtol(val[0].token.c_str(), NULL, 10);
-	if (return_value < 300 || return_value > 399)
-		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + return_string + _filepath + ":" + itostr(val[0].line));
-	_config->http_redirect = val[1].token;
-
-}
-
 void LocationBlock::parseReturn(vector<ConfigToken> val)
 {
-	long	return_value;
-
 	if (val.size() == 0 || val.size() > 2 || val[0].token.empty() == true)
-		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"return\" directive ") + _filepath + ":" + itostr(val[0].line));
+		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"return\" directive in ") + _filepath + ":" + itostr(val[0].line));
 
 	if (val[0].token.find_first_not_of("0123465789") != string::npos)
-		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + _filepath + ":" + itostr(val[0].line));
+		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in \"return\" directive in " + _filepath + ":" + itostr(val[0].line));
 
-	return_value = strtol(val[0].token.c_str(), NULL, 10);
-	if (return_value > 999)
-		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in " + _filepath + ":" + itostr(val[0].line));
+	short num = strtol(val[0].token.c_str(), NULL, 10);
+	if (num < 300 || num > 307)
+		throw runtime_error(INVALID_RETURN_CODE + qString(val[0].token) + " in \"return\" directive in " + _filepath + ":" + itostr(val[0].line));
+	_config->http_redirect.first = val[0].token;
+	_config->http_redirect.second = (val.size() == 2) ? val[1].token : "";
 }
-
 
 LocationBlock::~LocationBlock(void) {}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/16 20:19:44 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/27 13:57:08 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ class Request
 		string	_uri;
 		string	_version;
 		map<string, string>	_header;
+		string	_query;
 		string	_body;
 		string	_path;
 		
@@ -53,9 +54,13 @@ class Request
 
 		// CHECKS
 		void	checkStartLine();
+		void	checkMethod();
 		void	checkHeader();
 		string	getFilePath(const string &path);
-		void	checkMethod();
+
+		// CGI
+		char**		initEnv();
+		Response	handle_cgi();
 		
 		// METHOD HANDLING
 		map<string, Response (Request::*)()> _method_handling; // Map of methods to their handling functions
@@ -82,11 +87,11 @@ class Request
 
 		// STATUS
 		void		setIsCompleteRequest();
+		void		setIsCompleteRequest(bool val);
 		
 		// TESTING
 		int			_id; //debug
 		int			_parsingcalls; //debug
-		void		testParsing();
 		void		printStartLine();
 		void		printHeader();
 		void		printBody();

@@ -24,6 +24,7 @@
 # include <map>           // STL
 # include <list>          // STL
 # include <vector>        // STL
+# include <sys/wait.h>    // for wait
 # include <sys/stat.h>    // for stat
 # include <sys/types.h>   // Socket functions
 # include <sys/socket.h>  // Socket functions
@@ -40,5 +41,7 @@
 # include "macros.h"      // Macros for the project
 
 # include "utils.hpp"     // Utilities functions (like itostr)
+
+# include "logger.hpp"    // logs global variables
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/14 16:08:04 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ static void parseContentType(string ct_header_val, POSTData &data)
 	}
 }
 
-
 static void parseMultipartHeader(string body, POSTBody &part)
 {
 	size_t pos = 0;
@@ -72,6 +71,21 @@ static void parseMultipartHeader(string body, POSTBody &part)
 		string value = line.substr(sep_pos + 2);
 
 		part.headers[key] = value;
+		if (key == "content-disposition")
+		{
+			size_t name_pos = value.find("name=\"");
+			size_t filename_pos = value.find("filename=\"");
+			if (name_pos != string::npos)
+			{
+				size_t name_end = value.find("\"", name_pos + 6);
+				part.headers["name"] = value.substr(name_pos + 6, name_end - name_pos - 6);
+			}
+			if (filename_pos != string::npos)
+			{
+				size_t filename_end = value.find("\"", filename_pos + 10);
+				part.headers["filename"] = value.substr(filename_pos + 10, filename_end - filename_pos - 10);
+			}
+		}
 
 		pos = end_pos + 2; // Move past CRLF
 	}
@@ -105,44 +119,60 @@ static void parseMultipart(string body, POSTData &data)
 	}
 }
 
-void percentDecode(string &str)
-{
-	size_t pos = 0;
-
-	while ((pos = str.find('+', pos)) != string::npos)
-		str.replace(pos, 1, 1, ' ');
-	pos = 0;
-
-	while ((pos = str.find('%', pos)) != string::npos)
-	{
-		if (pos + 2 >= str.size())
-			throw ResponseException(Response("400"), "invalid percent encoding");
-		
-		string tmp = str.substr(pos + 1, 2);
-		char c = (char)strtol(tmp.c_str(), NULL, 16);
-		str.replace(pos, 3, 1, c);
-		pos++;
-	}
-}
-
-static void parseURLEncoded(string body, POSTData &data)
+void parseURLEncoded(string body, POSTData &data)
 {
 	istringstream iss(body);
 	string field;
 	
-	while (getline(iss, field, '&'))
+	try
 	{
-		size_t pos = field.find('=');
-		if (pos == string::npos)
-			throw ResponseException(Response("400"), "invalid url-encoded field");
-			
-		percentDecode(field);
-		string key = field.substr(0, pos);
-		string value = field.substr(pos + 1);
-			
-		POSTBody post_body;
-		post_body.content = key + "=" + value;
-		data.bodies.push_back(post_body);
+		vector< pair<string, string> > decoded = decodeURL(body);
+		for (vector< pair<string, string> >::iterator it = decoded.begin(); it != decoded.end(); it++)
+		{
+			POSTBody post_body;
+			post_body.content = it->first + "=" + it->second;
+			data.bodies.push_back(post_body);
+		}
+	}
+	catch(const runtime_error& e)
+	{
+		throw ResponseException(Response("500"), e.what());
+	}
+}
+
+void uploadPOST(POSTData &data, string upload_dir)
+{
+	struct stat info;
+	if (stat(upload_dir.c_str(), &info) != 0)
+		throw ResponseException(Response("404"), "upload directory \"" + upload_dir + "\" does not exist");
+	if (!(info.st_mode & S_IFDIR))
+		throw ResponseException(Response("404"), "\"" + upload_dir + "\" is not a directory");
+	if (access(upload_dir.c_str(), W_OK) != 0)
+		throw ResponseException(Response("403"), "no write access to upload directory \"" + upload_dir + "\"");
+
+	if (!upload_dir.empty() && upload_dir[upload_dir.size() - 1] == '/')
+		upload_dir.erase(upload_dir.size() - 1);
+
+	for (size_t i = 0; i < data.bodies.size(); i++)
+	{
+		if (data.bodies[i].headers.find("filename") != data.bodies[i].headers.end())
+		{
+			string filename = upload_dir + "/" + data.bodies[i].headers["filename"];
+			ofstream file(filename.c_str(), ios::out | ios::binary | ios::app);
+			if (!file.is_open() || !file.good())
+				throw ResponseException(Response("403"), "failed to open file \"" + filename + "\" for writing");
+
+			// Check if the file was created successfully
+			struct stat file_info;
+			if (stat(filename.c_str(), &file_info) != 0)
+				throw ResponseException(Response("403"), "failed to create file \"" + filename + "\"");
+
+			// Check for write access
+			if (access(filename.c_str(), W_OK) != 0)
+				throw ResponseException(Response("403"), "no write access to file \"" + filename + "\"");
+			file << data.bodies[i].content;
+			file.close();
+		}
 	}
 }
 
@@ -152,37 +182,42 @@ Response Request::handlePOST()
 	POSTData data;
 
 	parseContentType(_header["content-type"], data);
-	
+
 	try
-	{		
-		if (_body.empty())
-			cout << "debug: Empty body in PUT. what should I do with it ?" << endl; //? idk what to do with it yet
+	{
+		if (_body.empty()) 
+			return Response("405");
 		else if (data.type == "multipart/form-data")
 			parseMultipart(_body, data);
 		else if (data.type == "application/x-www-form-urlencoded")
 			parseURLEncoded(_body, data);
 		else if (data.type == "text/plain")
 		{
-			
 			POSTBody body;
 			body.content = _body;
 			data.bodies.push_back(body);
 		}
 		else if (!data.type.empty())
 			throw ResponseException(Response("400"), "unsupported content-type");
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << "debug: handlePOST(): " << e.what() << endl;
-	}	
 
+		string upload_dir = _route_conf.upload_dir.empty() ? _route_conf.root : _route_conf.upload_dir;
+		uploadPOST(data, upload_dir);
+	}
+	catch(const runtime_error& e)
+	{
+		error_log << "handlePOST(): " << e.what() << endl;
+	}
+
+
+	
 
 	response = Response("200");
-	//response = handleGET(); // for now, just to test
 
-	string response_body = "POST request received successfully\n\n";
+	string response_body = "POST request received successfully:\n\n";
 	for (size_t i = 0; i < data.bodies.size(); i++)
-		response_body += "[" + itostr(i) + "] - \"" + data.bodies[i].content + "\"\n";
+		response_body += data.bodies[i].content;
+	//for (size_t i = 0; i < data.bodies.size(); i++)
+	//	response_body += "[" + itostr(i) + "] - \"" + data.bodies[i].content + "\"\n";
 
 	response.setBody(response_body);
 

@@ -1,0 +1,3 @@
+Error while setting up server socket for port 7070: SocketOperations::bindSocket() unable to bind socket
+Error while setting up server socket for port 9090: SocketOperations::bindSocket() unable to bind socket
+webserv: no socket to monitor

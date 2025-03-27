@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/13 15:51:51 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,13 +85,11 @@ void Request::parseHeader(string raw_request)
 
 void Request::parseBody(string body)
 {
-	cerr << "parseBody() called" << endl;
-
 	if (body.empty())
 		return;
 
 	if ( _header["transfer-encoding"] == "chunked")
-		_body += decodeChunked(body);
+		_body = decodeChunked(body);
 	else if (!_header["transfer-encoding"].empty()
 		&& _header["transfer-encoding"] != "identity")
 		throw ResponseException(Response("501"), "transfer-encoding value \"" + _header["transfer-encoding"] + "\" not supported"); 
@@ -106,25 +104,23 @@ void Request::parseBody(string body)
 
 void Request::parseRequest(string request_chunk)
 {
-	//cerr << (_parsingcalls++ == 0 ? "\n" : "");
-	//cerr << BLUE << "parsing call [" << _parsingcalls << "]" << NC << endl;
-	
+
 	_raw_request += request_chunk;
 
 	setIsCompleteRequest();
 
-	//if (_raw_request.substr(0, 10).find("GET") == string::npos) // debug: avoid printing GET requests
-		this->printRaw(); //! debug to see recv() results
+	//if (_raw_request.substr(0, 10).find("GET") == string::npos) // avoid printing GET requests
+		//this->printRaw(); //! debug to see recv() results
 	
 	if (!_header_parsed && isCompleteHeader(_raw_request))
-		parseHeader(request_chunk);
+		parseHeader(_raw_request);
 
 	if (_header_parsed && _header["expect"] == "100-continue")
 	{
 		throw ContinueException();
 		_header["expect"] = "";
 	}
-	
+
 	setIsCompleteRequest();
 	if (_method != "GET" || _method != "HEAD")
 	{
