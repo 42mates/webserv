@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 18:19:55 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/26 21:35:58 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/27 01:12:42 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,13 @@ void	SocketPollManager::prepareRecv(t_sockfd socket_fd, size_t& total_bytes_read
 	gettimeofday(&start, NULL);
 }
 
+void	printServerNames(ServerConfig& s)
+{
+	for (size_t i = 0; i < s.server_names.size(); i ++)
+	{
+		cout << CYAN << s.server_names[i] << " " << NC << endl;
+	}
+}
 
 /**
  * @brief Prepares the response to be sent for a given socket file descriptor.
@@ -73,13 +80,14 @@ void	SocketPollManager::prepareSend(t_sockfd socket_fd, size_t& len_sent, Respon
 		host = infos.substr(0, index);
 		port = infos.substr(index + 1);
 		index = findBestServer(servers, host, port);
+		// cout << "index " << CYAN << index << BBLUE << ' ' << host << NC << ":" << BBLUE << port << NC << endl;
+		// printServerNames(servers[index]);
 	}
 
 	if (it == _socket_to_response.end())
 	{
 		gettimeofday(&start, NULL);
 		response = _socket_to_request[socket_fd].handleRequest(servers[index]);
-		//*find best server here
 		return ;
 	}
 
@@ -247,12 +255,31 @@ bool	keepConnectionOpen(Response& r)
 	return true;
 }
 
+/**
+ * @brief Finds the best server configuration based on the provided host and port.
+ * 
+ * This function iterates through a vector of `ServerConfig` objects, comparing the server names and port numbers
+ * to the provided `host` and `port`. If a matching server configuration is found, the index of that server
+ * in the vector is returned. If no matching server is found, the function returns 0.
+ * 
+ * @param servers A vector of `ServerConfig` objects representing the available server configurations.
+ * @param host The host name to search for.
+ * @param port The port number to search for, as a string.
+ * 
+ * @return The index of the best matching server configuration in the `servers` vector. Returns 0 if no match is found.
+ */
 size_t	findBestServer(vector<ServerConfig>& servers, const string host, const string port)
 {
 	for (size_t i = 0; i < servers.size(); i++)
 	{
-		if (servers[i].host == host && servers[i].port == atoi(port.c_str()))
-			return i;
+		for (size_t j = 0; j < servers[i].server_names.size(); j++)
+		{
+			if (servers[i].server_names[j] == host && servers[i].port == atoi(port.c_str()))
+			{
+				cout << CYAN << servers[i].server_names[j] << " " << servers[i].port << NC << endl;
+				return i;
+			}
+		}
 	}
 	return 0; //? can webserv be launched if no servers ?
 }

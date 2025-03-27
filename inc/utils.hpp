@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:33:23 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/26 15:18:28 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/26 22:53:14 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 
 #include "libs.h"
 
+struct ServerConfig;
+struct RouteConfig;
+class Response;
 
 // UTILS.CPP
 
@@ -22,20 +25,20 @@ int		countOccurrences(const string s, char c);
 string	getTestRequest();
 string	getDate();
 string	getFile(string path);
-bool	isTimeOutReached(timeval& start, timeval& end, size_t timeout);
 vector< pair<string, string> > decodeURL(string body);
 
+// CLIENT_UTILS.CPP
+
+bool	isTimeOutReached(timeval& start, timeval& end, size_t timeout);
+size_t	findBestServer(vector<ServerConfig>& servers, const string host, const string port);
 
 // CGI
 
-class Response;
-Response handle_cgi(string path, string query);
+Response handle_cgi(string path, string query); //? to delete
 
 
 // CONFIG_PRINT.CPP
 
-struct ServerConfig;
-struct RouteConfig;
 void printConfig(RouteConfig &config);
 void printConfig(RouteConfig &config, int indent_level);
 void printConfig(ServerConfig &config);

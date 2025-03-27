@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request_handling.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/25 13:31:30 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 01:08:05 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	try
 	{
 		if (!_is_complete_request)
-			throw ResponseException(Response("500"), "incomplete request");
+			throw ResponseException(Response("500"), "incomplete request"); //?400 rather
 		checkStartLine();
 		_server_conf = server_conf;
 		_route_conf = getBestRoute(_server_conf, _uri);

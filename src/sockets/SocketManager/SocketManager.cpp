@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/25 18:04:28 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/26 23:50:41 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ SocketManager::SocketManager(const vector <ServerConfig*>* servers) : _poll_mana
 		try
 		{
 			int port = servers->at(i)->port;
+			_ports_info[port];
 			storeAssociatedServers(port, servers);
 			_ops.createSocket(servers->at(i)->host, port, _ports_info[port]);
 			_ops.setReusability(_ports_info[port].server_fd);
@@ -51,8 +52,7 @@ SocketManager::SocketManager(const vector <ServerConfig*>* servers) : _poll_mana
 			_ops.bindSocket(_ports_info[port], port);
 			_ops.listenSocket(_ports_info[port]);
 			storeSocket(port, _ports_info[port].server_fd, (POLLIN | POLLERR | POLLHUP), SERVER_SOCKET, NULL);
-			// _ports_info[port].server = servers->at(i);
-			cout << "Now other server\n\n";
+			// _ports_info[port].servers = servers;
 		}
 		catch(exception& e) { cout << e.what() << endl; }
 	}
