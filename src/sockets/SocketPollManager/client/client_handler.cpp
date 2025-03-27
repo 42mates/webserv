@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/27 01:08:46 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/27 14:44:09 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 {
 	string		raw_request;
 	size_t		client_max_body_size = server.client_max_body_size;
-	ssize_t		ret;
+	ssize_t		ret = 1;
 	Request		request;
 	size_t		total_bytes_read = 0;
 	timeval		start, end;

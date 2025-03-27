@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request_handling.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 01:08:05 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/27 14:07:59 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,21 @@ void Request::checkStartLine()
 	if (_method.empty() || _uri.empty() || _version.empty())
 		throw ResponseException(Response("400"), "request start line has empty field (parsing functions were not called)");
 
-	// check if method is allowed
-	if (_method_handling.find(_method) == _method_handling.end())
-	{
-		Response response("405");
-		response.setHeaderValue("allow", Config::getAllowedMethods(_route_conf.methods));
-		throw ResponseException(response, "unknown method");
-	}
-
 	// get query string
 	if (_uri.find("?") != string::npos)
 	{
 		_query = _uri.substr(_uri.find("?") + 1);
 		_uri = _uri.substr(0, _uri.find("?"));
+	}
+}
+
+void Request::checkMethod()
+{
+	if (std::find(_route_conf.methods.begin(), _route_conf.methods.end(), _method) == _route_conf.methods.end())
+	{
+		Response response("405");
+		response.setHeaderValue("allow", Config::getAllowedMethods(_route_conf.methods));
+		throw ResponseException(response, "unknown method");
 	}
 }
 
@@ -84,16 +86,19 @@ Response Request::handleRequest(ServerConfig &server_conf)
 {
 	Response response;
 
-	//if (_method != "GET") // debug (avoiding GET printing)
-		//this->print(); //!leave this line for debugging purposes during correction
+	if (_method != "GET") // debug (avoiding GET printing)
+		this->print(); //!leave this line for debugging purposes during correction
 
 	try
 	{
 		if (!_is_complete_request)
-			throw ResponseException(Response("500"), "incomplete request"); //?400 rather
+			throw ResponseException(Response("400"), "incomplete request");
 		checkStartLine();
+
 		_server_conf = server_conf;
 		_route_conf = getBestRoute(_server_conf, _uri);
+		
+		checkMethod();
 		checkHeader();
 
 		if (_uri.size() >= 3 && _uri.substr(_uri.size() - 3) == ".py") // if file is cgi
@@ -103,7 +108,7 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	}
 	catch(const ResponseException& e)
 	{
-		cerr << "response: " << "handleRequest() response: " << e.what() << endl;
+		cerr << "debug: handleRequest(): " << e.what() << endl;
 		response = e.getResponse();
 	}
 	catch(const exception& e)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketManager.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/26 23:50:41 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/27 14:42:56 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,22 +59,35 @@ SocketManager::SocketManager(const vector <ServerConfig*>* servers) : _poll_mana
 }
 
 //!PULL BEFORE
-
 /**
  * @brief Ensures that all client and server sockets are closed for each port 
- * managed by the SocketManager.
+ * managed by the SocketManager, as well as for each instance in the _poll_fds vector.
  */
 SocketManager::~SocketManager(void)
 {
+	// Close each socket per port
 	for (map<int, PortInfo>::iterator port_it = _ports_info.begin(); port_it != _ports_info.end(); port_it++)
 	{
 		vector<ClientInfo>&	a_client = port_it->second.clients; 
 		for (size_t i = 0; i  < a_client.size(); i++)
 		{
 			if (a_client[i].client_fd != -1)
+			{
 				close(a_client[i].client_fd);
+				a_client[i].client_fd = -1;
+			}
 		}
 		if (port_it->second.server_fd != -1)
+		{
 			close(port_it->second.server_fd);
+			port_it->second.server_fd = -1;
+		}
+	}
+
+	// Close each socket in the _poll_fds vector
+	for (size_t i = 0; i < _poll_fds.size(); i++)
+	{
+		if (_poll_fds[i].fd != -1)
+			close(_poll_fds[i].fd);
 	}
 }

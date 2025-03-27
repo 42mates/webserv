@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/24 17:37:51 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 13:57:08 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ class Request
 
 		// CHECKS
 		void	checkStartLine();
+		void	checkMethod();
 		void	checkHeader();
 		string	getFilePath(const string &path);
 

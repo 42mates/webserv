@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/25 13:31:12 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 12:40:09 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,7 +236,10 @@ void LocationBlock::parseMethods(vector<ConfigToken> val)
 	{
 		string	tmp(val[i].token);
 		transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper);
-		if (tmp != "GET" && tmp != "POST" && tmp != "DELETE")
+		if (   tmp != "GET"
+			&& tmp != "POST"
+			&& tmp != "DELETE"
+			&& tmp != "HEAD")
 			throw runtime_error(METHOD_UNKNOWN + qString(val[i].token) + " in \"methods\" directive " + _filepath + ":" + itostr(val[i].line));
 		_config->methods.push_back(tmp);
 	}

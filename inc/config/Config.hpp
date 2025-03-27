@@ -44,7 +44,7 @@ struct RouteConfig {
 		path("/"),
 		directory_listing(false),
 		cgi_path(""),
-		upload_dir("tools/uploads"),
+		upload_dir(""),
 		http_redirect("", "")
 	{
 		methods.push_back("GET");
