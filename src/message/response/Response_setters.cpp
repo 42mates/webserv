@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 14:29:34 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/24 12:51:40 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void Response::setCode(string code)
 {
 	if (_status_line.find(code) == _status_line.end())
-		throw runtime_error(string("debug: Response setCode() used with invalid arg \"") + code + "\"");
+		throw runtime_error(string("Response setCode() used with invalid arg \"") + code + "\"");
 	_code = code;
 }
 
@@ -26,7 +26,7 @@ void Response::setHeaderValue(string key, string value)
 	if (_header.find(key) != _header.end())
 		_header[key] = value;
 	else
-		throw runtime_error(string("debug: Response setHeaderValue() used with invalid key \"") + key + "\"");
+		throw runtime_error(string("Response setHeaderValue() used with invalid key \"") + key + "\"");
 }
 
 void Response::setBody(string body)
@@ -63,7 +63,7 @@ void Response::setErrorBody(ServerConfig &server_conf, string &root)
 		}
 	}
 	if (!server_conf.error_pages.empty())
-		cerr << "debug: Response setErrorBody() could not set custom error body for " << _code << endl;
+		error_log << "Response setErrorBody() could not set custom error body for " << _code << endl;
 }
 
 void Response::setDate()

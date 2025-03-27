@@ -6,14 +6,13 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/27 14:44:09 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketPollManager.hpp"
 #include "SocketManager.hpp"
 
-//TODO test with connection-keep-alive allowed
 /**
  * @brief Establishes a connection with a client.
  * 
@@ -44,23 +43,23 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 				client_events[i].handler(poll_info, manager, *this);
 				if (client_events[i].event == POLLIN && isMessageEnd(poll_info.pfd.fd, T_REQUEST) == true)
 					fd_events |= POLLOUT;
-				if (client_events[i].event == POLLOUT) //? is the second check useless?
+				if (client_events[i].event == POLLOUT)
 					fd_events &= ~POLLOUT;
 			}
-			catch (ResponseException& e) //! response sending might be blocking, so multiple clientSend() call might be needed (careful with closing therefore)
+			catch (ResponseException& e)
 			{
-				cerr << "clientHandler(): " << e.what() << endl;
+				error_log << "clientHandler(): " << e.what() << endl;
 				Response r = e.getResponse();
 				clientSend(poll_info, r);
-				// if (keepConnectionOpen(r) == false)
-					manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET); //* handled double close in removeClientSocket()
-				// break ;
+				if (keepConnectionOpen(r) == false)
+					manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET);
 			}
 			catch (exception& e)
 			{
-				cerr << "(replace me) debug: clientHandler(): " << e.what() << endl;
+				error_log << "(replace me) clientHandler(): " << e.what() << endl;
+				Response r("500");
+				clientSend(poll_info, r);
 				manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET);
-				// break ;
 			}
 		}
 	}
@@ -92,14 +91,15 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 		ret = readOneChunk(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read, status);
 		if (ret < 0)
 			return recvError(poll_info.pfd.fd, status, request);
+		if (ret == 0)
+			break ;
 		try
-		{
+		{ 
 			request.parseRequest(raw_request);
 		}
 		catch (ContinueException& e_continue)
 		{
 			infoResponse r_continue(e_continue.getResponse(), 0);
-			// _socket_to_response[poll_info.pfd.fd] = r_continue; //* feels like not needed so commented
 			clientSend(poll_info, r_continue.response);
 			continue ;
 		}
@@ -154,15 +154,12 @@ ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& 
 	}
 	if (ret == 0)
 	{
-		cout << BRED << "SPECIAL CASE " << NC << endl;
 		infoResponse	tmp(class_response, len_sent);
 		tmp.fully_sent = true;
 		_socket_to_response[poll_info.pfd.fd] = tmp;
 		return len_sent;
 	}
-	// string	keepConnection = _socket_to_request.at(poll_info.pfd.fd).getConnectionKeepAlive(); //* keep in comments for tester
-	// if (keepConnection == "close")
-		manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET); //? end function here
+	manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET);
 	return len_sent;
 }
 
@@ -182,7 +179,7 @@ ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& 
  *
  * @note Connection should never be closed inside this function, because it can be called for a continue-response.
  */
-ssize_t	SocketPollManager::clientSend(SocketPollInfo &poll_info, Response& response) //! balls breaking if the send is blocking here
+ssize_t	SocketPollManager::clientSend(SocketPollInfo &poll_info, Response& response)
 {
 	Response	class_response;
 	size_t		len_sent = 0;
@@ -193,7 +190,6 @@ ssize_t	SocketPollManager::clientSend(SocketPollInfo &poll_info, Response& respo
 	size_t		len_response = string_response.size();
 
 	gettimeofday(&start, NULL);
-	cout << BRED << "IN THE CAUGHT FUNCTION" << NC << endl; // to leave for testing purposes
 	while (len_sent != len_response)
 	{
 		checkResponseTimeout(start, end);

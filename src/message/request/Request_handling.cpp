@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 15:38:33 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:46 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,12 +108,12 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	}
 	catch(const ResponseException& e)
 	{
-		cerr << "debug: handleRequest(): " << e.what() << endl;
+		error_log << "handleRequest(): " << e.what() << endl;
 		response = e.getResponse();
 	}
 	catch(const exception& e)
 	{
-		cerr << "debug: " << "handleRequest() exception: " << e.what() << endl;
+		error_log  << "handleRequest() exception: " << e.what() << endl;
 		response = Response("500");
 	}
 

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:35:16 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 12:35:27 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,7 +240,7 @@ Response::Response(string code)
 {
 	initStatusLine();
 	if (_status_line.find(_code) == _status_line.end())
-		throw runtime_error(string("debug: Response constructor used with invalid arg \"") + _code + "\"");
+		throw runtime_error(string("Response constructor used with invalid arg \"") + _code + "\"");
 	initHeaderFields();
 
 	//!_body = ""; //expected behaviour from tester

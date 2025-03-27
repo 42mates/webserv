@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:31:21 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/25 15:22:08 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,16 +41,17 @@ void	SocketPollManager::serverHandler(SocketPollInfo poll_info, SocketManager& m
 			}
 			catch (ResponseException& e)
 			{
-				cerr << "serverHandler(): " << e.what() << endl;
+				error_log << "serverHandler(): " << e.what() << endl;
 				Response r = e.getResponse();
-				// clientSend(poll_info, r);
 				closeConnectionToAllClients(r, poll_info, manager);
-				manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET); //! careful with MSG_DONTWAIT see(clientHandler())
+				manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET);
 			}
 			catch (const exception& e)
 			{
-				cerr << "debug: serverHandler(): " << e.what() << endl;
-				manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET); //! might be somer other issues here
+				error_log << "serverHandler(): " << e.what() << endl;
+				Response r("500");
+				closeConnectionToAllClients(r, poll_info, manager);
+				manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET);
 				break ;
 			}
 		}

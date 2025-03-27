@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/25 15:21:11 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:08:56 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,8 @@ enum ConfigTokenType
 //--> client_handler.cpp
 # define BLOCKING_OPERATION EWOULDBLOCK
 
-# define MCS_REQUEST_TIMEOUT 10000000
-# define MCS_RESPONSE_TIMEOUT 10000000
+# define MCS_REQUEST_TIMEOUT 3000000
+# define MCS_RESPONSE_TIMEOUT 3000000
 
 //-->client_utils.cpp
 

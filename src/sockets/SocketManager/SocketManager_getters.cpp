@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketManager_getters.cpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 09:34:48 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/02/28 14:10:02 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:05:00 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ PortInfo*	SocketManager::getPortInfo(int port)
 {
 	if (_ports_info.find(port) == _ports_info.end())
 	{
-		cerr << "port informations at port [" << port << "] not found" << endl;
+		error_log << "port informations at port [" << port << "] not found" << endl;
 		return NULL;
 	}
 	return &_ports_info.at(port);
@@ -67,7 +67,7 @@ vector<ClientInfo>*	SocketManager::getClientsInfo(int port)
 {
 	if (_ports_info.find(port) == _ports_info.end())
 	{
-		cerr << "port informations at port [" << port << "] not found" << endl;
+		error_log << "port informations at port [" << port << "] not found" << endl;
 		return NULL;
 	}
 	return &(_ports_info.at(port).clients);

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 14:24:11 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,14 +200,12 @@ Response Request::handlePOST()
 		else if (!data.type.empty())
 			throw ResponseException(Response("400"), "unsupported content-type");
 
-		cout << "route conf upload dir: " << _route_conf.upload_dir << endl;
-		cout << "route conf root: " << _route_conf.root << endl;
 		string upload_dir = _route_conf.upload_dir.empty() ? _route_conf.root : _route_conf.upload_dir;
 		uploadPOST(data, upload_dir);
 	}
 	catch(const runtime_error& e)
 	{
-		cerr << "debug: handlePOST(): " << e.what() << endl;
+		error_log << "handlePOST(): " << e.what() << endl;
 	}
 
 

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 14:39:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/25 18:25:37 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:27:02 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void SocketOperations::bindSocket(PortInfo& port_info, int port)
 			return ;
 		char	ip_address[INET_ADDRSTRLEN];
 		inet_ntop(AF_INET, &port_info.server_address.sin_addr, ip_address, INET_ADDRSTRLEN);
-		cout
+		cerr
 		<< "webserv: [emerg] bind() to " << ip_address << ":" << itostr(port)
 		<< " failed (" << itostr(errno) << ": " << strerror(errno) << ')' << endl;
 		max_try--;
@@ -133,18 +133,3 @@ void SocketOperations::setReusability(t_sockfd socket)
     setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
     setsockopt(socket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 }
-
-// //! might be useless
-// /**
-//  * @brief Closes the specified socket.
-//  * 
-//  * This function closes the specified socket using the `close` system call.
-//  * 
-//  * @param socket The file descriptor of the socket to close.
-//  * @throws runtime_error If an error occurs while closing the socket.
-//  */
-// void SocketOperations::closeSocket(t_sockfd socket)
-// {
-//     if (close(socket) == -1)
-//         throw runtime_error("SocketOperations: closeSocket() " + string(strerror(errno)));
-// }

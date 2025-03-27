@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 10:42:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/25 14:30:33 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,11 +111,11 @@ void Response::parseResponse(string raw_response)
 	}
 	catch(const ResponseException& e)
 	{
-		std::cerr << "debug: parseResponse(): " << e.what() << endl;
+		error_log << "parseResponse(): " << e.what() << endl;
 		*this = e.getResponse();
 	}
 	catch(const exception& e)
 	{
-		std::cerr << "debug: parseResponse() (std exception): " << e.what() << endl;
+		error_log << "parseResponse() (std exception): " << e.what() << endl;
 	}
 }

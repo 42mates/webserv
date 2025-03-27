@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 17:10:06 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 12:40:09 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 16:45:44 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ void ServerBlock::parseServerName(vector<ConfigToken> val)
 {
 	if (val.size() == 0 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"server_name\" directive in ") + _filepath + ":" + itostr(val[0].line));
-	_config->server_names.resize(0); //! just for testing purposes
+	_config->server_names.resize(0);
 	for (size_t i = 0; i < val.size(); i++)
 		_config->server_names.push_back(val[i].token);
 }
@@ -185,7 +185,7 @@ void ServerBlock::parseClientMaxBodySize(vector<ConfigToken> val)
 		if (unit == 'M') bytes_multiplier = 1000 * 1000;
 		if (unit == 'G') bytes_multiplier = 1000 * 1000 * 1000;
 		
-		if (val[0].token.size() != first_not_of + 1) //* means that there is something after the unit
+		if (val[0].token.size() != first_not_of + 1)
 			throw runtime_error(err_msg);
 	}
 	istringstream	iss(val[0].token);
@@ -193,11 +193,8 @@ void ServerBlock::parseClientMaxBodySize(vector<ConfigToken> val)
 	if (iss.fail())
 		throw runtime_error("string stream conversion error in parseClientMaxBodySize()");
 	bytes *= bytes_multiplier;
-	if (bytes == 0)
-		_config->client_max_body_size = string::npos; //* disables the limit
-	else
+	if (bytes >= 0)
 		_config->client_max_body_size = bytes;
-	//? set a maximum value (so that it doesn't exceed system limits)
 }
 
 ServerBlock::~ServerBlock(void) {}
@@ -207,9 +204,6 @@ ServerBlock::~ServerBlock(void) {}
 
 void LocationBlock::parseRoot(vector<ConfigToken> val)
 {
-	//todo only one argument ✅
-	//todo starts with / (but nginx doesnt throw an error when it is not)
-	//? so does that cause error at the execution?
 
 	if (val.size() != 1 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"root\" directive in ") + _filepath + ":" + itostr(val[0].line));
@@ -218,9 +212,6 @@ void LocationBlock::parseRoot(vector<ConfigToken> val)
 
 void LocationBlock::parseAlias(vector<ConfigToken> val)
 {
-	//todo only one argument ✅
-	//todo starts with / (but nginx doesnt throw an error when it is not)
-	//? so does that cause error at the execution?
 
 	if (val.size() != 1 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"alias\" directive in ") + _filepath + ":" + itostr(val[0].line));
@@ -247,7 +238,6 @@ void LocationBlock::parseMethods(vector<ConfigToken> val)
 
 void LocationBlock::parseDirectoryListing(vector<ConfigToken> val)
 {
-	//! is triggered only if no index_file is found
 	string	auto_index("\"auto_index\" directive ");
 
 	if (val.size() != 1 || val[0].token.empty() == true)
@@ -263,7 +253,7 @@ void LocationBlock::parseIndexFile(vector<ConfigToken> val)
 {
 	if (val.size() < 1 || val[0].token.empty() == true)
 		throw runtime_error(INVALID_NUMBER_OF_ARGUMENTS_IN + string("\"index_file\" directive ") + _filepath + ":" + itostr(val[0].line));
-	_config->index_file.resize(0); //! just for testing purposes
+	_config->index_file.resize(0);
 	for (size_t i = 0; i < val.size(); i++)
 		_config->index_file.push_back(val[i].token);
 }
@@ -283,8 +273,6 @@ void LocationBlock::parseUploadDir(vector<ConfigToken> val)
 
 }
 
-//TODO when there is no return code, 302 is assumed
-//? Store error code somewhere?
 void LocationBlock::parseReturn(vector<ConfigToken> val)
 {
 	if (val.size() == 0 || val.size() > 2 || val[0].token.empty() == true)

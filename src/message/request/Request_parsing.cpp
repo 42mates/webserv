@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 15:38:37 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,20 +104,13 @@ void Request::parseBody(string body)
 
 void Request::parseRequest(string request_chunk)
 {
-	//cerr << (_parsingcalls++ == 0 ? "\n" : "");
-	//cerr << BLUE << "parsing call [" << _parsingcalls << "]" << NC << endl;
-	
-	_raw_request += request_chunk;
 
-	//TODO: check if _raw_request is too large
-	//if (_raw_request.size() > _conf.max_body_size)
-	//	throw ResponseException(Response("413"), "request body too large");
-	//cout << "new size of _raw_request: " << _raw_request.size() << endl;
+	_raw_request += request_chunk;
 
 	setIsCompleteRequest();
 
-	//if (_raw_request.substr(0, 10).find("GET") == string::npos) // debug: avoid printing GET requests
-		this->printRaw(); //! debug to see recv() results
+	//if (_raw_request.substr(0, 10).find("GET") == string::npos) // avoid printing GET requests
+		//this->printRaw(); //! debug to see recv() results
 	
 	if (!_header_parsed && isCompleteHeader(_raw_request))
 		parseHeader(_raw_request);

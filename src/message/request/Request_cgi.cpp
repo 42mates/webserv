@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 10:33:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/25 16:04:17 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ char**	Request::initEnv()
 
 string	executeScript(char **args, char **env)
 {
-	cout << "Executing script " << args[1] << endl;
+	access_log << "Executing script " << args[1] << endl;
 	int pipefd[2];
 	if (pipe(pipefd) == -1)
 		throw ResponseException(Response("500"), "Pipe creation failed");
@@ -63,7 +63,7 @@ string	executeScript(char **args, char **env)
 
 		if (execve(args[0], args, env) == -1)
 		{
-			cout << "execve failed on \"" << args[0] << "\": " << strerror(errno) << endl;
+			error_log << "execve failed on \"" << args[0] << "\": " << strerror(errno) << endl;
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -133,7 +133,7 @@ Response Request::handle_cgi()
 	}
 	catch(const ResponseException& e)
 	{
-		cerr << "debug: handle_cgi(): " << e.what() << endl;
+		error_log << "handle_cgi(): " << e.what() << endl;
 		response = e.getResponse();
 	}
 

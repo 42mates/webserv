@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:50:23 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/26 21:38:06 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:42:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	clientPollIn(SocketPollInfo poll_info, SocketManager& manager, SocketPollMa
 {
 	ServerConfig*	server = &manager.getPortInfo(poll_info.port)->servers.at(0);
 	poll_manager.clientRecv(poll_info, *server);
-}//todo add findbestserver here
+}
 
 /**
  * @brief Handles the POLLOUT event for a client socket.

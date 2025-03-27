@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:37:29 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/17 15:47:27 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 16:46:32 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ vector<ServerConfig*>* Config::getServers()
 
 ServerConfig* Config::getBestServer(const string &host, int port, const string &server_name)
 {
-	cout << "getBestServer(): " << host << ":" << port << " (" << server_name << ")" << endl;
 	for (size_t i = 0; i < _servers.size(); i++)
 	{
 		if (_servers[i]->host == host && _servers[i]->port == port)

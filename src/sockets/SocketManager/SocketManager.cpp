@@ -6,21 +6,11 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/27 15:28:41 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:21:59 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SocketManager.hpp"
-
-
-/*
-for one port having a vector of servers
-get headeerValue with host for having domain and port
-then find ServerConfig
-then use function
-if no associated ServerConfig
-then use first ServerConfig in vector
-*/
 
 /**
  * @file SocketManager.cpp
@@ -50,13 +40,14 @@ SocketManager::SocketManager(const vector <ServerConfig*>* servers) : _poll_mana
 			_ops.bindSocket(_ports_info[port], port);
 			_ops.listenSocket(_ports_info[port]);
 			storeSocket(port, _ports_info[port].server_fd, (POLLIN | POLLERR | POLLHUP), SERVER_SOCKET, NULL);
-			// _ports_info[port].servers = servers;
 		}
-		catch(exception& e) { cout << e.what() << endl; }
+		catch (const std::exception& e) 
+		{ 
+			error_log << "Error while setting up server socket for port " << servers->at(i)->port << ": " << e.what() << std::endl;
+		}
 	}
 }
 
-//!PULL BEFORE
 /**
  * @brief Ensures that all client and server sockets are closed for each port 
  * managed by the SocketManager, as well as for each instance in the _poll_fds vector.

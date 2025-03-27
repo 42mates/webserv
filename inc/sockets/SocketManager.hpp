@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketManager.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 12:53:28 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/26 15:23:13 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:42:46 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,6 @@
 #include "SocketOperations.hpp"
 #include "SocketPollManager.hpp"
 #include <sys/time.h>
-
-
-//! Should multiple servers listen on the same port ?
-//! CAREFUL : Since _poll_manager need access to data stored in SocketManager, said data need
-//! to be initialized first of all. Should be ok since c++ initiliaze data in the order they appear
-//! in the class, but it still needs testing
-
 
 /**
  * @brief Manages socket operations and polling for multiple servers.

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 18:19:55 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/27 16:03:32 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 17:01:44 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,6 @@ void	SocketPollManager::prepareSend(t_sockfd socket_fd, size_t& len_sent, Respon
 		host = infos.substr(0, index);
 		port = infos.substr(index + 1);
 		index = findBestServer(servers, host, port);
-		// cout << "index " << CYAN << index << BBLUE << ' ' << host << NC << ":" << BBLUE << port << NC << endl;
-		// printServerNames(servers[index]);
 	}
 
 	if (it == _socket_to_response.end())
