@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 14:03:38 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 15:38:37 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void Request::parseRequest(string request_chunk)
 	setIsCompleteRequest();
 
 	//if (_raw_request.substr(0, 10).find("GET") == string::npos) // debug: avoid printing GET requests
-	//	this->printRaw(); //! debug to see recv() results
+		this->printRaw(); //! debug to see recv() results
 	
 	if (!_header_parsed && isCompleteHeader(_raw_request))
 		parseHeader(_raw_request);
@@ -127,7 +127,7 @@ void Request::parseRequest(string request_chunk)
 		throw ContinueException();
 		_header["expect"] = "";
 	}
-	
+
 	setIsCompleteRequest();
 	if (_method != "GET" || _method != "HEAD")
 	{

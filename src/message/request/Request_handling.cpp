@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 14:07:59 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 15:38:33 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,8 @@ Response Request::handleRequest(ServerConfig &server_conf)
 {
 	Response response;
 
-	if (_method != "GET") // debug (avoiding GET printing)
-		this->print(); //!leave this line for debugging purposes during correction
+	//if (_method != "GET") // debug (avoiding GET printing)
+		//this->print(); //!leave this line for debugging purposes during correction
 
 	try
 	{

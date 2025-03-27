@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:30:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/17 14:55:50 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 15:28:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,6 @@ void Request::setIsCompleteRequest()
 			_is_complete_request = true;
 	}
 
-	//! in case of a POST request, the content-length header is mandatory
-	//? where should we place the catch ?
 	if (_header["content-length"].empty() && _header["transfer-encoding"] != "chunked")
 		throw ResponseException(Response("411"), "missing required header field \"Content-Length\"");
 }

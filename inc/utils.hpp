@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:33:23 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/26 22:53:14 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/27 15:28:25 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,6 @@ vector< pair<string, string> > decodeURL(string body);
 
 bool	isTimeOutReached(timeval& start, timeval& end, size_t timeout);
 size_t	findBestServer(vector<ServerConfig>& servers, const string host, const string port);
-
-// CGI
-
-Response handle_cgi(string path, string query); //? to delete
-
 
 // CONFIG_PRINT.CPP
 

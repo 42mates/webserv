@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/27 14:42:56 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/27 15:28:41 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@ then use first ServerConfig in vector
  * structure. The destructor ensures that all sockets are properly closed.
  */
  
-
-//? Can there be multiple ServerConfig on one given port ?
 /**
  * @brief Generates a server socket and its informations for each ports given as a parameter.
  */

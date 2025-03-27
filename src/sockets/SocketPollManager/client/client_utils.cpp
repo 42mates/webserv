@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_utils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 18:19:55 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/27 01:12:42 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:03:32 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,11 +275,8 @@ size_t	findBestServer(vector<ServerConfig>& servers, const string host, const st
 		for (size_t j = 0; j < servers[i].server_names.size(); j++)
 		{
 			if (servers[i].server_names[j] == host && servers[i].port == atoi(port.c_str()))
-			{
-				cout << CYAN << servers[i].server_names[j] << " " << servers[i].port << NC << endl;
 				return i;
-			}
 		}
 	}
-	return 0; //? can webserv be launched if no servers ?
+	return 0;
 }
