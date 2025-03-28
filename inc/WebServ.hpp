@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebServ.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:45:48 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 15:30:24 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/28 18:17:39 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class WebServ
 	private:
 		Config 						_conf;
 		vector<pollfd>* 			_poll_fds;
-		map<t_sockfd, Request>*		_socket_to_request;
+		map<t_sockfd, Request*>*		_socket_to_request;
 		
 		void	setVariables(SocketManager& manager);
 		int		checkForEvents();

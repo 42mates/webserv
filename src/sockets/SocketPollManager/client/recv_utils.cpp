@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 18:19:55 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/28 17:16:26 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:41:45 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,21 +26,23 @@
  * @param request A reference to the variable to store the Request object.
  * @param start A reference to the timeval structure to store the start time.
  */
-void	SocketPollManager::prepareRecv(t_sockfd socket_fd, size_t& b_read, size_t& c_max_size, vector<ServerConfig>& servers, Request& request, timeval& start)
+void	SocketPollManager::prepareRecv(t_sockfd socket_fd, size_t& b_read, size_t& c_max_size, vector<ServerConfig>& servers, Request*& request, timeval& start)
 {
-	map<t_sockfd, Request>::iterator it = _socket_to_request.find(socket_fd);
+	map<t_sockfd, Request*>::iterator it = _socket_to_request.find(socket_fd);
 
 	if (it == _socket_to_request.end())
 	{
 		gettimeofday(&start, NULL);
+		request = new Request();
+		_socket_to_request[socket_fd] = request;
 		return ;
 	}
 
-	ssize_t	index = findBestServer(servers, it->second, false);
+	ssize_t	index = findBestServer(servers, *it->second, false);
 	if (index != -1)
 		c_max_size = servers[index].client_max_body_size;
-	b_read = it->second.getRawRequest().size();
-	request = it->second;
+	b_read = it->second->getRawRequest().size();
+	request = it->second; 
 	gettimeofday(&start, NULL);
 }
 
@@ -161,9 +163,12 @@ void	SocketPollManager::checkRequestTimeout(timeval& start, timeval& end)
 void	SocketPollManager::recvError(t_sockfd socket_fd, int& status, Request& request)
 {
 	if (status == BLOCKING_OPERATION)
-		_socket_to_request[socket_fd] = request;
+		_socket_to_request[socket_fd] = &request;
 	else
+	{
+		delete &request;
 		throw ResponseException(Response("500"), strerror(status));
+	}
 }
 
 

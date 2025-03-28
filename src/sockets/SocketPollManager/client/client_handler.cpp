@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/28 17:15:18 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:43:06 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, vector <ServerConfi
 	size_t		client_max_body_size = DEFAULT_MAX_BODY_SIZE;
 	bool		size_set_to_default = true;
 	ssize_t		ret;
-	Request		request;
+	Request		*request;
 	size_t		total_bytes_read = 0;
 	timeval		start, end;
 
@@ -89,17 +89,17 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, vector <ServerConfi
 		checkRequestTimeout(start, end);
 		int status = 0;
 		ret = readOneChunk(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read, status);
-		findClientMaxBodySize(servers, request, size_set_to_default, client_max_body_size);
+		findClientMaxBodySize(servers, *request, size_set_to_default, client_max_body_size);
 		if (ret < 0)
 		{;
 			checkIfRequestTooLarge(total_bytes_read, 0, client_max_body_size);
-			return recvError(poll_info.pfd.fd, status, request);
+			return recvError(poll_info.pfd.fd, status, *request);
 		}
 		if (ret == 0)
 			break ;
 		try
 		{ 
-			request.parseRequest(raw_request);
+			request->parseRequest(raw_request);
 			// if (request.getBodySize() > client_max_body_size) //
 			// 	throw ResponseException(Response("413"), "Request Entity Too Large");//TODO test me
 		}
@@ -110,8 +110,8 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, vector <ServerConfi
 			continue ;
 		}
 	}
-	request.setIsCompleteRequest(true);
-	_socket_to_request[poll_info.pfd.fd] = request;
+	request->setIsCompleteRequest(true);
+	// _socket_to_request[poll_info.pfd.fd] = request;
 
 }
 

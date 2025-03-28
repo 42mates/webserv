@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:40:43 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/28 16:41:59 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:40:55 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ private:
 		vector<pollfd>					*_poll_fds;
 		map<t_sockfd, SocketPollInfo>	*_socket_to_poll;
 
-		map<t_sockfd, Request>			_socket_to_request;
+		map<t_sockfd, Request*>			_socket_to_request;
 		map<t_sockfd, infoResponse>		_socket_to_response;
 
 public:
@@ -62,7 +62,7 @@ public:
 		
 												//--> utils
 		
-		void	prepareRecv(t_sockfd socket_fd, size_t& b_read, size_t& c_max_size, vector<ServerConfig>& servers, Request& request, timeval& start);
+		void	prepareRecv(t_sockfd socket_fd, size_t& b_read, size_t& c_max_size, vector<ServerConfig>& servers, Request*& request, timeval& start);
 		void	prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, vector<ServerConfig>& servers);
 		
 		ssize_t	readOneChunk(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, size_t& total_bytes_read, int& status);
@@ -83,7 +83,7 @@ public:
 								/* GETTERS */
 		
 		SocketPollInfo					getSocketInfo(pollfd pfd);
-		map<t_sockfd, Request>*			getSocketToRequest( void );
+		map<t_sockfd, Request*>*			getSocketToRequest( void );
 		map<t_sockfd, infoResponse>*	getSocketToResponse( void ); 
 
 

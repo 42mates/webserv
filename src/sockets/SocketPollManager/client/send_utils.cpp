@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 16:56:24 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/28 16:57:07 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:16:33 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,12 @@
 void	SocketPollManager::prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, vector <ServerConfig>& servers)
 {
 	map<t_sockfd, infoResponse>::iterator it = _socket_to_response.find(socket_fd);
-	ssize_t index = findBestServer(servers, _socket_to_request[socket_fd], true);
+	ssize_t index = findBestServer(servers, *_socket_to_request[socket_fd], true);
 
 	if (it == _socket_to_response.end())
 	{
 		gettimeofday(&start, NULL);
-		response = _socket_to_request[socket_fd].handleRequest(servers[index]);
+		response = _socket_to_request[socket_fd]->handleRequest(servers[index]);
 		return ;
 	}
 

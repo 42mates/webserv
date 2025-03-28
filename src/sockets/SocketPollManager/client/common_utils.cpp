@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 17:02:23 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/28 17:16:33 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:17:11 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ bool	SocketPollManager::isMessageEnd(t_sockfd socket_fd, __int8_t type)
 {
 	if (type == T_REQUEST)
 	{
-		map<t_sockfd, Request>::iterator it = _socket_to_request.find(socket_fd);
+		map<t_sockfd, Request*>::iterator it = _socket_to_request.find(socket_fd);
 		if (it == _socket_to_request.end())
 			return false;
-		if (it->second.getIsCompleteRequest() == true)
+		if (it->second->getIsCompleteRequest() == true)
 			return true;
 		return false;
 	}

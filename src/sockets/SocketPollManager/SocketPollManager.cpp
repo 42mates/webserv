@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:52:39 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/28 17:02:11 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:27:27 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,13 @@ SocketPollManager::SocketPollManager(SocketManager& manager)
 }
 
 
-SocketPollManager::~SocketPollManager() {}
+SocketPollManager::~SocketPollManager()
+{
+		for (map<t_sockfd, Request*>::iterator it = _socket_to_request.begin(); it != _socket_to_request.end(); it++)
+		{
+			delete it->second;
+		}
+}
 
 /**
  * @brief Retrieves the socket information for a given poll file descriptor.
@@ -60,7 +66,7 @@ SocketPollInfo	SocketPollManager::getSocketInfo(pollfd pfd)
  *
  * @return A pointer to the map of socket file descriptors to Request objects.
  */
-map<t_sockfd, Request>*	SocketPollManager::getSocketToRequest() 
+map<t_sockfd, Request*>*	SocketPollManager::getSocketToRequest() 
 {
 	return &_socket_to_request;
 }
@@ -88,6 +94,11 @@ map<t_sockfd, infoResponse>*	SocketPollManager::getSocketToResponse()
  */
 void	SocketPollManager::removeSocket(t_sockfd socket_fd)
 {
-	_socket_to_response.erase(socket_fd);
+	map<t_sockfd, Request*>::iterator it = _socket_to_request.find(socket_fd);
+	if (it != _socket_to_request.end())
+	{
+		delete it->second;
+		_socket_to_request.erase(it);
+	}
 	_socket_to_request.erase(socket_fd);
 }
