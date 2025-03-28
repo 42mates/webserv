@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:40:43 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/26 21:52:24 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/28 16:41:59 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,11 @@ public:
 		ssize_t	clientSend(SocketPollInfo& poll_info, Response& response);
 		ssize_t	clientSend(SocketPollInfo& poll_info, SocketManager& manager, vector<ServerConfig>& servers);
 		
-		void	clientRecv(SocketPollInfo poll_info, ServerConfig& server);
+		void	clientRecv(SocketPollInfo poll_info, vector <ServerConfig>& servers);
 		
 												//--> utils
 		
-		void	prepareRecv(t_sockfd socket_fd, size_t& total_bytes_read, Request& request, timeval& start);
+		void	prepareRecv(t_sockfd socket_fd, size_t& b_read, size_t& c_max_size, vector<ServerConfig>& servers, Request& request, timeval& start);
 		void	prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, vector<ServerConfig>& servers);
 		
 		ssize_t	readOneChunk(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, size_t& total_bytes_read, int& status);
@@ -93,7 +93,8 @@ public:
 };
 
 bool	keepConnectionOpen(Response& r);
-
+int		checkSocketStatus(t_sockfd socket_fd);
+void	checkIfRequestTooLarge(size_t& total_bytes_read, ssize_t bytes_to_read, size_t& limit);
 /**
  * @brief This structure holds a `Response` object and the length of the data it sent (`len_sent`) to the client.
  *
@@ -121,7 +122,6 @@ struct eventHandler
 };
 
 
-int		checkSocketStatus(t_sockfd socket_fd);
 
 
 void	serverPollIn(SocketPollInfo poll_info, SocketManager& manager, SocketPollManager& poll_manager);

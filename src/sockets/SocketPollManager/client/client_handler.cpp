@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/28 17:15:18 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 	}
 }
 
-
 /**
  * @brief Receives data from the client.
  * 
@@ -74,28 +73,35 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
  * @param poll_info The poll information containing the file descriptor and events.
  * @param server Reference to the ServerConfig instance.
  */
-void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& server)
+void	SocketPollManager::clientRecv(SocketPollInfo poll_info, vector <ServerConfig>& servers)
 {
 	string		raw_request;
-	size_t		client_max_body_size = server.client_max_body_size;
-	ssize_t		ret = 1;
+	size_t		client_max_body_size = DEFAULT_MAX_BODY_SIZE;
+	bool		size_set_to_default = true;
+	ssize_t		ret;
 	Request		request;
 	size_t		total_bytes_read = 0;
 	timeval		start, end;
 
-	prepareRecv(poll_info.pfd.fd, total_bytes_read, request, start);
-	while (total_bytes_read <= client_max_body_size && ret)
+	prepareRecv(poll_info.pfd.fd, total_bytes_read, client_max_body_size, servers, request, start);
+	while (total_bytes_read <= client_max_body_size)
 	{
 		checkRequestTimeout(start, end);
 		int status = 0;
 		ret = readOneChunk(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read, status);
+		findClientMaxBodySize(servers, request, size_set_to_default, client_max_body_size);
 		if (ret < 0)
+		{;
+			checkIfRequestTooLarge(total_bytes_read, 0, client_max_body_size);
 			return recvError(poll_info.pfd.fd, status, request);
+		}
 		if (ret == 0)
 			break ;
 		try
 		{ 
 			request.parseRequest(raw_request);
+			// if (request.getBodySize() > client_max_body_size) //
+			// 	throw ResponseException(Response("413"), "Request Entity Too Large");//TODO test me
 		}
 		catch (ContinueException& e_continue)
 		{
@@ -104,8 +110,7 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, ServerConfig& serve
 			continue ;
 		}
 	}
-	if (ret == 0)
-		request.setIsCompleteRequest(true);
+	request.setIsCompleteRequest(true);
 	_socket_to_request[poll_info.pfd.fd] = request;
 
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 15:33:23 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 15:28:25 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/28 16:00:30 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 struct ServerConfig;
 struct RouteConfig;
 class Response;
+class Request;
 
 // UTILS.CPP
 
@@ -30,7 +31,8 @@ vector< pair<string, string> > decodeURL(string body);
 // CLIENT_UTILS.CPP
 
 bool	isTimeOutReached(timeval& start, timeval& end, size_t timeout);
-size_t	findBestServer(vector<ServerConfig>& servers, const string host, const string port);
+ssize_t	findBestServer(vector<ServerConfig>& servers, Request& request, bool reading_operation);
+void	findClientMaxBodySize(vector<ServerConfig>& servers, Request& request, bool& size_set_to_default, size_t& c_mbs);
 
 // CONFIG_PRINT.CPP
 
