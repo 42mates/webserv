@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 13:59:59 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/13 12:41:46 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/28 17:07:11 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,17 +70,17 @@ void Request::printBody(string &body)
 
 void Request::print()
 {
-	cout << YELLOW << "------PARSED REQUEST [" << BYELLOW << _id << YELLOW << "]------" << NC << endl;
+	cout << YELLOW << "------PARSED REQUEST------" << NC << endl;
 	printStartLine();
 	printHeader();
 	cout << BYELLOW << "\\r\\n" << NC << endl;
 	printBody();
-	cout << YELLOW << "----------------------------------" << NC << endl;
+	cout << YELLOW << "--------------------------" << NC << endl;
 }
 
 void Request::printRaw()
 {
-	cout << RED << "------RAW REQUEST [" << BRED << _id << RED << "]------" << NC << endl;
+	cout << RED << "------RAW REQUEST------" << NC << endl;
 
 	size_t i = 0;
 	for (; i < _raw_request.size(); ++i) 
@@ -95,5 +95,5 @@ void Request::printRaw()
 	if (--i == _raw_request.size() - 1 && _raw_request[i] != '\n')
 		cout << BRED << "%\n" << NC;
 	
-	cout << RED <<   "-------------------------------" << NC << endl;
+	cout << RED << "-----------------------" << NC << endl;
 }

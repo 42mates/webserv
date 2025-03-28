@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/28 17:56:31 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,24 +81,30 @@ void Request::parseHeader(string raw_request)
 	else
 		_start += 2;
 	_header_parsed = true;
+
+	if (_header["expect"] == "100-continue")
+	{
+		_header["expect"] = "";
+		throw ContinueException();
+	}
 }
 
-void Request::parseBody(string body)
+void Request::parseBody(string request_chunk)
 {
-	if (body.empty())
+	if (request_chunk.empty())
 		return;
 
-	if ( _header["transfer-encoding"] == "chunked")
-		_body = decodeChunked(body);
+	if (_header["transfer-encoding"] == "chunked")
+		decodeChunked(request_chunk);
 	else if (!_header["transfer-encoding"].empty()
 		&& _header["transfer-encoding"] != "identity")
 		throw ResponseException(Response("501"), "transfer-encoding value \"" + _header["transfer-encoding"] + "\" not supported"); 
 	else
 	{
 		if (!_header["content-length"].empty()
-			&& body.size() != strtoul(_header["content-length"].c_str(), NULL, 10))
-			throw ResponseException(Response("400"), "invalid content-length (expected: " + _header["content-length"] + ", got: " + itostr(body.size()) + ")");
-		_body += body;
+			&& request_chunk.size() != strtoul(_header["content-length"].c_str(), NULL, 10))
+			throw ResponseException(Response("400"), "invalid content-length (expected: " + _header["content-length"] + ", got: " + itostr(request_chunk.size()) + ")");
+		_body_stream << request_chunk;
 	}
 }
 
@@ -107,29 +113,33 @@ void Request::parseRequest(string request_chunk)
 
 	_raw_request += request_chunk;
 
-	setIsCompleteRequest();
+	//setIsCompleteRequest();
 
 	//if (_raw_request.substr(0, 10).find("GET") == string::npos) // avoid printing GET requests
 		//this->printRaw(); //! debug to see recv() results
-	
+
 	if (!_header_parsed && isCompleteHeader(_raw_request))
-		parseHeader(_raw_request);
-
-	if (_header_parsed && _header["expect"] == "100-continue")
 	{
-		throw ContinueException();
-		_header["expect"] = "";
+		parseHeader(_raw_request);
+		if (_method == "GET" || _method == "HEAD")
+			_is_complete_request = true;
+		_raw_body = _raw_request.substr(_start);
 	}
+	else
+		_raw_body += request_chunk;
 
-	setIsCompleteRequest();
+	//setIsCompleteRequest();
+
 	if (_method != "GET" || _method != "HEAD")
 	{
 		if (_header["content-length"].empty() 
-			&& !_header["transfer-encoding"].empty()
-			&& _header["transfer-encoding"] != "chunked")
+		&& !_header["transfer-encoding"].empty()
+		&& _header["transfer-encoding"] != "chunked")
 			throw ResponseException(Response("411"), "missing content-length header");
 
-		if (_is_complete_request)
-			parseBody(_raw_request.substr(_start));
+		if (_header_parsed)
+			parseBody(_raw_body);
+		//if (_is_complete_request)
+			
 	}
 }

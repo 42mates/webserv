@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/18 14:33:20 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/28 18:03:24 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,20 +192,58 @@ Request::Request() :
 	_method(""),
 	_uri(""),
 	_version(""),
+	_query(""),
+	_body(""),
+	_path(""),
+	_body_size(0),
 	_is_complete_request(false),
+	_raw_request(""),
+	_raw_body(""),
+	_start(0),
 	_header_parsed(false),
-	_start(0)
+	_body_filename(""),
+	_body_stream(NULL)
 {
-	srand(time(0)); // debug
-	_id = rand(); // debug
-	_parsingcalls = 0; // debug
-
 	initHeaderFields();
 	initMethodHandling();
+
+	// Create a temporary file for the request body
+	char body_filename[] = "/tmp/request_temp_XXXXXX";
+	int fd = mkstemp(body_filename);
+	if (fd == -1)
+		throw runtime_error("Failed to create temporary file");
+	_body_filename = body_filename;
+
+	// Open the file stream for writing
+	_body_stream.open(_body_filename.c_str(), ios::out | ios::in | ios::trunc);
+	close(fd);
+	if (!_body_stream.is_open())
+		throw runtime_error("Failed to open temporary file stream");
 }
 
+Request::~Request()
+{
+	// Close the file stream and remove the temporary file
+	if (_body_stream.is_open())
+	{
+		_body_stream.close();
+	}
+	if (!_body_filename.empty())
+	{
+		remove(_body_filename.c_str());
+	}
+}
 
 /************ GETTERS ************/
+
+size_t Request::getBodySize()
+{
+	struct stat file_stat;
+	if (stat(_body_filename.c_str(), &file_stat) == 0)
+		return file_stat.st_size;
+	else
+		throw runtime_error("Failed to retrieve file size");
+}
 
 string Request::getHeaderValue(string value)
 {
@@ -227,6 +265,8 @@ bool	Request::getIsCompleteRequest()
 	return _is_complete_request;
 }
 
+
+/************ SETTERS ************/
 	
 void	Request::setIsCompleteRequest(bool val)
 {

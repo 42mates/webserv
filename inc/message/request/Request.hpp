@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 13:57:08 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/28 18:01:36 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ class Request
 		string	_query;
 		string	_body;
 		string	_path;
+		size_t	_body_size;
+		bool	_is_complete_request;
 		
 		// INITIALIZATION METHODS
 		void	initHeaderFields();
@@ -37,20 +39,17 @@ class Request
 		
 		// PARSING
 		string	_raw_request;
-		bool	_is_complete_request;
-		bool	_header_parsed;
+		string	_raw_body;
 		size_t	_start;
+		bool	_header_parsed;
+		string	_body_filename;
+		fstream _body_stream;
+		bool	isCompleteHeader(string raw_request);
 		void	parseStartLine(string start_line);
 		void	parseHeaderLine(string header_line);
 		void	parseHeader(string header_line);
+		void	decodeChunked(string body);
 		void	parseBody(string body);
-		
-		//STATUS
-		bool	isCompleteHeader(string raw_request);
-		
-		// CHUNKED DECODING
-		bool	_chunked_complete;
-		string	decodeChunked(string body);
 
 		// CHECKS
 		void	checkStartLine();
@@ -74,12 +73,15 @@ class Request
 
 	public:
 		Request();
-		virtual ~Request() {}
+		Request(Request &src);
+		Request &operator=(Request &src);
+		virtual ~Request();
 
 		void		parseRequest(string raw_request);
 		Response	handleRequest(ServerConfig &server_config);
 
 		// GETTERS
+		size_t		getBodySize();
 		string		getHeaderValue(string value);
 		string		getConnectionKeepAlive();
 		string		getRawRequest();
@@ -90,8 +92,6 @@ class Request
 		void		setIsCompleteRequest(bool val);
 		
 		// TESTING
-		int			_id; //debug
-		int			_parsingcalls; //debug
 		void		printStartLine();
 		void		printHeader();
 		void		printBody();

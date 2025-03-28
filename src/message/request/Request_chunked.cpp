@@ -6,59 +6,93 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 15:34:19 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/17 15:10:20 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/28 18:01:58 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-static size_t getChunkSize(string body)
+/**
+ * @brief Exception class for throwing Response objects.
+ */
+class ChunkedException : public exception
 {
-	size_t end = body.find(CRLF);
-	if (end == string::npos || end == 0)
-		throw ResponseException(Response("400"), "no chunk size");
+	private:
+		string _debug;
+	public:
+		ChunkedException( string debug) : _debug(debug) {}
+		~ChunkedException() throw() {}
 
-	string expression = body.substr(0, end);
+		const char *what() const throw() { return _debug.c_str(); }
+};
+
+
+static size_t getChunkSize(string str)
+{
+	size_t end = str.find(CRLF);
+	if (end == string::npos || end == 0)
+		throw ChunkedException("no chunk size");
+
+	string expression = str.substr(0, end);
 
 	transform(expression.begin(), expression.end(), expression.begin(), ::tolower);
 	for (string::iterator it = expression.begin(); it != expression.end(); ++it)
 	{
 		if (!::isxdigit(*it))
-			throw ResponseException(Response("400"), "not hex digit in chunk size");
+			throw ChunkedException("not hex digit in chunk size");
 	}
-	
+
 	size_t chunk_size = strtol(expression.c_str(), NULL, 16);
 	if (chunk_size < 0)
-		throw ResponseException(Response("400"), "negative chunk size");
+		throw ChunkedException("negative chunk size");
 
 	return chunk_size;
 }
 
-string Request::decodeChunked(string body)
+string decodeOneChunk(string str)
 {
-	string decoded;
+	string decoded = "";
 	size_t pos = 0;
 	size_t chunk_size;
-	string chunk;
 
-	// remove any data after the last chunk
-	body.erase(body.find("0\r\n\r\n") + 5);
+	chunk_size = getChunkSize(str);
+	if (chunk_size == 0)
+		return decoded;
 
-	while (pos < body.size())
-	{
-		chunk_size = getChunkSize(body.substr(pos));
-		if (chunk_size == 0)
-			break;
+	pos = str.find(CRLF) + 2;
+	if (pos == string::npos)
+		throw ChunkedException("no end of chunk size");
+	else if (pos + chunk_size > str.size())
+		throw ChunkedException("too large chunk size");
+	else if (str.substr(pos + chunk_size, 2) != CRLF)
+		throw ChunkedException("no CRLF at the end of the chunk");
 
-		pos = body.find(CRLF, pos) + 2;
-		if (pos == string::npos)
-			throw ResponseException(Response("400"), "no end of chunk size");
-		else if (chunk_size + pos > body.size())
-			throw ResponseException(Response("400"), "too large chunk size");
-
-		chunk = body.substr(pos, chunk_size);
-		decoded += chunk;
-		pos += chunk_size + 2;
-	}
+	decoded = str.substr(pos, chunk_size);
 	return decoded;
+}
+
+void Request::decodeChunked(string chunk)
+{
+	size_t pos = 0;
+	string decoded;
+
+	while (pos < chunk.size())
+	{
+		try
+		{
+			decoded = decodeOneChunk(chunk.substr(pos));
+			if (decoded.empty())
+			{
+				_is_complete_request = true;
+				return ;
+			}
+			pos += chunk.find(CRLF, pos) + 2 + decoded.size() + 2;
+			_body_stream << decoded;
+			_raw_body = chunk.substr(pos);
+		}
+		catch(const ChunkedException& e)
+		{
+			cerr << "Chunked: " <<  e.what() << endl;
+		}
+	}
 }
