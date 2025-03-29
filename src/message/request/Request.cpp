@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/28 18:03:24 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/29 16:30:19 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,8 +201,7 @@ Request::Request() :
 	_raw_body(""),
 	_start(0),
 	_header_parsed(false),
-	_body_filename(""),
-	_body_stream(NULL)
+	_body_filename("")
 {
 	initHeaderFields();
 	initMethodHandling();
@@ -228,21 +227,32 @@ Request::~Request()
 	{
 		_body_stream.close();
 	}
-	if (!_body_filename.empty())
-	{
-		remove(_body_filename.c_str());
-	}
+	//if (!_body_filename.empty())
+	//{
+	//	remove(_body_filename.c_str());
+	//}
 }
 
 /************ GETTERS ************/
 
 size_t Request::getBodySize()
 {
-	struct stat file_stat;
-	if (stat(_body_filename.c_str(), &file_stat) == 0)
-		return file_stat.st_size;
-	else
-		throw runtime_error("Failed to retrieve file size");
+	return _body_stream.tellg();
+}
+
+string Request::getBodyString()
+{
+	string body;
+	try
+	{
+		_body_stream.seekg(0, ios::beg);
+		body.assign(istreambuf_iterator<char>(_body_stream), istreambuf_iterator<char>());
+	} 
+	catch (const exception &e) 
+	{
+		throw ResponseException(Response("500"), "Failed to assign body string: " + string(e.what()));
+	}
+	return body;
 }
 
 string Request::getHeaderValue(string value)

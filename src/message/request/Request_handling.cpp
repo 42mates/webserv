@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 17:09:46 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/29 17:09:48 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,10 @@ string Request::getFilePath(const string &path)
 				throw ResponseException(Response("403"), "getFilePath(): access denied to file " + paths[i]);
 		}
 	}
-	throw ResponseException(Response("404"), "getFilePath(): could not find file " + path);	
+	struct stat buffer;
+	if (stat(path.c_str(), &buffer) == 0 && S_ISDIR(buffer.st_mode))
+		throw ResponseException(Response("404"), "getFilePath(): path \"" + path + "\" is a directory");
+	throw ResponseException(Response("404"), "getFilePath(): could not find file \"" + path + "\"");	
 }
 
 Response Request::handleRequest(ServerConfig &server_conf)
@@ -88,7 +91,7 @@ Response Request::handleRequest(ServerConfig &server_conf)
 
 	//if (_method != "GET") // debug (avoiding GET printing)
 		//this->print(); //!leave this line for debugging purposes during correction
-
+	
 	try
 	{
 		if (!_is_complete_request)
@@ -100,6 +103,8 @@ Response Request::handleRequest(ServerConfig &server_conf)
 		
 		checkMethod();
 		checkHeader();
+
+
 
 		if (_uri.size() >= 3 && _uri.substr(_uri.size() - 3) == ".py") // if file is cgi
 			response =  handle_cgi();

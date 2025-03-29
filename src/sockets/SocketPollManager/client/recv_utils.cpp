@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   recv_utils.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 18:19:55 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/28 18:41:45 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/29 18:17:13 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ ssize_t	SocketPollManager::readOneChunk(t_sockfd socket_fd, string& raw_request,
 	ssize_t		bytes_to_read = (client_max_body_size > BUFFER_SIZE ? BUFFER_SIZE : client_max_body_size);
 	ssize_t		bytes_received = 0;
 
-	checkIfRequestTooLarge(total_bytes_read, bytes_to_read, client_max_body_size);
+	//checkIfRequestTooLarge(total_bytes_read, bytes_to_read, client_max_body_size);
 	bytes_received = recv(socket_fd, buffer, bytes_to_read, MSG_DONTWAIT);
 
 	status = checkSocketStatus(socket_fd);
@@ -104,22 +104,11 @@ getBodySize() returns the expected size of the request
 */
 
 
-/**
- * @brief Checks if the total size of the request exceeds the allowed limit.
- *
- * This function verifies whether the sum of the total bytes read so far and the
- * bytes to be read in the current operation exceeds the specified limit. If the
- * limit is exceeded, it throws a ResponseException with a "413 Request Entity Too Large" response.
- *
- * @param total_bytes_read A reference to the total number of bytes read so far.
- * @param bytes_to_read A reference to the number of bytes to be read in the current operation.
- * @param limit A reference to the maximum allowed size of the request in bytes.
- *
- * @throws ResponseException Thrown when the total size of the request exceeds the specified limit.
- */
-void	checkIfRequestTooLarge(size_t& total_bytes_read, ssize_t bytes_to_read, size_t& limit)
+
+/// Checks if the request body size exceeds the specified limit and throws a ResponseException if it does.
+void	checkIfRequestTooLarge(size_t body_size, size_t limit)
 {
-	if (total_bytes_read + bytes_to_read > limit)
+	if (body_size > limit)
 		throw ResponseException(Response("413"), "Request Entity Too Large");
 }
 

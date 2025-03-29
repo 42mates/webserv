@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+         #
+#    By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/18 13:05:21 by mbecker           #+#    #+#              #
-#    Updated: 2025/03/18 13:52:38 by sokaraku         ###   ########.fr        #
+#    Updated: 2025/03/29 13:32:45 by mbecker          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,6 +28,7 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	@echo "$(LYELLOW)Objects successfully compiled in $(YELLOW)$$PWD/obj/$(LYELLOW).$(NC)"
 	@$(CC) $(CFLAG) $(SRC) $(INCLUDES) -o $(NAME)
+	@mkdir -p tools/logs
 	@if [ -f $(NAME) ]; then \
 		echo "$(LGREEN)Created $(GREEN)$(NAME)$(LGREEN).$(NC)" ; \
 	else \

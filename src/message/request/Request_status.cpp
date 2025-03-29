@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:30:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/28 17:26:13 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/29 17:59:27 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,15 +37,16 @@ void Request::setIsCompleteRequest()
 	if (!_header_parsed || _is_complete_request)
 		return ;
 
-	if (_method == "GET" || _method == "HEAD" || _method == "DELETE")
+	if (_header_parsed && (_method == "GET" || _method == "HEAD" || _method == "DELETE"))
 	{
 		_is_complete_request = true;
 		return ;
 	}
 	else if (!_header["content-length"].empty())
 	{
-		string body = _raw_request.substr(_raw_request.find("\r\n\r\n") + 4);
-		if (body.size() >= strtoul(_header["content-length"].c_str(), NULL, 10))
+		if (getBodySize() > strtoul(_header["content-length"].c_str(), NULL, 10))
+			throw ResponseException(Response("400"), "invalid content-length (expected: " + _header["content-length"] + ", got: " + itostr(getBodySize()));
+		else if (getBodySize() == strtoul(_header["content-length"].c_str(), NULL, 10))
 			_is_complete_request = true;
 	}
 

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 15:34:19 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/28 18:01:58 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/29 18:16:41 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,23 +76,23 @@ void Request::decodeChunked(string chunk)
 	size_t pos = 0;
 	string decoded;
 
-	while (pos < chunk.size())
+	try
 	{
-		try
+		while (pos < chunk.size())
 		{
 			decoded = decodeOneChunk(chunk.substr(pos));
+			_body_stream << decoded;
 			if (decoded.empty())
 			{
 				_is_complete_request = true;
 				return ;
 			}
 			pos += chunk.find(CRLF, pos) + 2 + decoded.size() + 2;
-			_body_stream << decoded;
 			_raw_body = chunk.substr(pos);
 		}
-		catch(const ChunkedException& e)
-		{
-			cerr << "Chunked: " <<  e.what() << endl;
-		}
+	}
+	catch(const ChunkedException& e)
+	{
+		cerr << "chunked body size total: " << getBodySize() << "\r" << flush;
 	}
 }

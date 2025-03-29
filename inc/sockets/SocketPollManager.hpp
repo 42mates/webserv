@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketPollManager.hpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:40:43 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/28 18:40:55 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/29 18:02:05 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ public:
 
 bool	keepConnectionOpen(Response& r);
 int		checkSocketStatus(t_sockfd socket_fd);
-void	checkIfRequestTooLarge(size_t& total_bytes_read, ssize_t bytes_to_read, size_t& limit);
+void	checkIfRequestTooLarge(size_t body_size, size_t limit);
 /**
  * @brief This structure holds a `Response` object and the length of the data it sent (`len_sent`) to the client.
  *

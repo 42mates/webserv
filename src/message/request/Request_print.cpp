@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 13:59:59 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/28 17:07:11 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/29 16:15:20 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,4 +96,24 @@ void Request::printRaw()
 		cout << BRED << "%\n" << NC;
 	
 	cout << RED << "-----------------------" << NC << endl;
+}
+
+void Request::printRaw(string str)
+{
+	cout << BLUE << "------RAW STRING------" << NC << endl;
+
+	size_t i = 0;
+	for (; i < str.size(); ++i) 
+	{
+		if (str[i] == '\r')
+			cout << BLUE << "\\r" << NC;
+		else if (str[i] == '\n')
+			cout << BLUE << "\\n" << NC << endl;
+		else
+			cout << str[i];
+	}
+	if (--i == str.size() - 1 && str[i] != '\n')
+		cout << BBLUE << "%\n" << NC;
+	
+	cout << BLUE << "-----------------------" << NC << endl;
 }

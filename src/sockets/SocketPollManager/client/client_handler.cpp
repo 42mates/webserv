@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/28 18:43:06 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/29 18:02:31 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,8 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, vector <ServerConfi
 		ret = readOneChunk(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read, status);
 		findClientMaxBodySize(servers, *request, size_set_to_default, client_max_body_size);
 		if (ret < 0)
-		{;
-			checkIfRequestTooLarge(total_bytes_read, 0, client_max_body_size);
+		{
+			checkIfRequestTooLarge(request->getBodySize(), client_max_body_size);
 			return recvError(poll_info.pfd.fd, status, *request);
 		}
 		if (ret == 0)
@@ -143,6 +143,9 @@ ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& 
 	char*		buffer = (char *)string_response.c_str();
 	size_t		len_response = string_response.size();
 	ssize_t		ret;
+
+	cerr << "clientSend(): sending response to client: " << class_response.getCode() << endl;
+
 	while (len_sent != len_response)
 	{
 		checkResponseTimeout(start, end);
@@ -195,6 +198,8 @@ ssize_t	SocketPollManager::clientSend(SocketPollInfo &poll_info, Response& respo
 	size_t		len_response = string_response.size();
 
 	gettimeofday(&start, NULL);
+	
+	cerr << "clientSend(): sending response to client: " << response.getCode() << endl;
 	while (len_sent != len_response)
 	{
 		checkResponseTimeout(start, end);

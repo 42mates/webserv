@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/28 17:56:31 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/29 17:51:25 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,14 +110,9 @@ void Request::parseBody(string request_chunk)
 
 void Request::parseRequest(string request_chunk)
 {
-
-	_raw_request += request_chunk;
-
-	//setIsCompleteRequest();
-
-	//if (_raw_request.substr(0, 10).find("GET") == string::npos) // avoid printing GET requests
-		//this->printRaw(); //! debug to see recv() results
-
+	if (!_header_parsed)
+		_raw_request += request_chunk;
+	
 	if (!_header_parsed && isCompleteHeader(_raw_request))
 	{
 		parseHeader(_raw_request);
@@ -128,8 +123,6 @@ void Request::parseRequest(string request_chunk)
 	else
 		_raw_body += request_chunk;
 
-	//setIsCompleteRequest();
-
 	if (_method != "GET" || _method != "HEAD")
 	{
 		if (_header["content-length"].empty() 
@@ -139,7 +132,13 @@ void Request::parseRequest(string request_chunk)
 
 		if (_header_parsed)
 			parseBody(_raw_body);
-		//if (_is_complete_request)
-			
 	}
+
+	setIsCompleteRequest();
+	if (_is_complete_request)
+		_body = getBodyString();
+
+	//static size_t i = 0;
+	//if (_is_complete_request)
+	//	cerr << "request " << i++ << " is complete" << endl;
 }
