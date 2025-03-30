@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 11:38:27 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/28 14:33:57 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/30 18:33:32 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,8 @@ enum ConfigTokenType
 //--> client_handler.cpp
 # define BLOCKING_OPERATION EWOULDBLOCK
 
-# define MCS_REQUEST_TIMEOUT 3000000 // 3sec
-# define MCS_RESPONSE_TIMEOUT 3000000 // 3sec 
+# define MCS_REQUEST_TIMEOUT 300000000 // 3sec
+# define MCS_RESPONSE_TIMEOUT 300000000 // 3sec 
 
 # define DEFAULT_MAX_BODY_SIZE 1000000 // 1MB
 

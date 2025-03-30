@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   recv_utils.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 18:19:55 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/29 18:17:13 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/30 19:01:26 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,47 +47,48 @@ void	SocketPollManager::prepareRecv(t_sockfd socket_fd, size_t& b_read, size_t& 
 }
 
 
-
 /**
- * @brief Reads a portion of data from the socket in a non-blocking manner.
- *
- * This function reads a portion of data from the specified socket. The amount of data read
- * is determined by the `client_max_body_size` and `BUFFER_SIZE`. The read data is stored in the
- * `raw_request` string. It also checks for socket errors and sets the `status` accordingly.
- *
+ * @brief Reads a chunk of data from a socket and processes it.
+ * 
+ * This function attempts to read a chunk of data from the specified socket
+ * into a buffer, appends it to the raw request string, and updates the
+ * request object. It also checks for errors, socket status, and ensures
+ * that the request body size does not exceed the maximum allowed size.
+ * 
  * @param socket_fd The file descriptor of the socket to read from.
- * @param raw_request Reference to the string to store the read data.
- * @param client_max_body_size The maximum allowed size of the client's body.
- * @param total_bytes_read Reference to the total number of bytes read so far.
- * @param status Reference to an integer to store the status of the read operation.
- *               It can be 0 for success, `BLOCKING_OPERATION` if the operation would block,
- *               or an error code from `checkSocketStatus`.
- *
- * @return The number of bytes read in this call, or -1 if an error occurred.
+ * @param raw_request A reference to a string where the raw request data will be stored.
+ * @param request A reference to the Request object to update with the received data.
+ * @param client_max_body_size The maximum allowed size for the client's request body.
+ * @param total_bytes_read A reference to a variable tracking the total bytes read so far.
+ * @param status A reference to an integer that will store the status of the socket operation.
+ * 
+ * @return The number of bytes received, or -1 if an error occurred.
+ * 
+ * @throws If the received data exceeds the maximum allowed body size, an exception
+ *       or error handling mechanism should be triggered by `checkIfRequestTooLarge`.
  */
-ssize_t	SocketPollManager::readOneChunk(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, size_t& total_bytes_read, int& status)
+ssize_t	SocketPollManager::readOneChunk(t_sockfd socket_fd, string& raw_request, Request& request, size_t client_max_body_size, size_t& total_bytes_read, int& status)
 {
 	const int	BUFFER_SIZE = 1024;
 	char		buffer[BUFFER_SIZE + 1] = {0};
 	ssize_t		bytes_to_read = (client_max_body_size > BUFFER_SIZE ? BUFFER_SIZE : client_max_body_size);
 	ssize_t		bytes_received = 0;
 
-	//checkIfRequestTooLarge(total_bytes_read, bytes_to_read, client_max_body_size);
 	bytes_received = recv(socket_fd, buffer, bytes_to_read, MSG_DONTWAIT);
-
 	status = checkSocketStatus(socket_fd);
 	if (bytes_received == -1)
 	{
 		status == 0 ? status = BLOCKING_OPERATION : status;
 		return -1;
 	}
+	total_bytes_read += bytes_received;
+	// (void)request //* commented for now, might be ebtter to only check in clientRecv() in fact
+	// checkIfRequestTooLarge(request.getBodySize(), client_max_body_size);
 	if (bytes_received > 0)
 		buffer[bytes_received] = '\0';
 
 	raw_request.clear();
 	raw_request = buffer;
-
-	total_bytes_read += bytes_received;
 
 	return bytes_received;
 }
@@ -154,10 +155,7 @@ void	SocketPollManager::recvError(t_sockfd socket_fd, int& status, Request& requ
 	if (status == BLOCKING_OPERATION)
 		_socket_to_request[socket_fd] = &request;
 	else
-	{
-		delete &request;
 		throw ResponseException(Response("500"), strerror(status));
-	}
 }
 
 

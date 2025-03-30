@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/29 18:02:31 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/30 18:48:22 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,20 +88,16 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, vector <ServerConfi
 	{
 		checkRequestTimeout(start, end);
 		int status = 0;
-		ret = readOneChunk(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read, status);
+		ret = readOneChunk(poll_info.pfd.fd, raw_request, *request, client_max_body_size, total_bytes_read, status);
 		findClientMaxBodySize(servers, *request, size_set_to_default, client_max_body_size);
 		if (ret < 0)
-		{
-			checkIfRequestTooLarge(request->getBodySize(), client_max_body_size);
 			return recvError(poll_info.pfd.fd, status, *request);
-		}
 		if (ret == 0)
 			break ;
 		try
 		{ 
 			request->parseRequest(raw_request);
-			// if (request.getBodySize() > client_max_body_size) //
-			// 	throw ResponseException(Response("413"), "Request Entity Too Large");//TODO test me
+			checkIfRequestTooLarge(request->getBodySize(), client_max_body_size);
 		}
 		catch (ContinueException& e_continue)
 		{
@@ -111,7 +107,6 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, vector <ServerConfi
 		}
 	}
 	request->setIsCompleteRequest(true);
-	// _socket_to_request[poll_info.pfd.fd] = request;
 
 }
 
@@ -142,11 +137,11 @@ ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& 
 	string		string_response = class_response.getResponse();
 	char*		buffer = (char *)string_response.c_str();
 	size_t		len_response = string_response.size();
-	ssize_t		ret;
+	ssize_t		ret = 1;
 
 	cerr << "clientSend(): sending response to client: " << class_response.getCode() << endl;
 
-	while (len_sent != len_response)
+	while (len_sent != len_response && ret)
 	{
 		checkResponseTimeout(start, end);
 		ret = send(poll_info.pfd.fd, buffer + len_sent, len_response - len_sent, MSG_DONTWAIT);
@@ -157,8 +152,6 @@ ssize_t	SocketPollManager::clientSend(SocketPollInfo& poll_info, SocketManager& 
 			return len_sent;	
 		}
 		len_sent += ret;
-		if (ret == 0)
-			break ;
 	}
 	if (ret == 0)
 	{

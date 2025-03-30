@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketPollManager.hpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:40:43 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/29 18:02:05 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/30 18:44:49 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ public:
 		void	prepareRecv(t_sockfd socket_fd, size_t& b_read, size_t& c_max_size, vector<ServerConfig>& servers, Request*& request, timeval& start);
 		void	prepareSend(t_sockfd socket_fd, size_t& len_sent, Response& response, timeval& start, vector<ServerConfig>& servers);
 		
-		ssize_t	readOneChunk(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, size_t& total_bytes_read, int& status);
+		ssize_t	readOneChunk(t_sockfd socket_fd, string& raw_request, Request& request, size_t client_max_body_size, size_t& total_bytes_read, int& status);
 		
 		void	checkRequestTimeout(timeval& start, timeval& end);
 		void	checkResponseTimeout(timeval& start, timeval& end);
