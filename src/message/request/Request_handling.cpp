@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/29 17:09:48 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/31 14:27:06 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ Response Request::handleRequest(ServerConfig &server_conf)
 	}
 	catch(const ResponseException& e)
 	{
-		error_log << "handleRequest(): " << e.what() << endl;
+		cerr <<  "handleRequest(): " << e.what() << endl;
 		response = e.getResponse();
 	}
 	catch(const exception& e)

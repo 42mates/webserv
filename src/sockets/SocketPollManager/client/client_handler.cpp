@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_handler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/31 11:43:31 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/31 14:27:06 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 			}
 			catch (ResponseException& e)
 			{
-				error_log << "clientHandler(): " << e.what() << endl;
+				cerr <<  "clientHandler(): " << e.what() << endl;
 				Response r = e.getResponse();
 				clientSend(poll_info, r);
 				if (keepConnectionOpen(r) == false)
@@ -56,7 +56,7 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 			}
 			catch (exception& e)
 			{
-				error_log << "(replace me) clientHandler(): " << e.what() << endl;
+				cerr <<  "(replace me) clientHandler(): " << e.what() << endl;
 				Response r("500");
 				clientSend(poll_info, r);
 				manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET);

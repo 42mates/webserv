@@ -34,12 +34,12 @@ Response Request::handleDELETE()
 	}
 	catch (const ResponseException &e)
 	{
-		error_log << "response: handleDELETE(): " << e.what() << endl;
+		cerr <<  "response: handleDELETE(): " << e.what() << endl;
 		response = e.getResponse();
 	}
 	catch (const exception &e)
 	{
-		error_log << "handleDELETE(): Unexpected error: " << e.what() << endl;
+		cerr <<  "handleDELETE(): Unexpected error: " << e.what() << endl;
 		response.setCode("500");
 		response.setBody("Internal Server Error");
 	}

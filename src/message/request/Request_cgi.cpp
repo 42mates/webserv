@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request_cgi.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 10:33:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/31 11:38:27 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/31 14:27:06 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ string executeScript(char **args, char **env)
 
         if (execve(args[0], args, env) == -1)
         {
-            error_log << "execve failed on \"" << args[0] << "\": " << strerror(errno) << endl;
+            cerr <<  "execve failed on \"" << args[0] << "\": " << strerror(errno) << endl;
             exit(EXIT_FAILURE);
         }
     }
@@ -127,7 +127,7 @@ Response Request::handle_cgi()
 	}
 	catch(const ResponseException& e)
 	{
-		error_log << "handle_cgi(): " << e.what() << endl;
+		cerr <<  "handle_cgi(): " << e.what() << endl;
 		response = e.getResponse();
 	}
 

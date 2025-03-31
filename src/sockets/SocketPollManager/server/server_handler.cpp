@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:31:21 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/31 14:27:06 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,14 @@ void	SocketPollManager::serverHandler(SocketPollInfo poll_info, SocketManager& m
 			}
 			catch (ResponseException& e)
 			{
-				error_log << "serverHandler(): " << e.what() << endl;
+				cerr <<  "serverHandler(): " << e.what() << endl;
 				Response r = e.getResponse();
 				closeConnectionToAllClients(r, poll_info, manager);
 				manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET);
 			}
 			catch (const exception& e)
 			{
-				error_log << "serverHandler(): " << e.what() << endl;
+				cerr <<  "serverHandler(): " << e.what() << endl;
 				Response r("500");
 				closeConnectionToAllClients(r, poll_info, manager);
 				manager.closeConnection(poll_info.port, poll_info.pfd.fd, SERVER_SOCKET);

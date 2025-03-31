@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 14:29:34 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/31 14:27:06 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void Response::setErrorBody(ServerConfig &server_conf, string &root)
 		}
 	}
 	if (!server_conf.error_pages.empty())
-		error_log << "Response setErrorBody() could not set custom error body for " << _code << endl;
+		cerr <<  "Response setErrorBody() could not set custom error body for " << _code << endl;
 }
 
 void Response::setDate()

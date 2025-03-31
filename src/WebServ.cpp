@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:48:43 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/31 14:27:06 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void WebServ::handleOneEvent(pollfd& poll_fd, SocketManager& manager)
 	}
 	catch(exception& e) 
 	{ 
-		error_log << "handleOneEvent(): " << e.what() << endl; 
+		cerr <<  "handleOneEvent(): " << e.what() << endl; 
 	}
 }
 
@@ -103,7 +103,7 @@ void WebServ::run(const char* arg, int& ret)
 	}
 	catch (const exception& e)
 	{
-		error_log << "webserv: " << e.what() << endl;
+		cerr <<  "webserv: " << e.what() << endl;
 		ret = 1;
 	}
 	if (sockets != NULL)

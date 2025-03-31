@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 13:11:29 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/27 17:21:59 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/31 14:27:06 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ SocketManager::SocketManager(const vector <ServerConfig*>* servers) : _poll_mana
 		}
 		catch (const std::exception& e) 
 		{ 
-			error_log << "Error while setting up server socket for port " << servers->at(i)->port << ": " << e.what() << std::endl;
+			cerr <<  "Error while setting up server socket for port " << servers->at(i)->port << ": " << e.what() << std::endl;
 		}
 	}
 }

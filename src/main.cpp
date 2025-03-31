@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:43:34 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 17:05:00 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/31 14:27:06 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 {
 	if (argc > 2)
 	{
-		error_log << "Usage: " << argv[0] << " [configuration file]" << endl;
+		cerr <<  "Usage: " << argv[0] << " [configuration file]" << endl;
 		return (1);
 	}
 

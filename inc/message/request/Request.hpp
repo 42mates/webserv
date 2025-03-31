@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/29 17:43:32 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/31 15:05:12 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,12 @@ class Request
 		bool	_header_parsed;
 		string	_body_filename;
 		fstream _body_stream;
+		string	_multipart_filename;
 		bool	isCompleteHeader(string raw_request);
 		void	parseStartLine(string start_line);
 		void	parseHeaderLine(string header_line);
 		void	parseHeader(string header_line);
+		void	decodeMultipart(string body);
 		void	decodeChunked(string body);
 		void	parseBody(string body);
 

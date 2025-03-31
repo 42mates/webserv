@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 11:34:33 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 17:05:00 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/31 14:27:06 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ bool Config::isDuplicateServer(ServerConfig *sconfig)
 
 		if (sname_i >= 0 && (*it)->port == sconfig->port)
 		{
-			error_log << "nginx: warning: conflicting server name \""
+			cerr <<  "nginx: warning: conflicting server name \""
 				<< sconfig->server_names[sname_i] << "\" on " 
 				<< sconfig->host << ":" << sconfig->port
 				<< ", ignored" << endl;
