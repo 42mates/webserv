@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/31 11:00:42 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/31 11:43:31 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, vector <ServerConfi
 	string		raw_request;
 	size_t		client_max_body_size = DEFAULT_MAX_BODY_SIZE;
 	bool		size_set_to_default = true;
-	ssize_t		ret;
+	ssize_t		ret = 1;
 	Request		*request;
 	size_t		total_bytes_read = 0;
 	timeval		start, end;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request_cgi.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 10:33:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 17:09:36 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/03/31 11:38:27 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,75 +40,69 @@ char**	Request::initEnv()
 	return env;
 }
 
-string	executeScript(char **args, char **env)
+
+string executeScript(char **args, char **env)
 {
-	access_log << "Executing script " << args[1] << endl;
-	int pipefd[2];
-	if (pipe(pipefd) == -1)
-		throw ResponseException(Response("500"), "Pipe creation failed");
+    access_log << "Executing script " << args[1] << endl;
+    int pipefd[2];
+    if (pipe(pipefd) == -1)
+        throw ResponseException(Response("500"), "Pipe creation failed");
 
-	pid_t pid = fork();
-	if (pid == -1)
-	{
-		close(pipefd[0]);
-		close(pipefd[1]);
-		throw ResponseException(Response("500"), "Fork failed");
-	}
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        close(pipefd[0]);
+        close(pipefd[1]);
+        throw ResponseException(Response("500"), "Fork failed");
+    }
 
-	if (pid == 0) // Child process
-	{
-		close(pipefd[0]); // Close read end of the pipe
-		dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to the pipe
-		close(pipefd[1]);
+    if (pid == 0) // Child process
+    {
+        close(pipefd[0]);            // Close read end
+        dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to pipe
+        close(pipefd[1]);
 
-		if (execve(args[0], args, env) == -1)
-		{
-			error_log << "execve failed on \"" << args[0] << "\": " << strerror(errno) << endl;
-			exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		close(pipefd[1]); // Close write end of the pipe
+        if (execve(args[0], args, env) == -1)
+        {
+            error_log << "execve failed on \"" << args[0] << "\": " << strerror(errno) << endl;
+            exit(EXIT_FAILURE);
+        }
+    }
+    else // Parent process
+    {
+        close(pipefd[1]); // Close write end
+        int status;
+        time_t start_time = time(NULL);
 
+        while (waitpid(pid, &status, WNOHANG) == 0)
+        {
+            if (time(NULL) - start_time >= CGI_TIMEOUT) // Check timeout
+            {
+                kill(pid, SIGKILL); // Kill process if it exceeds timeout
+                throw ResponseException(Response("504"), "CGI script execution timed out");
+            }
+
+            usleep(100000); // Sleep 100ms before rechecking
+        }
 		string output;
-		char buffer[1024];
-		ssize_t bytes_read;
+        char buffer[1024];
+        ssize_t bytes_read;
+		cout << "before loop " << endl;
+        while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0)
+        {
+            buffer[bytes_read] = '\0';
+            output += buffer;
+			cout << bytes_read << " " << output << endl;
+        }
 
-		while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0)
-		{
-			buffer[bytes_read] = '\0';
-			output += buffer;
-		}
+        close(pipefd[0]);
+        if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+            throw ResponseException(Response("502"), "CGI script execution failed: " + output);
 
-		close(pipefd[0]);
+        return output;
+    }
 
-		int status;
-		struct timespec timeout;
-		timeout.tv_sec = CGI_TIMEOUT; // Set timeout to 5 seconds
-		timeout.tv_nsec = 0;
-
-		int ret;
-		while ((ret = waitpid(pid, &status, WNOHANG)) == 0)
-		{
-			nanosleep(&timeout, NULL);
-			if ((ret = waitpid(pid, &status, WNOHANG)) == 0)
-			{
-				kill(pid, SIGKILL); // Kill the process if it exceeds the timeout
-				throw ResponseException(Response("504"), "CGI script execution timed out");
-			}
-		}
-
-		if (ret == -1)
-			throw ResponseException(Response("500"), "Error while waiting for CGI script");
-
-		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-			throw ResponseException(Response("502"), "CGI script execution failed: " + output);
-
-		return output;
-	}
-
-	return ""; // Should never reach here
+    return ""; // Should never reach here
 }
 
 Response Request::handle_cgi()
