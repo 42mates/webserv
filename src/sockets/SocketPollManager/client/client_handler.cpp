@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/30 18:48:22 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/31 11:00:42 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, vector <ServerConfi
 	{
 		checkRequestTimeout(start, end);
 		int status = 0;
-		ret = readOneChunk(poll_info.pfd.fd, raw_request, *request, client_max_body_size, total_bytes_read, status);
+		ret = readOneChunk(poll_info.pfd.fd, raw_request, client_max_body_size, total_bytes_read, status);
 		findClientMaxBodySize(servers, *request, size_set_to_default, client_max_body_size);
 		if (ret < 0)
 			return recvError(poll_info.pfd.fd, status, *request);
@@ -106,6 +106,8 @@ void	SocketPollManager::clientRecv(SocketPollInfo poll_info, vector <ServerConfi
 			continue ;
 		}
 	}
+	if (ret == 0)
+		checkIfRequestTooLarge(request->getBodySize(), client_max_body_size);
 	request->setIsCompleteRequest(true);
 
 }

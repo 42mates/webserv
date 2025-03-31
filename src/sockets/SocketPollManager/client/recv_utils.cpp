@@ -6,7 +6,7 @@
 /*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 18:19:55 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/30 19:01:26 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/03/31 11:00:15 by sokaraku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,17 +57,13 @@ void	SocketPollManager::prepareRecv(t_sockfd socket_fd, size_t& b_read, size_t& 
  * 
  * @param socket_fd The file descriptor of the socket to read from.
  * @param raw_request A reference to a string where the raw request data will be stored.
- * @param request A reference to the Request object to update with the received data.
  * @param client_max_body_size The maximum allowed size for the client's request body.
  * @param total_bytes_read A reference to a variable tracking the total bytes read so far.
  * @param status A reference to an integer that will store the status of the socket operation.
  * 
  * @return The number of bytes received, or -1 if an error occurred.
- * 
- * @throws If the received data exceeds the maximum allowed body size, an exception
- *       or error handling mechanism should be triggered by `checkIfRequestTooLarge`.
  */
-ssize_t	SocketPollManager::readOneChunk(t_sockfd socket_fd, string& raw_request, Request& request, size_t client_max_body_size, size_t& total_bytes_read, int& status)
+ssize_t	SocketPollManager::readOneChunk(t_sockfd socket_fd, string& raw_request, size_t client_max_body_size, size_t& total_bytes_read, int& status)
 {
 	const int	BUFFER_SIZE = 1024;
 	char		buffer[BUFFER_SIZE + 1] = {0};
@@ -82,8 +78,6 @@ ssize_t	SocketPollManager::readOneChunk(t_sockfd socket_fd, string& raw_request,
 		return -1;
 	}
 	total_bytes_read += bytes_received;
-	// (void)request //* commented for now, might be ebtter to only check in clientRecv() in fact
-	// checkIfRequestTooLarge(request.getBodySize(), client_max_body_size);
 	if (bytes_received > 0)
 		buffer[bytes_received] = '\0';
 
