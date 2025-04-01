@@ -4,6 +4,10 @@ import os
 import urllib.parse
 import sys
 
+#while True:
+#	pass  # Keeps the loop running indefinitely
+
+	
 try:
 	query = os.environ.get('_QUERY', '')
 	params = urllib.parse.parse_qs(query)

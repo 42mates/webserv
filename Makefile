@@ -6,7 +6,7 @@
 #    By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/18 13:05:21 by mbecker           #+#    #+#              #
-#    Updated: 2025/03/29 13:32:45 by mbecker          ###   ########.fr        #
+#    Updated: 2025/04/01 14:21:54 by mbecker          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,6 +49,10 @@ fclean: clean
 	@rm -f $(NAME)
 
 re: fclean all
+
+siege:
+	@echo "$(LYELLOW)Launching siege...$(NC)"
+	@siege -b -c 30 -t 1M http://localhost:7070/
 
 .PHONY : all clean fclean re libft
 

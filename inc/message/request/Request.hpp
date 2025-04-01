@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 16:55:36 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/31 15:05:12 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/04/01 14:15:39 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,11 @@ class Request
 		bool	_header_parsed;
 		string	_body_filename;
 		fstream _body_stream;
-		string	_multipart_filename;
 		bool	isCompleteHeader(string raw_request);
 		void	parseStartLine(string start_line);
 		void	parseHeaderLine(string header_line);
 		void	parseHeader(string header_line);
-		void	decodeMultipart(string body);
+		void	decodeMultipart(string &upload_dir, string &filename, fstream &outfile);
 		void	decodeChunked(string body);
 		void	parseBody(string body);
 
@@ -68,6 +67,7 @@ class Request
 		ServerConfig	_server_conf;
 		RouteConfig		_route_conf;
 		string		getFileContent();
+		void		getOutfile(string &filename, string &upload_dir, fstream &file);
 		Response	handleGET();
 		Response	handleHEAD();
 		Response	handlePOST();
@@ -83,6 +83,7 @@ class Request
 		// GETTERS
 		size_t		getBodySize();
 		string		getBodyString();
+		string		getBodyString(fstream &file);
 		string		getHeaderValue(string value);
 		string		getConnectionKeepAlive();
 		string		getRawRequest();

@@ -9,11 +9,11 @@ Response Request::handleDELETE()
 		// Get the file path from the URI
 		string file_path = getFilePath(_route_conf.root + _uri);
 
-		// Check if the file exists and is access_logible
+		// Check if the file exists and is accessible
 		struct stat buffer;
 		if (stat(file_path.c_str(), &buffer) != 0)
 		{
-			access_log << "DELETE request rejected: File \"" << file_path << "\" does not exist or is inaccess_logible." << endl;
+			cout << "DELETE request rejected: File \"" << file_path << "\" does not exist or is inaccessible." << endl;
 			if (errno == EACCES)
 				throw ResponseException(Response("403"), "\"" + file_path + "\": " + strerror(errno));
 			else
@@ -23,14 +23,14 @@ Response Request::handleDELETE()
 		// Attempt to delete the file
 		if (remove(file_path.c_str()) != 0)
 		{
-			access_log << "DELETE request rejected: Failed to delete file \"" << file_path << "\" due to insufficient permissions." << endl;
+			cout << "DELETE request rejected: Failed to delete file \"" << file_path << "\" due to insufficient permissions." << endl;
 			throw ResponseException(Response("403"), "Failed to delete the file (permission denied)");
 		}
 
 		// Set response status to 204 (No Content) as the file was successfully deleted
 		response.setCode("200");
 		response.setBody("File deleted successfully: " + _uri);
-		access_log << "DELETE request accepted: File \"" << file_path << "\" was successfully deleted." << endl;
+		cout << "DELETE request accepted: File \"" << file_path << "\" was successfully deleted." << endl;
 	}
 	catch (const ResponseException &e)
 	{

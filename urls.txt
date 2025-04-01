@@ -1,3 +1,0 @@
-http://localhost:7070
-http://localhost:42420
-http://dump-ubuntu-2204:9090

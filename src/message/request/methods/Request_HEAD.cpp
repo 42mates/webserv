@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 17:09:46 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/04/01 14:48:57 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,9 @@ Response Request::handleHEAD()
 	}
 	catch(const ResponseException& e)
 	{
-		error_log  << "handleGET(): " << e.what() << endl;
+		cerr << "handleGET(): " << e.what() << endl;
 		response = e.getResponse();
-		access_log << "REQUEST DENIED 😱" << endl;
 		return response;
 	}
-	access_log << "REQUEST ACCEPTED 😎" << endl;
 	return response;
 }

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/29 17:51:25 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/04/01 14:03:59 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,22 +89,23 @@ void Request::parseHeader(string raw_request)
 	}
 }
 
-void Request::parseBody(string request_chunk)
+void Request::parseBody(string raw_body)
 {
-	if (request_chunk.empty())
+	if (raw_body.empty())
 		return;
 
 	if (_header["transfer-encoding"] == "chunked")
-		decodeChunked(request_chunk);
+		decodeChunked(raw_body);
 	else if (!_header["transfer-encoding"].empty()
 		&& _header["transfer-encoding"] != "identity")
 		throw ResponseException(Response("501"), "transfer-encoding value \"" + _header["transfer-encoding"] + "\" not supported"); 
 	else
 	{
 		if (!_header["content-length"].empty()
-			&& request_chunk.size() != strtoul(_header["content-length"].c_str(), NULL, 10))
-			throw ResponseException(Response("400"), "invalid content-length (expected: " + _header["content-length"] + ", got: " + itostr(request_chunk.size()) + ")");
-		_body_stream << request_chunk;
+			&& getBodySize() > strtoul(_header["content-length"].c_str(), NULL, 10))
+			throw ResponseException(Response("400"), "invalid content-length (expected: " + _header["content-length"] + ", got: " + itostr(getBodySize()) + ")");
+		_body_stream << raw_body;
+		_raw_body.clear();
 	}
 }
 
@@ -112,7 +113,7 @@ void Request::parseRequest(string request_chunk)
 {
 	if (!_header_parsed)
 		_raw_request += request_chunk;
-	
+
 	if (!_header_parsed && isCompleteHeader(_raw_request))
 	{
 		parseHeader(_raw_request);
@@ -135,10 +136,4 @@ void Request::parseRequest(string request_chunk)
 	}
 
 	setIsCompleteRequest();
-	if (_is_complete_request)
-		_body = getBodyString();
-
-	//static size_t i = 0;
-	//if (_is_complete_request)
-	//	cerr << "request " << i++ << " is complete" << endl;
 }

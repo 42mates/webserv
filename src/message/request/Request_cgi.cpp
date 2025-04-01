@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 10:33:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/31 14:27:06 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/04/01 14:27:40 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ char**	Request::initEnv()
 
 string executeScript(char **args, char **env)
 {
-    access_log << "Executing script " << args[1] << endl;
+    cout << "Executing script " << args[1] << endl;
     int pipefd[2];
     if (pipe(pipefd) == -1)
         throw ResponseException(Response("500"), "Pipe creation failed");
@@ -87,12 +87,10 @@ string executeScript(char **args, char **env)
 		string output;
         char buffer[1024];
         ssize_t bytes_read;
-		cout << "before loop " << endl;
         while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0)
         {
             buffer[bytes_read] = '\0';
             output += buffer;
-			cout << bytes_read << " " << output << endl;
         }
 
         close(pipefd[0]);

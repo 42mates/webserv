@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 14:41:50 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/31 15:15:19 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/04/01 14:14:58 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 typedef struct MultipartBody
 {
 	map<string, string>	headers;
-	fstream*			content;
 } MultipartBody;
 
 typedef struct MultipartData
@@ -88,37 +87,46 @@ static void parseMultipartHeader(string body, MultipartBody &file)
 	}
 }
 
-void Request::decodeMultipart(string chunk)
+void Request::decodeMultipart(string &upload_dir, string &filename, fstream &outfile)
 {
 	MultipartData data;
 	parseContentType(_header["content-type"], data);
-
+	
+	string body = getBodyString();
 	string boundary = "--" + data.settings["boundary"];
 	size_t boundary_len = boundary.size();
-	size_t pos = chunk.find(boundary) + boundary_len;
+	size_t pos = body.find(boundary) + boundary_len;
 	size_t next_pos = 0;
 
 	if (pos != boundary_len)
-		return;
-		//throw ResponseException(Response("400"), "invalid multipart body format: no initial boundary");
-
-	while ((next_pos = chunk.find(string(CRLF) + boundary, pos)) != string::npos)
+		throw ResponseException(Response("400"), "invalid multipart body format: no initial boundary");
+		
+	MultipartBody file;
+	
+	while ((next_pos = body.find(string(CRLF) + boundary, pos)) != string::npos)
 	{
-		string entity = chunk.substr(pos + 2, next_pos - pos - 2); // + 2 = CRLF
+		string entity = body.substr(pos + 2, next_pos - pos - 2); // + 2 = CRLF
 		if (entity.empty())
-			throw runtime_error("empty multipart entity");
+			throw ResponseException(Response("400"), "empty multipart entity");
 
-		MultipartBody file;
 		size_t sep = entity.find(string(CRLF) + CRLF);
 		if (sep == string::npos)
-			break;
-			//throw ResponseException(Response("400"), "invalid multipart entity format");
+			throw ResponseException(Response("400"), "invalid multipart entity format");
 
 		parseMultipartHeader(entity.substr(0, sep), file);
-		if (file.headers.find("filename") != file.headers.end())
-			_multipart_filename = file.headers["filename"];
-		*file.content << entity.substr(sep + 4);
-		_raw_body = chunk.substr(next_pos + 2);
+
+		if (file.headers.find("filename") != file.headers.end()
+			&& upload_dir + "/" + file.headers["filename"] != filename)
+		{
+			filename = upload_dir + "/" + file.headers["filename"];
+			getOutfile(filename, upload_dir, outfile);
+		}
+		else if (!outfile.is_open())
+			getOutfile(filename, upload_dir, outfile);
+		
+		outfile << entity.substr(sep + 4);
 		pos = next_pos + 2 + boundary_len;
+		if (pos >= body.size())
+			break; 
 	}
 }

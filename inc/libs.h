@@ -42,7 +42,4 @@
 
 # include "utils.hpp"      // Utilities functions (like itostr)
 
-# include "logger.hpp"     // logs global variables
-
-
 #endif

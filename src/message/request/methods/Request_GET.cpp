@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/27 17:09:46 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/04/01 14:48:44 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,12 @@ Response Request::handleGET()
 		string file = getFileContent();
 		response.setBody(file);
 		response.setCode("200");
-		access_log << "GET request successfully processed. Response code: 200." << endl;
 	}
 	catch(const ResponseException& e)
 	{
-		error_log  << e.what() << endl;
+		cerr << e.what() << endl;
 		response = e.getResponse();
-		access_log << "GET request failed. Error: " << e.what() << endl;
+		cout << "handleGET(): GET request failed: " << e.what() << endl;
 		return response;
 	}
 	return response;

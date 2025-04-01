@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 17:08:21 by mbecker           #+#    #+#             */
-/*   Updated: 2025/03/29 16:30:19 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/04/01 14:15:45 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,10 +227,10 @@ Request::~Request()
 	{
 		_body_stream.close();
 	}
-	//if (!_body_filename.empty())
-	//{
-	//	remove(_body_filename.c_str());
-	//}
+	if (!_body_filename.empty())
+	{
+		remove(_body_filename.c_str());
+	}
 }
 
 /************ GETTERS ************/
@@ -255,9 +255,35 @@ string Request::getBodyString()
 	return body;
 }
 
-string Request::getHeaderValue(string value)
+string Request::getBodyString(fstream &file)
 {
-	return (_header[value]);
+	string body;
+	try
+	{
+		if (!file.is_open() || !file.good())
+			throw runtime_error("File stream is not open or in a good state");
+		file.seekg(0, ios::beg);
+		body.assign(istreambuf_iterator<char>(file), istreambuf_iterator<char>());
+	} 
+	catch (const exception &e) 
+	{
+		throw ResponseException(Response("500"), "Failed to assign body string: " + string(e.what()));
+	}
+	return body;
+}
+
+string Request::getHeaderValue(string key)
+{
+	if (key == "content-type")
+	{
+		istringstream iss(_header["content-type"]);
+		string tmp;
+		getline(iss, tmp, ' ');
+		if (tmp[tmp.size() - 1] == ';')
+			tmp.erase(tmp.size() - 1);
+		return tmp;
+	}
+	return (_header[key]);
 }
 
 string Request::getConnectionKeepAlive()
