@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 10:33:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/04/01 14:27:40 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/04/01 15:22:45 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,16 +110,16 @@ Response Request::handle_cgi()
 	char		**args = new char*[3];
 	char		**env = initEnv();
 
-	args[0] = new char[17];
-	strcpy(args[0], "/usr/bin/python3");
-	if (_route_conf.cgi_path.empty())
-		throw ResponseException(Response("500"), "CGI script not set in configuration file");
-	args[1] = new char[_route_conf.cgi_path.size() + 1];
-	strcpy(args[1], _route_conf.cgi_path.c_str());
-	args[2] = NULL;
-
 	try
 	{
+		memset(args, 0, sizeof(char*) * 3);
+		args[0] = new char[17];
+		strcpy(args[0], "/usr/bin/python3");
+		if (_route_conf.cgi_path.empty())
+			throw ResponseException(Response("502"), "CGI script not set in configuration file");
+		args[1] = new char[_route_conf.cgi_path.size() + 1];
+		strcpy(args[1], _route_conf.cgi_path.c_str());
+		args[2] = NULL;	
 		script_output = "HTTP/1.1 200 OK\n" + executeScript(args, env);
 		response.parseResponse(script_output);
 	}
