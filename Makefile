@@ -6,7 +6,7 @@
 #    By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/18 13:05:21 by mbecker           #+#    #+#              #
-#    Updated: 2025/04/01 14:21:54 by mbecker          ###   ########.fr        #
+#    Updated: 2025/04/01 15:09:22 by mbecker          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 clean:
 	@echo "$(LRED)Removing $(RED)objects$(LRED)...$(NC)"
-	@rm -rf $(OBJ_DIR)
+	@rm -rf $(OBJ_DIR) tools/website/data/*
 
 fclean: clean
 	@echo "$(LRED)Removing $(RED)$(NAME)$(LRED)...$(NC)"

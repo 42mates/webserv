@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 15:10:07 by mbecker           #+#    #+#             */
-/*   Updated: 2025/04/01 14:29:10 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/04/01 14:58:19 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,9 +89,6 @@ Response Request::handleRequest(ServerConfig &server_conf)
 {
 	Response response;
 
-	//if (_method != "GET") // debug (avoiding GET printing)
-		//this->print(); //!leave this line for debugging purposes during correction
-	
 	try
 	{
 		if (!_is_complete_request)
@@ -103,8 +100,8 @@ Response Request::handleRequest(ServerConfig &server_conf)
 		
 		checkMethod();
 		checkHeader();
-
-
+		if (getBodySize() > _server_conf.client_max_body_size)
+			throw ResponseException(Response("413"), "request body too large (max: " + itostr(_server_conf.client_max_body_size) + " bytes, got: " + itostr(getBodySize()) + " bytes)");
 
 		if (_uri.size() >= 3 && _uri.substr(_uri.size() - 3) == ".py") // if file is cgi
 			response =  handle_cgi();

@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:49:26 by mbecker           #+#    #+#             */
-/*   Updated: 2025/04/01 14:17:12 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/04/01 15:08:22 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ string parseURLEncoded(string body)
 	{
 		vector< pair<string, string> > decoded = decodeURL(body);
 		for (vector< pair<string, string> >::iterator it = decoded.begin(); it != decoded.end(); it++)
-			result += it->first + "=" + it->second;
+			result += it->first + "=" + it->second + "\n";
 	}
 	catch(const runtime_error& e)
 	{
@@ -99,7 +99,12 @@ Response Request::handlePOST()
 	try
 	{
 		if (getBodySize() == 0)
-			return Response("405");
+		{
+			if (!_query.empty())
+				_body_stream << parseURLEncoded(_query);
+			//else
+			//	return Response("405"); asked for subject
+		}
 
 		string upload_dir = _route_conf.upload_dir.empty() ? _route_conf.root : _route_conf.upload_dir;
 		string filename = getUniqueFilename(upload_dir);
