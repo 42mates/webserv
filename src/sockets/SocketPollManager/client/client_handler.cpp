@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:32:26 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/31 14:27:06 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/04/02 12:31:19 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,7 @@ void	SocketPollManager::clientHandler(SocketPollInfo poll_info, SocketManager& m
 				cerr <<  "clientHandler(): " << e.what() << endl;
 				Response r = e.getResponse();
 				clientSend(poll_info, r);
-				if (keepConnectionOpen(r) == false)
-					manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET);
+				manager.closeConnection(poll_info.port, poll_info.pfd.fd, CLIENT_SOCKET);
 			}
 			catch (exception& e)
 			{

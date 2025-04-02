@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketPollManager.hpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:40:43 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/31 11:00:31 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/04/02 12:31:26 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,6 @@ public:
 		void	removeSocket(t_sockfd socket_fd);
 };
 
-bool	keepConnectionOpen(Response& r);
 int		checkSocketStatus(t_sockfd socket_fd);
 void	checkIfRequestTooLarge(size_t body_size, size_t limit);
 /**

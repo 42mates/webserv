@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   common_utils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sokaraku <sokaraku@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 17:02:23 by sokaraku          #+#    #+#             */
-/*   Updated: 2025/03/28 18:17:11 by sokaraku         ###   ########.fr       */
+/*   Updated: 2025/04/02 12:31:39 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,17 +33,6 @@ bool	SocketPollManager::isMessageEnd(t_sockfd socket_fd, __int8_t type)
 	return false;
 
 }
-
-
-bool	keepConnectionOpen(Response& r)
-{
-	string	status = r.getCode();
-
-	if (status == "400" || status == "413" || status == "500")
-		return false;
-	return true;
-}
-
 
 /**
  * @brief Finds the best matching server configuration for a given request.

@@ -6,7 +6,7 @@
 #    By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/18 13:05:21 by mbecker           #+#    #+#              #
-#    Updated: 2025/04/01 15:09:22 by mbecker          ###   ########.fr        #
+#    Updated: 2025/04/02 12:30:10 by mbecker          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,7 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	@echo "$(LYELLOW)Objects successfully compiled in $(YELLOW)$$PWD/obj/$(LYELLOW).$(NC)"
 	@$(CC) $(CFLAG) $(SRC) $(INCLUDES) -o $(NAME)
-	@mkdir -p tools/logs
+	@mkdir -p tools/website/data
 	@if [ -f $(NAME) ]; then \
 		echo "$(LGREEN)Created $(GREEN)$(NAME)$(LGREEN).$(NC)" ; \
 	else \

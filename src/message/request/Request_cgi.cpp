@@ -6,7 +6,7 @@
 /*   By: mbecker <mbecker@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 10:33:01 by mbecker           #+#    #+#             */
-/*   Updated: 2025/04/01 15:22:45 by mbecker          ###   ########.fr       */
+/*   Updated: 2025/04/01 15:55:34 by mbecker          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ string executeScript(char **args, char **env)
             if (time(NULL) - start_time >= CGI_TIMEOUT) // Check timeout
             {
                 kill(pid, SIGKILL); // Kill process if it exceeds timeout
+				close(pipefd[0]);
                 throw ResponseException(Response("504"), "CGI script execution timed out");
             }
 
